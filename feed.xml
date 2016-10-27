@@ -2,8 +2,8 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/">
 	<channel>
 		<title>Luis Elizondo</title>
-		<link>http://localhost:4000</link>
-		<atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
+		<link>http://luiselizondo.github.io</link>
+		<atom:link href="http://luiselizondo.github.io/feed.xml" rel="self" type="application/rss+xml" />
 		
 			<item>
 				<title>Do not rebuild your frontend code</title>
@@ -50,8 +50,8 @@ CMD [&quot;/opt/start-nginx.sh&quot;]
 &lt;p&gt;This way, we don’t rebuild the project each time. Problem solved.&lt;/p&gt;
 </description>
 				<pubDate>Thu, 06 Oct 2016 05:59:44 +0900</pubDate>
-				<link>http://localhost:4000/2016-10-06/do-not-rebuild-your-frontend-code/</link>
-				<guid isPermaLink="true">http://localhost:4000/2016-10-06/do-not-rebuild-your-frontend-code/</guid>
+				<link>http://luiselizondo.github.io/2016-10-06/do-not-rebuild-your-frontend-code/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2016-10-06/do-not-rebuild-your-frontend-code/</guid>
 			</item>
 		
 			<item>
@@ -594,8 +594,8 @@ Body: This is the second time I call a method that will return a promise
 &lt;p&gt;That’s it, you can see the code on &lt;a href=&quot;https://github.com/luiselizondo/Synchronous-JavaScript-Using-Promises&quot;&gt;Github&lt;/a&gt;. I hope you understand now the advantages of using promises. If you have any questions, please leave a comment or follow me on &lt;a href=&quot;http://twitter.com/lelizondo&quot;&gt;Twitter&lt;/a&gt;.&lt;/p&gt;
 </description>
 				<pubDate>Sat, 04 Jul 2015 01:26:00 +0900</pubDate>
-				<link>http://localhost:4000/2015-07-04/synchronous-javascript-using-promises-a-tutorial-on-using-promises/</link>
-				<guid isPermaLink="true">http://localhost:4000/2015-07-04/synchronous-javascript-using-promises-a-tutorial-on-using-promises/</guid>
+				<link>http://luiselizondo.github.io/2015-07-04/synchronous-javascript-using-promises-a-tutorial-on-using-promises/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2015-07-04/synchronous-javascript-using-promises-a-tutorial-on-using-promises/</guid>
 			</item>
 		
 			<item>
@@ -697,8 +697,8 @@ function init(callback) {
 &lt;p&gt;So there you have it, a very easy solution to handle a big loop.&lt;/p&gt;
 </description>
 				<pubDate>Sat, 25 Apr 2015 21:42:18 +0900</pubDate>
-				<link>http://localhost:4000/2015-04-25/how-to-write-a-big-loop-on-node-js/</link>
-				<guid isPermaLink="true">http://localhost:4000/2015-04-25/how-to-write-a-big-loop-on-node-js/</guid>
+				<link>http://luiselizondo.github.io/2015-04-25/how-to-write-a-big-loop-on-node-js/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2015-04-25/how-to-write-a-big-loop-on-node-js/</guid>
 			</item>
 		
 			<item>
@@ -893,8 +893,8 @@ pre-stop script
 &lt;p&gt;If you have any questions, please don’t hesitate to post a comment here or mention me on Twitter &lt;a href=&quot;https://twitter.com/lelizondo&quot;&gt;@lelizondo&lt;/a&gt;. You can also follow me on &lt;a href=&quot;https://github.com/luiselizondo&quot;&gt;Github&lt;/a&gt;, fork and contribute to one of the projects of our &lt;a href=&quot;https://github.com/iiiepe&quot;&gt;organisation&lt;/a&gt; or use our &lt;a href=&quot;https://hub.docker.com/u/iiiepe&quot;&gt;images&lt;/a&gt;. Thanks.&lt;/p&gt;
 </description>
 				<pubDate>Mon, 30 Mar 2015 18:23:12 +0900</pubDate>
-				<link>http://localhost:4000/2015-03-30/a-production-ready-docker-workflow-part-4-service-discovery-and-the-load-balancer/</link>
-				<guid isPermaLink="true">http://localhost:4000/2015-03-30/a-production-ready-docker-workflow-part-4-service-discovery-and-the-load-balancer/</guid>
+				<link>http://luiselizondo.github.io/2015-03-30/a-production-ready-docker-workflow-part-4-service-discovery-and-the-load-balancer/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2015-03-30/a-production-ready-docker-workflow-part-4-service-discovery-and-the-load-balancer/</guid>
 			</item>
 		
 			<item>
@@ -1031,8 +1031,8 @@ docker push iiieperobot/dashi3
 &lt;p&gt;Part 4 is out, you can read it &lt;a href=&quot;http://www.luiselizondo.net/a-production-ready-docker-workflow-part-4-service-discovery-and-the-load-balancer/&quot;&gt;here&lt;/a&gt;&lt;/p&gt;
 </description>
 				<pubDate>Fri, 27 Mar 2015 16:07:54 +0900</pubDate>
-				<link>http://localhost:4000/2015-03-27/a-production-ready-docker-workflow-part-3-orchestration-tools/</link>
-				<guid isPermaLink="true">http://localhost:4000/2015-03-27/a-production-ready-docker-workflow-part-3-orchestration-tools/</guid>
+				<link>http://luiselizondo.github.io/2015-03-27/a-production-ready-docker-workflow-part-3-orchestration-tools/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2015-03-27/a-production-ready-docker-workflow-part-3-orchestration-tools/</guid>
 			</item>
 		
 			<item>
@@ -1115,8 +1115,8 @@ docker push iiieperobot/dashi3
 &lt;p&gt;Part 3 is out, you can read it &lt;a href=&quot;http://www.luiselizondo.net/a-production-ready-docker-workflow-part-3-orchestration-tools/&quot;&gt;here&lt;/a&gt;&lt;/p&gt;
 </description>
 				<pubDate>Mon, 23 Mar 2015 18:39:56 +0900</pubDate>
-				<link>http://localhost:4000/2015-03-23/a-production-ready-docker-workflow-part-2-the-storage-problem/</link>
-				<guid isPermaLink="true">http://localhost:4000/2015-03-23/a-production-ready-docker-workflow-part-2-the-storage-problem/</guid>
+				<link>http://luiselizondo.github.io/2015-03-23/a-production-ready-docker-workflow-part-2-the-storage-problem/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2015-03-23/a-production-ready-docker-workflow-part-2-the-storage-problem/</guid>
 			</item>
 		
 			<item>
@@ -1324,8 +1324,8 @@ sudo ln -s /usr/local/bin/docker-compose /usr/local/bin/fig
 &lt;p&gt;You can read part 2 at http://www.luiselizondo.net/a-production-ready-docker-workflow-part-2-the-storage-problem/&lt;/p&gt;
 </description>
 				<pubDate>Thu, 19 Mar 2015 20:03:48 +0900</pubDate>
-				<link>http://localhost:4000/2015-03-19/a-production-ready-docker-workflow/</link>
-				<guid isPermaLink="true">http://localhost:4000/2015-03-19/a-production-ready-docker-workflow/</guid>
+				<link>http://luiselizondo.github.io/2015-03-19/a-production-ready-docker-workflow/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2015-03-19/a-production-ready-docker-workflow/</guid>
 			</item>
 		
 			<item>
@@ -1562,8 +1562,8 @@ stderr_logfile=/var/log/supervisor/%(program_name)s.log
 &lt;/div&gt;
 </description>
 				<pubDate>Mon, 01 Dec 2014 18:38:17 +0900</pubDate>
-				<link>http://localhost:4000/2014-12-01/how-to-run-tests-with-docker-mongoose-nodejs-and-mocha/</link>
-				<guid isPermaLink="true">http://localhost:4000/2014-12-01/how-to-run-tests-with-docker-mongoose-nodejs-and-mocha/</guid>
+				<link>http://luiselizondo.github.io/2014-12-01/how-to-run-tests-with-docker-mongoose-nodejs-and-mocha/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2014-12-01/how-to-run-tests-with-docker-mongoose-nodejs-and-mocha/</guid>
 			</item>
 		
 			<item>
@@ -1626,8 +1626,8 @@ stderr_logfile=/var/log/supervisor/%(program_name)s.log
 &lt;p&gt;That’s it. Using those simple commands you can save yourself hours of frustration. If you need help or if you have an idea please leave a comment or even better, you can fork the project and submit a pull request.&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;&lt;strong&gt;Update 10/29/2014&lt;/strong&gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;&lt;span style=&quot;line-height: 1.6em;&quot;&gt;The latest version of the official MySQL image now supports creating a Database user with a password and a database if the environment variables are passed. The scripts are still working but now you have another option to create a database.&lt;/span&gt;&amp;lt;/p&amp;gt;&lt;/p&gt;
 </description>
 				<pubDate>Thu, 18 Sep 2014 05:06:51 +0900</pubDate>
-				<link>http://localhost:4000/2014-09-18/a-tutorial-on-how-to-use-mysql-with-docker/</link>
-				<guid isPermaLink="true">http://localhost:4000/2014-09-18/a-tutorial-on-how-to-use-mysql-with-docker/</guid>
+				<link>http://luiselizondo.github.io/2014-09-18/a-tutorial-on-how-to-use-mysql-with-docker/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2014-09-18/a-tutorial-on-how-to-use-mysql-with-docker/</guid>
 			</item>
 		
 			<item>
@@ -1664,8 +1664,8 @@ stderr_logfile=/var/log/supervisor/%(program_name)s.log
 &lt;p&gt;If you’re curious about the application, you can download the code at &lt;a href=&quot;https://github.com/luiselizondo/angular-test-app&quot;&gt;Github&lt;/a&gt;. Turns out that after the 4 hours of frustration, I’m actually enjoying learning Angular.js.&lt;/p&gt;
 </description>
 				<pubDate>Thu, 24 Jul 2014 07:32:57 +0900</pubDate>
-				<link>http://localhost:4000/2014-07-24/the-thing-no-one-mentions-when-youre-learning-angujarjs/</link>
-				<guid isPermaLink="true">http://localhost:4000/2014-07-24/the-thing-no-one-mentions-when-youre-learning-angujarjs/</guid>
+				<link>http://luiselizondo.github.io/2014-07-24/the-thing-no-one-mentions-when-youre-learning-angujarjs/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2014-07-24/the-thing-no-one-mentions-when-youre-learning-angujarjs/</guid>
 			</item>
 		
 			<item>
@@ -1769,8 +1769,8 @@ That's it, I hope it saves you three hours.
 &lt;/p&gt;&lt;/p&gt;&lt;/js&gt;
 </description>
 				<pubDate>Fri, 18 Jul 2014 18:22:12 +0900</pubDate>
-				<link>http://localhost:4000/2014-07-18/navigationwindow-problem-in-titanium/</link>
-				<guid isPermaLink="true">http://localhost:4000/2014-07-18/navigationwindow-problem-in-titanium/</guid>
+				<link>http://luiselizondo.github.io/2014-07-18/navigationwindow-problem-in-titanium/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2014-07-18/navigationwindow-problem-in-titanium/</guid>
 			</item>
 		
 			<item>
@@ -1793,8 +1793,8 @@ That's it, I hope it saves you three hours.
 &lt;p&gt;&amp;nbsp;&lt;/p&gt;
 </description>
 				<pubDate>Thu, 22 May 2014 03:18:15 +0900</pubDate>
-				<link>http://localhost:4000/2014-05-22/how-to-completely-remove-packages-with-apt-get-on-ubuntu-linux/</link>
-				<guid isPermaLink="true">http://localhost:4000/2014-05-22/how-to-completely-remove-packages-with-apt-get-on-ubuntu-linux/</guid>
+				<link>http://luiselizondo.github.io/2014-05-22/how-to-completely-remove-packages-with-apt-get-on-ubuntu-linux/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2014-05-22/how-to-completely-remove-packages-with-apt-get-on-ubuntu-linux/</guid>
 			</item>
 		
 			<item>
@@ -1823,8 +1823,8 @@ That's it, I hope it saves you three hours.
 &lt;p&gt;&amp;nbsp;&lt;/p&gt;
 </description>
 				<pubDate>Thu, 15 May 2014 19:43:41 +0900</pubDate>
-				<link>http://localhost:4000/2014-05-15/creating-a-lemp-with-docker-and-the-data-only-container-pattern/</link>
-				<guid isPermaLink="true">http://localhost:4000/2014-05-15/creating-a-lemp-with-docker-and-the-data-only-container-pattern/</guid>
+				<link>http://luiselizondo.github.io/2014-05-15/creating-a-lemp-with-docker-and-the-data-only-container-pattern/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2014-05-15/creating-a-lemp-with-docker-and-the-data-only-container-pattern/</guid>
 			</item>
 		
 			<item>
@@ -1844,8 +1844,8 @@ That's it, I hope it saves you three hours.
 &lt;p&gt;This is a really nice service, it has the same kind of encryption that SpiderOak does but also this is a Swish company, which means that it's out of the NSA jurisdiction. I installed it and made a test with two directories. Both of them were already in sync. After a few minutes of uploading files, the second device detected that the files were the same, so it skipped them and flag them as &quot;synced&quot; which is exactly what I wanted. I currently have the 50GB / $7 plan and I'm almost finishing syncing.&lt;/p&gt;
 </description>
 				<pubDate>Sun, 11 May 2014 18:44:23 +0900</pubDate>
-				<link>http://localhost:4000/2014-05-11/goodbye-dropbox-finding-an-alternative/</link>
-				<guid isPermaLink="true">http://localhost:4000/2014-05-11/goodbye-dropbox-finding-an-alternative/</guid>
+				<link>http://luiselizondo.github.io/2014-05-11/goodbye-dropbox-finding-an-alternative/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2014-05-11/goodbye-dropbox-finding-an-alternative/</guid>
 			</item>
 		
 			<item>
@@ -1868,8 +1868,8 @@ That's it, I hope it saves you three hours.
 &lt;p&gt;Si te interesa puedes leer más en &lt;a href=&quot;http://www.adnpolitico.com/gobierno/2014/04/07/5-riesgos-de-censura-en-internet-en-la-iniciativa-de-telecom&quot;&gt;http://www.adnpolitico.com/gobierno/2014/04/07/5-riesgos-de-censura-en-internet-en-la-iniciativa-de-telecom&lt;/a&gt; o puedes bajar el comparativo entre las Iniciativas propuestas por el Ejecutivo y por el Senador Lozano en &lt;a href=&quot;http://t.co/h7ZPGvc6Qh&quot;&gt;http://t.co/h7ZPGvc6Qh&lt;/a&gt;&lt;/p&gt;
 </description>
 				<pubDate>Thu, 24 Apr 2014 17:14:51 +0900</pubDate>
-				<link>http://localhost:4000/2014-04-24/riesgos-de-la-reforma-de-telecomunicaciones-epnvsinternet/</link>
-				<guid isPermaLink="true">http://localhost:4000/2014-04-24/riesgos-de-la-reforma-de-telecomunicaciones-epnvsinternet/</guid>
+				<link>http://luiselizondo.github.io/2014-04-24/riesgos-de-la-reforma-de-telecomunicaciones-epnvsinternet/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2014-04-24/riesgos-de-la-reforma-de-telecomunicaciones-epnvsinternet/</guid>
 			</item>
 		
 			<item>
@@ -1975,8 +1975,8 @@ $ docker run -itd -p 8080:80 --link curious_torvalds:node1 --link docker_rapid:n
 &lt;p&gt;So that’s it, I hope you have a good time using Docker. If you have any questions, please use the comments section.&lt;/p&gt;
 </description>
 				<pubDate>Sun, 30 Mar 2014 01:44:47 +0900</pubDate>
-				<link>http://localhost:4000/2014-03-30/varnish-as-a-node-js-load-balancer-in-docker/</link>
-				<guid isPermaLink="true">http://localhost:4000/2014-03-30/varnish-as-a-node-js-load-balancer-in-docker/</guid>
+				<link>http://luiselizondo.github.io/2014-03-30/varnish-as-a-node-js-load-balancer-in-docker/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2014-03-30/varnish-as-a-node-js-load-balancer-in-docker/</guid>
 			</item>
 		
 			<item>
@@ -2259,8 +2259,8 @@ $ docker logs nodejs
 &lt;p&gt;Este post quedó muy largo, así que va a tener que esperar para otro día.&lt;/p&gt;
 </description>
 				<pubDate>Wed, 26 Mar 2014 17:21:22 +0900</pubDate>
-				<link>http://localhost:4000/2014-03-26/como-crear-un-ambiente-de-desarrollo-con-docker-node-js-mongodb-varnish/</link>
-				<guid isPermaLink="true">http://localhost:4000/2014-03-26/como-crear-un-ambiente-de-desarrollo-con-docker-node-js-mongodb-varnish/</guid>
+				<link>http://luiselizondo.github.io/2014-03-26/como-crear-un-ambiente-de-desarrollo-con-docker-node-js-mongodb-varnish/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2014-03-26/como-crear-un-ambiente-de-desarrollo-con-docker-node-js-mongodb-varnish/</guid>
 			</item>
 		
 			<item>
@@ -2542,8 +2542,8 @@ $ docker logs nodejs
 &lt;p&gt;This blog post already got too long, so that’s going to have to wait until the next post.&lt;/p&gt;
 </description>
 				<pubDate>Tue, 25 Mar 2014 00:22:48 +0900</pubDate>
-				<link>http://localhost:4000/2014-03-25/how-to-create-a-docker-node-js-mongodb-varnish-environment/</link>
-				<guid isPermaLink="true">http://localhost:4000/2014-03-25/how-to-create-a-docker-node-js-mongodb-varnish-environment/</guid>
+				<link>http://luiselizondo.github.io/2014-03-25/how-to-create-a-docker-node-js-mongodb-varnish-environment/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2014-03-25/how-to-create-a-docker-node-js-mongodb-varnish-environment/</guid>
 			</item>
 		
 			<item>
@@ -2551,8 +2551,8 @@ $ docker logs nodejs
         <description>&lt;p&gt;Git es parte de nuestro trabajo en el IIIEPE, hace tiempo elaboré una Guía de trampas (Cheat Guide) para todo el equipo, la comparto aquí bajo la licencia&amp;nbsp; Creative Commons Attribution-NonCommercial 4.0 International License. Se comparte la fuente y PDF.&lt;/p&gt;
 </description>
 				<pubDate>Fri, 07 Mar 2014 01:02:09 +0900</pubDate>
-				<link>http://localhost:4000/2014-03-07/git-cheat-guide-en-espanol/</link>
-				<guid isPermaLink="true">http://localhost:4000/2014-03-07/git-cheat-guide-en-espanol/</guid>
+				<link>http://luiselizondo.github.io/2014-03-07/git-cheat-guide-en-espanol/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2014-03-07/git-cheat-guide-en-espanol/</guid>
 			</item>
 		
 			<item>
@@ -2570,8 +2570,8 @@ $ docker logs nodejs
 &lt;p&gt;P.D. The version 3.4.x is the first version released and it will change at the same pace express.js does.&lt;/p&gt;
 </description>
 				<pubDate>Sun, 02 Mar 2014 01:34:55 +0900</pubDate>
-				<link>http://localhost:4000/2014-03-02/introducing-express-js-mvc/</link>
-				<guid isPermaLink="true">http://localhost:4000/2014-03-02/introducing-express-js-mvc/</guid>
+				<link>http://luiselizondo.github.io/2014-03-02/introducing-express-js-mvc/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2014-03-02/introducing-express-js-mvc/</guid>
 			</item>
 		
 			<item>
@@ -2737,8 +2737,8 @@ provider.api_key = 'YOUR_API_KEY'   end end &amp;lt;/code&amp;gt;
 
 </description>
 				<pubDate>Sat, 11 Jan 2014 19:39:07 +0900</pubDate>
-				<link>http://localhost:4000/2014-01-11/use-vagrant-and-packer-to-develop-locally-and-deploy-to-digital-ocean-the-same-environment/</link>
-				<guid isPermaLink="true">http://localhost:4000/2014-01-11/use-vagrant-and-packer-to-develop-locally-and-deploy-to-digital-ocean-the-same-environment/</guid>
+				<link>http://luiselizondo.github.io/2014-01-11/use-vagrant-and-packer-to-develop-locally-and-deploy-to-digital-ocean-the-same-environment/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2014-01-11/use-vagrant-and-packer-to-develop-locally-and-deploy-to-digital-ocean-the-same-environment/</guid>
 			</item>
 		
 			<item>
@@ -2765,8 +2765,8 @@ provider.api_key = 'YOUR_API_KEY'   end end &amp;lt;/code&amp;gt;
 &lt;p&gt;Estaré siguiendo a Backdrop y trataré de contribuir en lo que pueda, mi interés por Drupal / Backdrop ha sido renovado por completo y me gustaría verlo crecer. El trabajo es mucho y se necesitará formar a una gran comunidad, la ventaja es que gran parte de esa comunidad ya existe y está organizada en Drupal 7 y puede empezar a migrarse lentamente. Le deseo suerte y éxito al proyecto, al igual que a Drupal, mismo que tampoco abandonaré a menos que Backdrop se convierta en una mejor alternativa que Drupal.&lt;/p&gt;
 </description>
 				<pubDate>Wed, 06 Nov 2013 16:15:07 +0900</pubDate>
-				<link>http://localhost:4000/2013-11-06/backdrop-y-lo-que-significa-para-la-comunidad-de-drupal/</link>
-				<guid isPermaLink="true">http://localhost:4000/2013-11-06/backdrop-y-lo-que-significa-para-la-comunidad-de-drupal/</guid>
+				<link>http://luiselizondo.github.io/2013-11-06/backdrop-y-lo-que-significa-para-la-comunidad-de-drupal/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2013-11-06/backdrop-y-lo-que-significa-para-la-comunidad-de-drupal/</guid>
 			</item>
 		
 			<item>
@@ -2833,8 +2833,8 @@ Happy coding!
 &lt;/label&gt;&lt;/Window&gt;&lt;/Tab&gt;&lt;/Alloy&gt;
 </description>
 				<pubDate>Wed, 04 Sep 2013 08:42:55 +0900</pubDate>
-				<link>http://localhost:4000/2013-09-04/alloy-and-titanium-studio-part-3-lazy-load-windows-and-tabs/</link>
-				<guid isPermaLink="true">http://localhost:4000/2013-09-04/alloy-and-titanium-studio-part-3-lazy-load-windows-and-tabs/</guid>
+				<link>http://luiselizondo.github.io/2013-09-04/alloy-and-titanium-studio-part-3-lazy-load-windows-and-tabs/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2013-09-04/alloy-and-titanium-studio-part-3-lazy-load-windows-and-tabs/</guid>
 			</item>
 		
 			<item>
@@ -2852,8 +2852,8 @@ Happy coding!
 &lt;p&gt;Me pongo a disposición de cualquier funcionario público que quiera platicar más del tema, incluso los invito a navegar en http://opendatamty.org/ en donde ya existe una comunidad de personas interesadas en el tema.&lt;/p&gt;
 </description>
 				<pubDate>Sun, 23 Jun 2013 06:54:51 +0900</pubDate>
-				<link>http://localhost:4000/2013-06-23/transparencia-y-datos-abiertos-open-data-en-mexico/</link>
-				<guid isPermaLink="true">http://localhost:4000/2013-06-23/transparencia-y-datos-abiertos-open-data-en-mexico/</guid>
+				<link>http://luiselizondo.github.io/2013-06-23/transparencia-y-datos-abiertos-open-data-en-mexico/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2013-06-23/transparencia-y-datos-abiertos-open-data-en-mexico/</guid>
 			</item>
 		
 			<item>
@@ -3111,8 +3111,8 @@ I'm uploading the source code for the app at https://github.com/lelizondo/titani
 &lt;/label&gt;&lt;/TableViewRow&gt;&lt;/TableView&gt;&lt;/Window&gt;&lt;/Alloy&gt;
 </description>
 				<pubDate>Tue, 07 May 2013 04:44:41 +0900</pubDate>
-				<link>http://localhost:4000/2013-05-07/alloy-and-titanium-studio-part-2-controllers-views-collections-and-models-and-how-to-put-it-all-together/</link>
-				<guid isPermaLink="true">http://localhost:4000/2013-05-07/alloy-and-titanium-studio-part-2-controllers-views-collections-and-models-and-how-to-put-it-all-together/</guid>
+				<link>http://luiselizondo.github.io/2013-05-07/alloy-and-titanium-studio-part-2-controllers-views-collections-and-models-and-how-to-put-it-all-together/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2013-05-07/alloy-and-titanium-studio-part-2-controllers-views-collections-and-models-and-how-to-put-it-all-together/</guid>
 			</item>
 		
 			<item>
@@ -3129,8 +3129,8 @@ I'm uploading the source code for the app at https://github.com/lelizondo/titani
 &lt;p&gt;Have fun and if you create a really cool template, please share with the community.&lt;/p&gt;
 </description>
 				<pubDate>Mon, 29 Apr 2013 05:30:22 +0900</pubDate>
-				<link>http://localhost:4000/2013-04-29/managing-templates-in-libreoffice/</link>
-				<guid isPermaLink="true">http://localhost:4000/2013-04-29/managing-templates-in-libreoffice/</guid>
+				<link>http://luiselizondo.github.io/2013-04-29/managing-templates-in-libreoffice/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2013-04-29/managing-templates-in-libreoffice/</guid>
 			</item>
 		
 			<item>
@@ -3153,8 +3153,8 @@ I'm uploading the source code for the app at https://github.com/lelizondo/titani
 
 </description>
 				<pubDate>Tue, 23 Apr 2013 03:46:38 +0900</pubDate>
-				<link>http://localhost:4000/2013-04-23/my-first-andoid-device/</link>
-				<guid isPermaLink="true">http://localhost:4000/2013-04-23/my-first-andoid-device/</guid>
+				<link>http://luiselizondo.github.io/2013-04-23/my-first-andoid-device/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2013-04-23/my-first-andoid-device/</guid>
 			</item>
 		
 			<item>
@@ -3165,8 +3165,8 @@ I'm uploading the source code for the app at https://github.com/lelizondo/titani
 &lt;p&gt;I get that software companies, specially Microsoft, reach out universities and sell their licenses for almost nothing, and they do lobbing to prevent any competitors (a.k.a. Open Source) from entering the University. So schools teach them Windows Server instead of Linux, ASP.net instead of PHP/Ruby/Node.js, and C# instead of C++&lt;/p&gt;
 </description>
 				<pubDate>Tue, 16 Apr 2013 04:20:55 +0900</pubDate>
-				<link>http://localhost:4000/2013-04-16/teaching-drupal-to-the-local-community/</link>
-				<guid isPermaLink="true">http://localhost:4000/2013-04-16/teaching-drupal-to-the-local-community/</guid>
+				<link>http://luiselizondo.github.io/2013-04-16/teaching-drupal-to-the-local-community/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2013-04-16/teaching-drupal-to-the-local-community/</guid>
 			</item>
 		
 			<item>
@@ -3189,8 +3189,8 @@ I'm uploading the source code for the app at https://github.com/lelizondo/titani
 &lt;p&gt;&amp;nbsp;&lt;/p&gt;
 </description>
 				<pubDate>Tue, 16 Apr 2013 03:52:28 +0900</pubDate>
-				<link>http://localhost:4000/2013-04-16/software-you-should-learn-if-you-want-to-code/</link>
-				<guid isPermaLink="true">http://localhost:4000/2013-04-16/software-you-should-learn-if-you-want-to-code/</guid>
+				<link>http://luiselizondo.github.io/2013-04-16/software-you-should-learn-if-you-want-to-code/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2013-04-16/software-you-should-learn-if-you-want-to-code/</guid>
 			</item>
 		
 			<item>
@@ -3302,8 +3302,8 @@ function clickLoginButton(e) {
 &lt;p&gt;I hope you now get an idea of how to interact with multiple controllers and views using Alloy and Titanium Studio. Is not that hard isn’t it? If you have any questions, please leave a comment.&lt;/p&gt;
 </description>
 				<pubDate>Sat, 06 Apr 2013 23:20:13 +0900</pubDate>
-				<link>http://localhost:4000/2013-04-06/alloy-and-titanium-studio-part-1/</link>
-				<guid isPermaLink="true">http://localhost:4000/2013-04-06/alloy-and-titanium-studio-part-1/</guid>
+				<link>http://luiselizondo.github.io/2013-04-06/alloy-and-titanium-studio-part-1/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2013-04-06/alloy-and-titanium-studio-part-1/</guid>
 			</item>
 		
 			<item>
@@ -3312,8 +3312,8 @@ function clickLoginButton(e) {
 &lt;p&gt;http://wordoid.com/&lt;/p&gt;
 </description>
 				<pubDate>Sat, 06 Apr 2013 07:19:46 +0900</pubDate>
-				<link>http://localhost:4000/2013-04-06/how-to-create-a-fancy-name-for-your-startup/</link>
-				<guid isPermaLink="true">http://localhost:4000/2013-04-06/how-to-create-a-fancy-name-for-your-startup/</guid>
+				<link>http://luiselizondo.github.io/2013-04-06/how-to-create-a-fancy-name-for-your-startup/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2013-04-06/how-to-create-a-fancy-name-for-your-startup/</guid>
 			</item>
 		
 			<item>
@@ -3326,8 +3326,8 @@ function clickLoginButton(e) {
 &lt;p&gt;&amp;nbsp;&lt;/p&gt;
 </description>
 				<pubDate>Sat, 06 Apr 2013 07:16:29 +0900</pubDate>
-				<link>http://localhost:4000/2013-04-06/software-i-cant-live-without/</link>
-				<guid isPermaLink="true">http://localhost:4000/2013-04-06/software-i-cant-live-without/</guid>
+				<link>http://luiselizondo.github.io/2013-04-06/software-i-cant-live-without/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2013-04-06/software-i-cant-live-without/</guid>
 			</item>
 		
 			<item>
@@ -3336,8 +3336,8 @@ function clickLoginButton(e) {
 &lt;p&gt;&amp;nbsp;&lt;/p&gt;
 </description>
 				<pubDate>Fri, 05 Apr 2013 22:35:48 +0900</pubDate>
-				<link>http://localhost:4000/2013-04-05/why-i-hate-drupal-sometimes/</link>
-				<guid isPermaLink="true">http://localhost:4000/2013-04-05/why-i-hate-drupal-sometimes/</guid>
+				<link>http://luiselizondo.github.io/2013-04-05/why-i-hate-drupal-sometimes/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2013-04-05/why-i-hate-drupal-sometimes/</guid>
 			</item>
 		
 			<item>
@@ -3349,8 +3349,8 @@ function clickLoginButton(e) {
 &lt;p&gt;Finally, the site runs Nginx becuase I wanted to give it a try. Right know it's working great but I keep getting an error: &quot;Your server is not capable of displaying file upload progress. File upload progress requires an Apache server running PHP with mod_php.&quot;&lt;/p&gt;
 </description>
 				<pubDate>Thu, 04 Apr 2013 20:37:57 +0900</pubDate>
-				<link>http://localhost:4000/2013-04-04/building-luiselizondo-net/</link>
-				<guid isPermaLink="true">http://localhost:4000/2013-04-04/building-luiselizondo-net/</guid>
+				<link>http://luiselizondo.github.io/2013-04-04/building-luiselizondo-net/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2013-04-04/building-luiselizondo-net/</guid>
 			</item>
 		
 			<item>
@@ -3360,8 +3360,8 @@ function clickLoginButton(e) {
 &lt;p&gt;&amp;nbsp;&lt;/p&gt;
 </description>
 				<pubDate>Thu, 04 Apr 2013 20:19:49 +0900</pubDate>
-				<link>http://localhost:4000/2013-04-04/my-favorite-movies/</link>
-				<guid isPermaLink="true">http://localhost:4000/2013-04-04/my-favorite-movies/</guid>
+				<link>http://luiselizondo.github.io/2013-04-04/my-favorite-movies/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2013-04-04/my-favorite-movies/</guid>
 			</item>
 		
 			<item>
@@ -3388,8 +3388,8 @@ function clickLoginButton(e) {
 &lt;p&gt; &lt;/p&gt;
 </description>
 				<pubDate>Fri, 07 Dec 2012 18:50:28 +0900</pubDate>
-				<link>http://localhost:4000/2012-12-07/the-things-i-dont-like-about-gnome-3/</link>
-				<guid isPermaLink="true">http://localhost:4000/2012-12-07/the-things-i-dont-like-about-gnome-3/</guid>
+				<link>http://luiselizondo.github.io/2012-12-07/the-things-i-dont-like-about-gnome-3/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2012-12-07/the-things-i-dont-like-about-gnome-3/</guid>
 			</item>
 		
 			<item>
@@ -3403,8 +3403,8 @@ function clickLoginButton(e) {
 &lt;p&gt;Colección Sía Educación is an amazing project and we expect it to grow as more schools jump in and start using it. If you want more information, please contact me on Twitter @lelizondo&lt;/p&gt;
 </description>
 				<pubDate>Wed, 22 Aug 2012 22:36:00 +0900</pubDate>
-				<link>http://localhost:4000/2012-08-22/helping-education-with-open-data-in-mexico/</link>
-				<guid isPermaLink="true">http://localhost:4000/2012-08-22/helping-education-with-open-data-in-mexico/</guid>
+				<link>http://luiselizondo.github.io/2012-08-22/helping-education-with-open-data-in-mexico/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2012-08-22/helping-education-with-open-data-in-mexico/</guid>
 			</item>
 		
 			<item>
@@ -3412,8 +3412,8 @@ function clickLoginButton(e) {
         <description>&lt;p&gt;&lt;a href=&quot;https://github.com/lelizondo/nodejs-async-blocks-example&quot;&gt;Source code for: Holy sh$% Batman: showing async blocks of data from multiple sources with jQuery, Node JS and Express JS and the problem with Virtuals, DynamicHelpers and Partials&lt;/a&gt;&lt;/p&gt;
 </description>
 				<pubDate>Wed, 22 Aug 2012 21:49:21 +0900</pubDate>
-				<link>http://localhost:4000/2012-08-22/source-code-for-holy-sh-batman-showing-async-blocks-of-data-from-multiple-sources-with-jquery-node-js-and-express-js-and-the-problem-with-virtual/</link>
-				<guid isPermaLink="true">http://localhost:4000/2012-08-22/source-code-for-holy-sh-batman-showing-async-blocks-of-data-from-multiple-sources-with-jquery-node-js-and-express-js-and-the-problem-with-virtual/</guid>
+				<link>http://luiselizondo.github.io/2012-08-22/source-code-for-holy-sh-batman-showing-async-blocks-of-data-from-multiple-sources-with-jquery-node-js-and-express-js-and-the-problem-with-virtual/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2012-08-22/source-code-for-holy-sh-batman-showing-async-blocks-of-data-from-multiple-sources-with-jquery-node-js-and-express-js-and-the-problem-with-virtual/</guid>
 			</item>
 		
 			<item>
@@ -3453,8 +3453,8 @@ function clickLoginButton(e) {
 &lt;p&gt;So, what do you think?&lt;/p&gt;
 </description>
 				<pubDate>Wed, 22 Aug 2012 20:46:00 +0900</pubDate>
-				<link>http://localhost:4000/2012-08-22/holy-sh-batman-showing-async-blocks-of-data-from-multiple-sources-with-jquery-node-js-and-express-js-and-the-problem-with-virtuals-dynamichelpers/</link>
-				<guid isPermaLink="true">http://localhost:4000/2012-08-22/holy-sh-batman-showing-async-blocks-of-data-from-multiple-sources-with-jquery-node-js-and-express-js-and-the-problem-with-virtuals-dynamichelpers/</guid>
+				<link>http://luiselizondo.github.io/2012-08-22/holy-sh-batman-showing-async-blocks-of-data-from-multiple-sources-with-jquery-node-js-and-express-js-and-the-problem-with-virtuals-dynamichelpers/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2012-08-22/holy-sh-batman-showing-async-blocks-of-data-from-multiple-sources-with-jquery-node-js-and-express-js-and-the-problem-with-virtuals-dynamichelpers/</guid>
 			</item>
 		
 			<item>
@@ -3467,8 +3467,8 @@ function clickLoginButton(e) {
 &lt;p&gt;Trust me, I just spent two days rewriting everything using Mongoose, I wish someone told me before.&lt;/p&gt;
 </description>
 				<pubDate>Sat, 11 Aug 2012 09:48:52 +0900</pubDate>
-				<link>http://localhost:4000/2012-08-11/mongoose-vs-mongojs-on-node-js/</link>
-				<guid isPermaLink="true">http://localhost:4000/2012-08-11/mongoose-vs-mongojs-on-node-js/</guid>
+				<link>http://luiselizondo.github.io/2012-08-11/mongoose-vs-mongojs-on-node-js/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2012-08-11/mongoose-vs-mongojs-on-node-js/</guid>
 			</item>
 		
 			<item>
@@ -3479,8 +3479,8 @@ function clickLoginButton(e) {
 &lt;p&gt;For all I know, the &amp;#8220;invention of Ice&amp;#8221; is worth of the Nobel Prize of Physics.&lt;/p&gt;
 </description>
 				<pubDate>Sat, 11 Aug 2012 03:43:35 +0900</pubDate>
-				<link>http://localhost:4000/2012-08-11/20-inventions-that-we-cant-live-without-and-the-iphone-is-not-one-of-them/</link>
-				<guid isPermaLink="true">http://localhost:4000/2012-08-11/20-inventions-that-we-cant-live-without-and-the-iphone-is-not-one-of-them/</guid>
+				<link>http://luiselizondo.github.io/2012-08-11/20-inventions-that-we-cant-live-without-and-the-iphone-is-not-one-of-them/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2012-08-11/20-inventions-that-we-cant-live-without-and-the-iphone-is-not-one-of-them/</guid>
 			</item>
 		
 			<item>
@@ -3512,8 +3512,8 @@ function clickLoginButton(e) {
 &lt;p&gt;More information about populate here: &lt;a href=&quot;http://mongoosejs.com/docs/populate.html&quot;&gt;http://mongoosejs.com/docs/populate.html&lt;/a&gt;&lt;/p&gt;
 </description>
 				<pubDate>Fri, 10 Aug 2012 20:26:00 +0900</pubDate>
-				<link>http://localhost:4000/2012-08-10/joins-on-mongodb-with-mongoose-and-nodejs/</link>
-				<guid isPermaLink="true">http://localhost:4000/2012-08-10/joins-on-mongodb-with-mongoose-and-nodejs/</guid>
+				<link>http://luiselizondo.github.io/2012-08-10/joins-on-mongodb-with-mongoose-and-nodejs/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2012-08-10/joins-on-mongodb-with-mongoose-and-nodejs/</guid>
 			</item>
 		
 			<item>
@@ -3539,8 +3539,8 @@ function clickLoginButton(e) {
 &lt;p&gt;If you&amp;#8217;re using your Desktop as your traditional Desktop, where you can drop icons and documents, then you&amp;#8217;ll need this one to quick access it.&lt;/p&gt;
 </description>
 				<pubDate>Mon, 30 Jul 2012 20:06:47 +0900</pubDate>
-				<link>http://localhost:4000/2012-07-30/6-great-gnome-3-shell-extensions/</link>
-				<guid isPermaLink="true">http://localhost:4000/2012-07-30/6-great-gnome-3-shell-extensions/</guid>
+				<link>http://luiselizondo.github.io/2012-07-30/6-great-gnome-3-shell-extensions/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2012-07-30/6-great-gnome-3-shell-extensions/</guid>
 			</item>
 		
 			<item>
@@ -3553,8 +3553,8 @@ function clickLoginButton(e) {
 &lt;p&gt;&amp;lt;/div&amp;gt;&lt;/p&gt;
 </description>
 				<pubDate>Thu, 26 Jul 2012 19:59:58 +0900</pubDate>
-				<link>http://localhost:4000/2012-07-26/the-new-progressive-government-spending-priorities/</link>
-				<guid isPermaLink="true">http://localhost:4000/2012-07-26/the-new-progressive-government-spending-priorities/</guid>
+				<link>http://luiselizondo.github.io/2012-07-26/the-new-progressive-government-spending-priorities/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2012-07-26/the-new-progressive-government-spending-priorities/</guid>
 			</item>
 		
 			<item>
@@ -3566,8 +3566,8 @@ function clickLoginButton(e) {
 &lt;p&gt;One final thought. Knowing about programs like the Stockpile stewardship makes me realize that there are guys who have in their hands thousands of lives and they are not generals nor politics, only guys who if they don&amp;#8217;t do their job, people die. I don&amp;#8217;t know how much they make a year, but whatever it is, please, double it, after all, we&amp;#8217;re still here and that means they&amp;#8217;re doing a pretty good job.&lt;/p&gt;
 </description>
 				<pubDate>Thu, 26 Jul 2012 18:53:22 +0900</pubDate>
-				<link>http://localhost:4000/2012-07-26/you-better-not-survive-a-zombie-apocalypse/</link>
-				<guid isPermaLink="true">http://localhost:4000/2012-07-26/you-better-not-survive-a-zombie-apocalypse/</guid>
+				<link>http://luiselizondo.github.io/2012-07-26/you-better-not-survive-a-zombie-apocalypse/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2012-07-26/you-better-not-survive-a-zombie-apocalypse/</guid>
 			</item>
 		
 			<item>
@@ -3583,8 +3583,8 @@ function clickLoginButton(e) {
 &lt;p&gt;I seriously hope that if we ever see this is only in a movie, because if we get to see this for real, that would mean we&amp;#8217;re talking about the end of the world.&lt;/p&gt;
 </description>
 				<pubDate>Tue, 24 Jul 2012 09:43:52 +0900</pubDate>
-				<link>http://localhost:4000/2012-07-24/uk-letters-of-last-resort/</link>
-				<guid isPermaLink="true">http://localhost:4000/2012-07-24/uk-letters-of-last-resort/</guid>
+				<link>http://luiselizondo.github.io/2012-07-24/uk-letters-of-last-resort/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2012-07-24/uk-letters-of-last-resort/</guid>
 			</item>
 		
 			<item>
@@ -3600,8 +3600,8 @@ function clickLoginButton(e) {
 &lt;p&gt;cap deploy will do a git pull and cap cc will do a drush cc all but you can call both tasks in one command. Easy and it saves time.&lt;/p&gt;
 </description>
 				<pubDate>Mon, 23 Jul 2012 04:12:00 +0900</pubDate>
-				<link>http://localhost:4000/2012-07-23/capistrano-saves-you-time/</link>
-				<guid isPermaLink="true">http://localhost:4000/2012-07-23/capistrano-saves-you-time/</guid>
+				<link>http://luiselizondo.github.io/2012-07-23/capistrano-saves-you-time/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2012-07-23/capistrano-saves-you-time/</guid>
 			</item>
 		
 			<item>
@@ -3622,8 +3622,8 @@ function clickLoginButton(e) {
 &lt;p&gt;One more thing, is probably not a good idea to redirect all email to your main email address, you&amp;#8217;ll get lots of spam.&lt;/p&gt;
 </description>
 				<pubDate>Sun, 22 Jul 2012 14:52:42 +0900</pubDate>
-				<link>http://localhost:4000/2012-07-22/redirect-all-email-in-your-development-environment/</link>
-				<guid isPermaLink="true">http://localhost:4000/2012-07-22/redirect-all-email-in-your-development-environment/</guid>
+				<link>http://luiselizondo.github.io/2012-07-22/redirect-all-email-in-your-development-environment/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2012-07-22/redirect-all-email-in-your-development-environment/</guid>
 			</item>
 		
 			<item>
@@ -3650,8 +3650,8 @@ function clickLoginButton(e) {
 &lt;p&gt;That&amp;#8217;s it. Save the script as whatever.py, give it permission to execute (chmod u+x) and run it. If you can&amp;#8217;t move files around in those directories you have to run the script as sudo. You&amp;#8217;ll need to create any directory that you doesn&amp;#8217;t exists too.&lt;/p&gt;
 </description>
 				<pubDate>Tue, 10 Jul 2012 21:46:00 +0900</pubDate>
-				<link>http://localhost:4000/2012-07-10/move-files-from-multiple-drupal-sites-to-the-site-they-belong/</link>
-				<guid isPermaLink="true">http://localhost:4000/2012-07-10/move-files-from-multiple-drupal-sites-to-the-site-they-belong/</guid>
+				<link>http://luiselizondo.github.io/2012-07-10/move-files-from-multiple-drupal-sites-to-the-site-they-belong/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2012-07-10/move-files-from-multiple-drupal-sites-to-the-site-they-belong/</guid>
 			</item>
 		
 			<item>
@@ -3659,8 +3659,8 @@ function clickLoginButton(e) {
         <description>&lt;p&gt;&lt;span&gt;I honestly can&amp;#8217;t believe I&amp;#8217;m blogging about this in 2012 but it is true, Bookmarking is still an issue, and a big one. As usual, let me describe my scenario.&lt;/span&gt;&lt;br /&gt;&lt;span&gt;&lt;/span&gt;&lt;br /&gt;&lt;span&gt;I use 4 PC and one Phone, 3 of them run Linux, 1 is a Macbook. 2 of them are at work, the rest at home. I use all browsers, Firefox, Chrome, Opera and Safari on both my Linux boxes, the Macbook and the iPhone. My two primary browsers are Firefox and Chrome, depending on the machine I&amp;#8217;m using.&lt;/span&gt;&lt;br /&gt;&lt;span&gt;&lt;/span&gt;&lt;br /&gt;&lt;span&gt;The problem is that I want my bookmarks to follow me, I want them organized, I want them private and I want them smart. I would pay for a service that does this. For years I used Delicious, I thought it was great at the time, but then Yahoo stopped supporting it and Firefox upgraded to their crazy new release cycle and the Delicious add-on for Firefox stopped working for a few months. Bad timing. &lt;/span&gt;&lt;br /&gt;&lt;span&gt;&lt;/span&gt;&lt;br /&gt;&lt;span&gt;That&amp;#8217;s when I tried Xmarks, recently acquired by LastPass. Not a very good choice. Now I&amp;#8217;m using Google Bookmarks, and still, I have problems.&lt;/span&gt;&lt;br /&gt;&lt;span&gt;&lt;/span&gt;&lt;br /&gt;&lt;span&gt;So what are the problems? I&amp;#8217;ll name a few:&lt;/span&gt;&lt;br /&gt;&lt;span&gt;&lt;/span&gt;&lt;br /&gt;&lt;span&gt;1. The browsers problem. If I used only one browser I&amp;#8217;d be OK, but I use multiple.&lt;/span&gt;&lt;br /&gt;&lt;span&gt;&lt;/span&gt;&lt;br /&gt;&lt;span&gt;2. Delicious doesn&amp;#8217;t accept Tags with spaces.&lt;/span&gt;&lt;br /&gt;&lt;span&gt;&lt;/span&gt;&lt;br /&gt;&lt;span&gt;3. Delicious doesn&amp;#8217;t have private bookmarks, or at least, not that I know off.&lt;/span&gt;&lt;br /&gt;&lt;span&gt;&lt;/span&gt;&lt;br /&gt;&lt;span&gt;4. Xmarks is the best service to save and sync bookmarks but is the worst when you are searching. It creates a jungle.&lt;/span&gt;&lt;br /&gt;&lt;span&gt;&lt;/span&gt;&lt;br /&gt;&lt;span&gt;5. Browsers come with a solution to sync bookmarks, but they only work with one browser, Firefox has a great system, Safari, Chrome and Opera too, but they only work great within that same browser.&lt;/span&gt;&lt;br /&gt;&lt;span&gt;&lt;/span&gt;&lt;br /&gt;&lt;span&gt;6. Google Bookmarks is a great service, easy to bookmark, easy to search, but only if you use Chrome.&lt;/span&gt;&lt;br /&gt;&lt;span&gt;&lt;/span&gt;&lt;br /&gt;&lt;span&gt;7. Google Bookmarks add-on for Firefox is not really good, I actually need to login everytime I use the service and I can&amp;#8217;t use the little star in the address bar to bookmark a webpage. Maybe if Google made an official add-on the problem will go away.&lt;/span&gt;&lt;br /&gt;&lt;span&gt;&lt;/span&gt;&lt;br /&gt;&lt;span&gt;Someone please solve this mess, I seriously thought LastPass was gonna solve this problem when they bought XMarks, after all their product to save passwords is just incredible good.&lt;/span&gt;&lt;br /&gt;&lt;span&gt;&lt;/span&gt;&lt;br /&gt;&lt;span&gt;I’m mostly using now getPocket.com (formerly read it later). It is not a proper way to save Bookmarks but it’s a perfect example of how a good service should work. Really easy to bookmark, great to find what you bookmark, follows you everywhere, awesome iPhone app, good third party support and getting better and it’s cloud based so it works on every browser out there. The only problem is that I’m using a service that is not quite designed to bookmark webpages.&lt;/span&gt;&lt;br /&gt;&lt;span&gt;&lt;/span&gt;&lt;/p&gt;
 </description>
 				<pubDate>Mon, 09 Jul 2012 09:32:00 +0900</pubDate>
-				<link>http://localhost:4000/2012-07-09/bookmarks-a-big-problem-someone-needs-to-solve/</link>
-				<guid isPermaLink="true">http://localhost:4000/2012-07-09/bookmarks-a-big-problem-someone-needs-to-solve/</guid>
+				<link>http://luiselizondo.github.io/2012-07-09/bookmarks-a-big-problem-someone-needs-to-solve/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2012-07-09/bookmarks-a-big-problem-someone-needs-to-solve/</guid>
 			</item>
 		
 			<item>
@@ -3674,8 +3674,8 @@ function clickLoginButton(e) {
 &lt;p&gt;I will explain why I&amp;#8217;m starting to love Gnome 3 in another post. I still like Ubuntu, specially the server edition, I don&amp;#8217;t have any problem with it. But the desktop version, well, let&amp;#8217;s just say that for the first time, is possible that I skip a few versions until Ubuntu surprises me again, just like it did the first time I used it. &lt;/p&gt;
 </description>
 				<pubDate>Sun, 08 Jul 2012 06:28:16 +0900</pubDate>
-				<link>http://localhost:4000/2012-07-08/goodbye-ubuntu-hello-fedora/</link>
-				<guid isPermaLink="true">http://localhost:4000/2012-07-08/goodbye-ubuntu-hello-fedora/</guid>
+				<link>http://luiselizondo.github.io/2012-07-08/goodbye-ubuntu-hello-fedora/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2012-07-08/goodbye-ubuntu-hello-fedora/</guid>
 			</item>
 		
 			<item>
@@ -3684,8 +3684,8 @@ function clickLoginButton(e) {
 &lt;p&gt;&lt;strong&gt;&lt;span&gt;México tendrá que cambiar&lt;/span&gt;&lt;/strong&gt;&lt;br /&gt;&lt;span&gt;Los próximos tres años representan una oportunidad única para aprobar ciertas reformas que se han quedado atoradas desde 1997. Si Enrique Peña Nieto tiene la habilidad para deshacerse de la imagen negativa del PRI e impulsa junto con la oposición las reformas que se han bloqueado, México ganará. &lt;/span&gt;&lt;br /&gt;&lt;span&gt;&lt;/span&gt;&lt;br /&gt;&lt;span&gt;Un PRI que respete las libertades de los Mexicanos, que garantice procesos democráticos, que de resultados, que brinde seguridad en serio y no solo aparente, que maneje con responsabilidad la economía, y sobre todo, que no proteja a sus líderes corruptos, es un PRI con el que todo mundo sueña, y de lograrlo, no veo una razón fuerte por la cual los mexicanos quisieran quitarlo nuevamente del poder.&lt;/span&gt;&lt;br /&gt;&lt;span&gt;&lt;/span&gt;&lt;br /&gt;&lt;span&gt;Es solo un Presidente emanado del PRI quien tiene el poder de reformar al PRI, a sus instituciones, a sus sindicatos y al sistema político mexicano en su conjunto. Ni un Presidente emanado del PAN o del PRD lo pueden hacer porque perderían gobernabilidad. Si lo hace Enrique Peña Nieto, México se quitará de muchos vicios que han estado ahí desde el 2000 y nos han impedido que nuestro país funcione plenamente. Si lo hace, pasará a la historia como el Presidente que logró cambiar al sistema político mexicano y a México. Esperemos esto y nada menos.&lt;br /&gt;&lt;/span&gt;&lt;/p&gt;
 </description>
 				<pubDate>Mon, 02 Jul 2012 23:57:00 +0900</pubDate>
-				<link>http://localhost:4000/2012-07-02/conclusiones-sobre-las-elecciones-presidenciales-en-mexico/</link>
-				<guid isPermaLink="true">http://localhost:4000/2012-07-02/conclusiones-sobre-las-elecciones-presidenciales-en-mexico/</guid>
+				<link>http://luiselizondo.github.io/2012-07-02/conclusiones-sobre-las-elecciones-presidenciales-en-mexico/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2012-07-02/conclusiones-sobre-las-elecciones-presidenciales-en-mexico/</guid>
 			</item>
 		
 			<item>
@@ -3696,8 +3696,8 @@ function clickLoginButton(e) {
 &lt;p&gt;mysql -u username -h host-where-your-database-is-located -p&lt;/p&gt;
 </description>
 				<pubDate>Tue, 26 Jun 2012 01:13:03 +0900</pubDate>
-				<link>http://localhost:4000/2012-06-26/access-mysql-server-from-anywhere/</link>
-				<guid isPermaLink="true">http://localhost:4000/2012-06-26/access-mysql-server-from-anywhere/</guid>
+				<link>http://luiselizondo.github.io/2012-06-26/access-mysql-server-from-anywhere/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2012-06-26/access-mysql-server-from-anywhere/</guid>
 			</item>
 		
 			<item>
@@ -3709,8 +3709,8 @@ function clickLoginButton(e) {
 &lt;p&gt;&lt;a href=&quot;http://www.quora.com/Startups/Why-do-employees-leave-big-brands-to-join-a-startup&quot;&gt;http://www.quora.com/Startups/Why-do-employees-leave-big-brands-to-join-a-startup&lt;/a&gt;&lt;/p&gt;
 </description>
 				<pubDate>Thu, 21 Jun 2012 18:59:00 +0900</pubDate>
-				<link>http://localhost:4000/2012-06-21/top-3-quora-questions-of-the-week/</link>
-				<guid isPermaLink="true">http://localhost:4000/2012-06-21/top-3-quora-questions-of-the-week/</guid>
+				<link>http://luiselizondo.github.io/2012-06-21/top-3-quora-questions-of-the-week/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2012-06-21/top-3-quora-questions-of-the-week/</guid>
 			</item>
 		
 			<item>
@@ -3732,8 +3732,8 @@ function clickLoginButton(e) {
 &lt;p&gt;I&amp;#8217;m working with Asana for one reason, the way I enter tasks. Is just like opening the notepad and start typing tasks, one task by line, and then magically turn them all in tasks that I can assign to people or check later. This is the greatest advantage and as long as Asana is the only one with this feature, I am sticking to them.&lt;/p&gt;
 </description>
 				<pubDate>Thu, 21 Jun 2012 18:51:21 +0900</pubDate>
-				<link>http://localhost:4000/2012-06-21/asana-com-vs-do-com/</link>
-				<guid isPermaLink="true">http://localhost:4000/2012-06-21/asana-com-vs-do-com/</guid>
+				<link>http://luiselizondo.github.io/2012-06-21/asana-com-vs-do-com/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2012-06-21/asana-com-vs-do-com/</guid>
 			</item>
 		
 			<item>
@@ -3743,8 +3743,8 @@ function clickLoginButton(e) {
 &lt;p&gt;&lt;strong&gt;&lt;a href=&quot;http://www.quora.com/Public-Speaking/What-are-the-best-commencement-speeches-of-all-time/&quot; target=&quot;_blank&quot;&gt;Public Speaking: What are the best commencement speeches of all time?&lt;/a&gt;&lt;/strong&gt;&lt;br /&gt;This is a great collection of speeches, some of them are extraordinary. If you never took the time to actually watch the Steve Jobs commencement speech, now is the time, you won&amp;#8217;t regret it.&lt;br /&gt;&lt;br /&gt;&lt;strong&gt;&lt;a href=&quot;http://www.quora.com/Pets/If-you-could-ask-your-pet-a-question-and-get-a-reply-in-the-same-language-what-would-you-ask&quot; target=&quot;_blank&quot;&gt;If you could ask your pet a question, and get a reply in the same language, what would you ask?&lt;/a&gt;&lt;/strong&gt;&lt;br /&gt;There are some really funny and motivating answers, we humans (at least most of us) love pets, and I always thought it would be great if we could communicate with them.&lt;br /&gt;&lt;br /&gt;&lt;br /&gt;&lt;/p&gt;
 </description>
 				<pubDate>Thu, 21 Jun 2012 18:38:50 +0900</pubDate>
-				<link>http://localhost:4000/2012-06-21/top-3-quora-questions-of-the-week-3/</link>
-				<guid isPermaLink="true">http://localhost:4000/2012-06-21/top-3-quora-questions-of-the-week-3/</guid>
+				<link>http://luiselizondo.github.io/2012-06-21/top-3-quora-questions-of-the-week-3/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2012-06-21/top-3-quora-questions-of-the-week-3/</guid>
 			</item>
 		
 			<item>
@@ -3764,8 +3764,8 @@ function clickLoginButton(e) {
 &lt;p&gt;Winner: Ubuntu&lt;/p&gt;
 </description>
 				<pubDate>Thu, 21 Jun 2012 18:17:57 +0900</pubDate>
-				<link>http://localhost:4000/2012-06-21/battle-1-fedora-17-vs-ubuntu-12-04/</link>
-				<guid isPermaLink="true">http://localhost:4000/2012-06-21/battle-1-fedora-17-vs-ubuntu-12-04/</guid>
+				<link>http://luiselizondo.github.io/2012-06-21/battle-1-fedora-17-vs-ubuntu-12-04/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2012-06-21/battle-1-fedora-17-vs-ubuntu-12-04/</guid>
 			</item>
 		
 			<item>
@@ -3773,8 +3773,8 @@ function clickLoginButton(e) {
         <description>&lt;p&gt;&lt;a href=&quot;https://www.facebook.com/video/video.php?v=10100259101684977&quot;&gt;How does Facebook push code&lt;/a&gt;&lt;/p&gt;
 </description>
 				<pubDate>Mon, 11 Jun 2012 18:44:18 +0900</pubDate>
-				<link>http://localhost:4000/2012-06-11/how-does-facebook-push-code/</link>
-				<guid isPermaLink="true">http://localhost:4000/2012-06-11/how-does-facebook-push-code/</guid>
+				<link>http://luiselizondo.github.io/2012-06-11/how-does-facebook-push-code/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2012-06-11/how-does-facebook-push-code/</guid>
 			</item>
 		
 			<item>
@@ -3782,8 +3782,8 @@ function clickLoginButton(e) {
         <description>
 </description>
 				<pubDate>Fri, 08 Jun 2012 07:47:19 +0900</pubDate>
-				<link>http://localhost:4000/2012-06-08/the-only-article-you-should-read-this-week/</link>
-				<guid isPermaLink="true">http://localhost:4000/2012-06-08/the-only-article-you-should-read-this-week/</guid>
+				<link>http://luiselizondo.github.io/2012-06-08/the-only-article-you-should-read-this-week/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2012-06-08/the-only-article-you-should-read-this-week/</guid>
 			</item>
 		
 			<item>
@@ -3798,8 +3798,8 @@ function clickLoginButton(e) {
 &lt;p&gt;&lt;br /&gt;&lt;br /&gt;&lt;/p&gt;
 </description>
 				<pubDate>Fri, 08 Jun 2012 07:32:00 +0900</pubDate>
-				<link>http://localhost:4000/2012-06-08/top-3-quora-questions-of-the-week-2/</link>
-				<guid isPermaLink="true">http://localhost:4000/2012-06-08/top-3-quora-questions-of-the-week-2/</guid>
+				<link>http://luiselizondo.github.io/2012-06-08/top-3-quora-questions-of-the-week-2/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2012-06-08/top-3-quora-questions-of-the-week-2/</guid>
 			</item>
 		
 			<item>
@@ -3812,8 +3812,8 @@ function clickLoginButton(e) {
 &lt;p&gt;In Part 2 I will talk about databases and in Part 3 about the guys in the middle.&lt;/p&gt;
 </description>
 				<pubDate>Thu, 07 Jun 2012 19:39:00 +0900</pubDate>
-				<link>http://localhost:4000/2012-06-07/technologies-behind-the-web-part-1-the-web-server-explained-for-non-techincal-users/</link>
-				<guid isPermaLink="true">http://localhost:4000/2012-06-07/technologies-behind-the-web-part-1-the-web-server-explained-for-non-techincal-users/</guid>
+				<link>http://luiselizondo.github.io/2012-06-07/technologies-behind-the-web-part-1-the-web-server-explained-for-non-techincal-users/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2012-06-07/technologies-behind-the-web-part-1-the-web-server-explained-for-non-techincal-users/</guid>
 			</item>
 		
 			<item>
@@ -3821,8 +3821,8 @@ function clickLoginButton(e) {
         <description>&lt;p&gt;&lt;a href=&quot;http://obstacol.com/wp-content/uploads/2012/05/inspirational-quotes31.jpg&quot;&gt;inspirational-quotes31.jpg 500×633 pixels&lt;/a&gt;&lt;/p&gt;
 </description>
 				<pubDate>Thu, 24 May 2012 11:46:01 +0900</pubDate>
-				<link>http://localhost:4000/2012-05-24/inspirational-quotes31-jpg-500x633-pixels/</link>
-				<guid isPermaLink="true">http://localhost:4000/2012-05-24/inspirational-quotes31-jpg-500x633-pixels/</guid>
+				<link>http://luiselizondo.github.io/2012-05-24/inspirational-quotes31-jpg-500x633-pixels/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2012-05-24/inspirational-quotes31-jpg-500x633-pixels/</guid>
 			</item>
 		
 			<item>
@@ -4062,8 +4062,8 @@ sudo service php5-fpm restart
 &lt;p&gt;Visit your site! It should be working and you should view the install screen! If not, google any errors, visit your log, check your DNS, remember that MySQL is not running on this box.&lt;/p&gt;
 </description>
 				<pubDate>Sat, 19 May 2012 06:09:18 +0900</pubDate>
-				<link>http://localhost:4000/2012-05-19/ubuntu-12-04-nginx-drupal/</link>
-				<guid isPermaLink="true">http://localhost:4000/2012-05-19/ubuntu-12-04-nginx-drupal/</guid>
+				<link>http://luiselizondo.github.io/2012-05-19/ubuntu-12-04-nginx-drupal/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2012-05-19/ubuntu-12-04-nginx-drupal/</guid>
 			</item>
 		
 			<item>
@@ -4084,8 +4084,8 @@ sudo service php5-fpm restart
 &lt;p&gt;So, what do we do? To be honest, I think the answer depends on your needs, as usual, but neither of the approaches described above are 100% safe and satisfactory. What do you think?&lt;/p&gt;
 </description>
 				<pubDate>Tue, 15 May 2012 03:56:00 +0900</pubDate>
-				<link>http://localhost:4000/2012-05-15/drupal-on-aws-with-a-load-balancer-and-capistrano-git-and-nfs/</link>
-				<guid isPermaLink="true">http://localhost:4000/2012-05-15/drupal-on-aws-with-a-load-balancer-and-capistrano-git-and-nfs/</guid>
+				<link>http://luiselizondo.github.io/2012-05-15/drupal-on-aws-with-a-load-balancer-and-capistrano-git-and-nfs/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2012-05-15/drupal-on-aws-with-a-load-balancer-and-capistrano-git-and-nfs/</guid>
 			</item>
 		
 			<item>
@@ -4093,8 +4093,8 @@ sudo service php5-fpm restart
         <description>&lt;p&gt;&lt;a href=&quot;http://lab.iiiepe.net/osiepresentation/#/step-1&quot;&gt;Open Source in Education, Presentation&lt;/a&gt;&lt;/p&gt;
 </description>
 				<pubDate>Fri, 04 May 2012 20:07:00 +0900</pubDate>
-				<link>http://localhost:4000/2012-05-04/open-source-in-education-presentation/</link>
-				<guid isPermaLink="true">http://localhost:4000/2012-05-04/open-source-in-education-presentation/</guid>
+				<link>http://luiselizondo.github.io/2012-05-04/open-source-in-education-presentation/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2012-05-04/open-source-in-education-presentation/</guid>
 			</item>
 		
 			<item>
@@ -4102,8 +4102,8 @@ sudo service php5-fpm restart
         <description>&lt;p&gt;&lt;a href=&quot;http://cinemagr.am/show/6054329&quot;&gt;cinemagr.am&lt;/a&gt;&amp;lt;div class=&quot;link_description&quot;&amp;gt;&amp;lt;div&amp;gt;&amp;lt;p&amp;gt;&lt;img src=&quot;http://cinemagr.am/uploads/6054329.gif&quot; /&gt;&amp;lt;/p&amp;gt; &lt;br /&gt;&amp;lt;p&amp;gt;(Taken with &lt;a href=&quot;http://cinemagr.am&quot;&gt;&lt;a href=&quot;http://cinemagr.am&quot;&gt;http://cinemagr.am&lt;/a&gt;&lt;/a&gt;)&amp;lt;/p&amp;gt;&amp;lt;/div&amp;gt;&amp;lt;/div&amp;gt;&lt;/p&gt;
 </description>
 				<pubDate>Fri, 04 May 2012 04:00:15 +0900</pubDate>
-				<link>http://localhost:4000/2012-05-04/cinemagr-am/</link>
-				<guid isPermaLink="true">http://localhost:4000/2012-05-04/cinemagr-am/</guid>
+				<link>http://luiselizondo.github.io/2012-05-04/cinemagr-am/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2012-05-04/cinemagr-am/</guid>
 			</item>
 		
 			<item>
@@ -4126,8 +4126,8 @@ sudo service php5-fpm restart
 &lt;p&gt;Finally, I must say that you can easily disable it, I won&amp;#8217;t disable it personally, I&amp;#8217;ll be giving it a try, is just like a Gnome-Do for apps which I use a lot but again, I&amp;#8217;m not a &amp;#8220;human being&amp;#8221;&lt;/p&gt;
 </description>
 				<pubDate>Mon, 30 Apr 2012 08:36:00 +0900</pubDate>
-				<link>http://localhost:4000/2012-04-30/the-hud-in-ubuntu-12-04/</link>
-				<guid isPermaLink="true">http://localhost:4000/2012-04-30/the-hud-in-ubuntu-12-04/</guid>
+				<link>http://luiselizondo.github.io/2012-04-30/the-hud-in-ubuntu-12-04/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2012-04-30/the-hud-in-ubuntu-12-04/</guid>
 			</item>
 		
 			<item>
@@ -4169,8 +4169,8 @@ sudo service php5-fpm restart
 &lt;p&gt;My personal conclusion is that I&amp;#8217;ll try to upgrade my PC at work in 3 or 4 months, for now, I&amp;#8217;m really happy with 11.10&lt;/p&gt;
 </description>
 				<pubDate>Sun, 29 Apr 2012 13:43:00 +0900</pubDate>
-				<link>http://localhost:4000/2012-04-29/ubuntu-12-04-review/</link>
-				<guid isPermaLink="true">http://localhost:4000/2012-04-29/ubuntu-12-04-review/</guid>
+				<link>http://luiselizondo.github.io/2012-04-29/ubuntu-12-04-review/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2012-04-29/ubuntu-12-04-review/</guid>
 			</item>
 		
 			<item>
@@ -4178,8 +4178,8 @@ sudo service php5-fpm restart
         <description>&lt;p&gt;&lt;a href=&quot;http://b0x.ee/xSe8Ve&quot;&gt;loved Rob Reid: The $8 billion iPod on Boxee&lt;/a&gt;&lt;/p&gt;
 </description>
 				<pubDate>Thu, 05 Apr 2012 12:18:11 +0900</pubDate>
-				<link>http://localhost:4000/2012-04-05/loved-rob-reid-the-8-billion-ipod-on-boxee/</link>
-				<guid isPermaLink="true">http://localhost:4000/2012-04-05/loved-rob-reid-the-8-billion-ipod-on-boxee/</guid>
+				<link>http://luiselizondo.github.io/2012-04-05/loved-rob-reid-the-8-billion-ipod-on-boxee/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2012-04-05/loved-rob-reid-the-8-billion-ipod-on-boxee/</guid>
 			</item>
 		
 			<item>
@@ -4187,8 +4187,8 @@ sudo service php5-fpm restart
         <description>&lt;p&gt;&lt;a href=&quot;http://b0x.ee/GUK7lS&quot;&gt;loved Donald Sadoway: The missing link to renewable energy on Boxee&lt;/a&gt;&lt;/p&gt;
 </description>
 				<pubDate>Thu, 05 Apr 2012 12:08:06 +0900</pubDate>
-				<link>http://localhost:4000/2012-04-05/loved-donald-sadoway-the-missing-link-to-renewable-energy-on-boxee/</link>
-				<guid isPermaLink="true">http://localhost:4000/2012-04-05/loved-donald-sadoway-the-missing-link-to-renewable-energy-on-boxee/</guid>
+				<link>http://luiselizondo.github.io/2012-04-05/loved-donald-sadoway-the-missing-link-to-renewable-energy-on-boxee/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2012-04-05/loved-donald-sadoway-the-missing-link-to-renewable-energy-on-boxee/</guid>
 			</item>
 		
 			<item>
@@ -4196,8 +4196,8 @@ sudo service php5-fpm restart
         <description>&lt;p&gt;My profile on Quora&lt;br /&gt;&lt;br /&gt;&lt;span class=&quot;qlink_container&quot;&gt;&lt;a href=&quot;http://www.quora.com/Luis-Elizondo&quot;&gt;Luis Elizondo&lt;/a&gt;&lt;/span&gt;&lt;/p&gt;
 </description>
 				<pubDate>Wed, 28 Mar 2012 04:23:43 +0900</pubDate>
-				<link>http://localhost:4000/2012-03-28/luis-elizondo/</link>
-				<guid isPermaLink="true">http://localhost:4000/2012-03-28/luis-elizondo/</guid>
+				<link>http://luiselizondo.github.io/2012-03-28/luis-elizondo/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2012-03-28/luis-elizondo/</guid>
 			</item>
 		
 			<item>
@@ -4205,8 +4205,8 @@ sudo service php5-fpm restart
         <description>&lt;p&gt;&lt;a href=&quot;http://b0x.ee/uLE3wz&quot;&gt;loved [B]To Understand is to Perceive Patterns on Boxee&lt;/a&gt;&lt;/p&gt;
 </description>
 				<pubDate>Fri, 06 Jan 2012 12:00:19 +0900</pubDate>
-				<link>http://localhost:4000/2012-01-06/loved-bto-understand-is-to-perceive-patterns-on-boxee/</link>
-				<guid isPermaLink="true">http://localhost:4000/2012-01-06/loved-bto-understand-is-to-perceive-patterns-on-boxee/</guid>
+				<link>http://luiselizondo.github.io/2012-01-06/loved-bto-understand-is-to-perceive-patterns-on-boxee/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2012-01-06/loved-bto-understand-is-to-perceive-patterns-on-boxee/</guid>
 			</item>
 		
 			<item>
@@ -4214,8 +4214,8 @@ sudo service php5-fpm restart
         <description>&lt;p&gt;&lt;a href=&quot;http://b0x.ee/wQkjpG&quot;&gt;loved The King’s Speech　2010　Beethoven 7th Symphony 2nd Movement Sequence on Boxee&lt;/a&gt;&lt;/p&gt;
 </description>
 				<pubDate>Fri, 06 Jan 2012 10:02:17 +0900</pubDate>
-				<link>http://localhost:4000/2012-01-06/loved-the-kings-speech-2010-beethoven-7th-symphony-2nd-movement-sequence-on-boxee/</link>
-				<guid isPermaLink="true">http://localhost:4000/2012-01-06/loved-the-kings-speech-2010-beethoven-7th-symphony-2nd-movement-sequence-on-boxee/</guid>
+				<link>http://luiselizondo.github.io/2012-01-06/loved-the-kings-speech-2010-beethoven-7th-symphony-2nd-movement-sequence-on-boxee/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2012-01-06/loved-the-kings-speech-2010-beethoven-7th-symphony-2nd-movement-sequence-on-boxee/</guid>
 			</item>
 		
 			<item>
@@ -4223,8 +4223,8 @@ sudo service php5-fpm restart
         <description>&lt;p&gt;&lt;a href=&quot;http://b0x.ee/wAm27x&quot;&gt;loved Feist - La même historie on Boxee&lt;/a&gt;&lt;/p&gt;
 </description>
 				<pubDate>Fri, 06 Jan 2012 09:55:54 +0900</pubDate>
-				<link>http://localhost:4000/2012-01-06/loved-feist-la-meme-historie-on-boxee/</link>
-				<guid isPermaLink="true">http://localhost:4000/2012-01-06/loved-feist-la-meme-historie-on-boxee/</guid>
+				<link>http://luiselizondo.github.io/2012-01-06/loved-feist-la-meme-historie-on-boxee/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2012-01-06/loved-feist-la-meme-historie-on-boxee/</guid>
 			</item>
 		
 			<item>
@@ -4232,8 +4232,8 @@ sudo service php5-fpm restart
         <description>&lt;p&gt;&lt;a href=&quot;http://b0x.ee/j0ottV&quot;&gt;loved Bruno Mars - Just The Way You Are [Official Video] on Boxee&lt;/a&gt;&lt;/p&gt;
 </description>
 				<pubDate>Fri, 06 Jan 2012 09:46:47 +0900</pubDate>
-				<link>http://localhost:4000/2012-01-06/loved-bruno-mars-just-the-way-you-are-official-video-on-boxee/</link>
-				<guid isPermaLink="true">http://localhost:4000/2012-01-06/loved-bruno-mars-just-the-way-you-are-official-video-on-boxee/</guid>
+				<link>http://luiselizondo.github.io/2012-01-06/loved-bruno-mars-just-the-way-you-are-official-video-on-boxee/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2012-01-06/loved-bruno-mars-just-the-way-you-are-official-video-on-boxee/</guid>
 			</item>
 		
 			<item>
@@ -4241,8 +4241,8 @@ sudo service php5-fpm restart
         <description>&lt;p&gt;&lt;a href=&quot;http://b0x.ee/ws1iNA&quot;&gt;loved Pitbull - Rain Over Me ft. Marc Anthony on Boxee&lt;/a&gt;&lt;/p&gt;
 </description>
 				<pubDate>Fri, 06 Jan 2012 09:46:28 +0900</pubDate>
-				<link>http://localhost:4000/2012-01-06/loved-pitbull-rain-over-me-ft-marc-anthony-on-boxee/</link>
-				<guid isPermaLink="true">http://localhost:4000/2012-01-06/loved-pitbull-rain-over-me-ft-marc-anthony-on-boxee/</guid>
+				<link>http://luiselizondo.github.io/2012-01-06/loved-pitbull-rain-over-me-ft-marc-anthony-on-boxee/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2012-01-06/loved-pitbull-rain-over-me-ft-marc-anthony-on-boxee/</guid>
 			</item>
 		
 			<item>
@@ -4250,8 +4250,8 @@ sudo service php5-fpm restart
         <description>&lt;p&gt;&lt;a href=&quot;http://b0x.ee/AbY63e&quot;&gt;loved Alanis Morissette - Uninvited on Boxee&lt;/a&gt;&lt;/p&gt;
 </description>
 				<pubDate>Fri, 06 Jan 2012 09:27:47 +0900</pubDate>
-				<link>http://localhost:4000/2012-01-06/loved-alanis-morissette-uninvited-on-boxee/</link>
-				<guid isPermaLink="true">http://localhost:4000/2012-01-06/loved-alanis-morissette-uninvited-on-boxee/</guid>
+				<link>http://luiselizondo.github.io/2012-01-06/loved-alanis-morissette-uninvited-on-boxee/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2012-01-06/loved-alanis-morissette-uninvited-on-boxee/</guid>
 			</item>
 		
 			<item>
@@ -4259,8 +4259,8 @@ sudo service php5-fpm restart
         <description>&lt;p&gt;&lt;a href=&quot;http://b0x.ee/atsBOp&quot;&gt;loved Jonathan Haidt on the moral roots of liberals and conservatives on Boxee&lt;/a&gt;&lt;/p&gt;
 </description>
 				<pubDate>Wed, 04 Jan 2012 02:48:21 +0900</pubDate>
-				<link>http://localhost:4000/2012-01-04/loved-jonathan-haidt-on-the-moral-roots-of-liberals-and-conservatives-on-boxee/</link>
-				<guid isPermaLink="true">http://localhost:4000/2012-01-04/loved-jonathan-haidt-on-the-moral-roots-of-liberals-and-conservatives-on-boxee/</guid>
+				<link>http://luiselizondo.github.io/2012-01-04/loved-jonathan-haidt-on-the-moral-roots-of-liberals-and-conservatives-on-boxee/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2012-01-04/loved-jonathan-haidt-on-the-moral-roots-of-liberals-and-conservatives-on-boxee/</guid>
 			</item>
 		
 			<item>
@@ -4268,8 +4268,8 @@ sudo service php5-fpm restart
         <description>&lt;p&gt;&lt;a href=&quot;http://b0x.ee/yGiTrU&quot;&gt;wow &lt;/a&gt;&lt;/p&gt;
 </description>
 				<pubDate>Wed, 04 Jan 2012 02:35:29 +0900</pubDate>
-				<link>http://localhost:4000/2012-01-04/wow/</link>
-				<guid isPermaLink="true">http://localhost:4000/2012-01-04/wow/</guid>
+				<link>http://luiselizondo.github.io/2012-01-04/wow/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2012-01-04/wow/</guid>
 			</item>
 		
 			<item>
@@ -4277,8 +4277,8 @@ sudo service php5-fpm restart
         <description>&lt;p&gt;&lt;a href=&quot;http://b0x.ee/aUYUpM&quot;&gt;loved Bill Gates on energy: Innovating to zero! on Boxee&lt;/a&gt;&lt;/p&gt;
 </description>
 				<pubDate>Wed, 28 Dec 2011 11:19:57 +0900</pubDate>
-				<link>http://localhost:4000/2011-12-28/loved-bill-gates-on-energy-innovating-to-zero-on-boxee/</link>
-				<guid isPermaLink="true">http://localhost:4000/2011-12-28/loved-bill-gates-on-energy-innovating-to-zero-on-boxee/</guid>
+				<link>http://luiselizondo.github.io/2011-12-28/loved-bill-gates-on-energy-innovating-to-zero-on-boxee/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2011-12-28/loved-bill-gates-on-energy-innovating-to-zero-on-boxee/</guid>
 			</item>
 		
 			<item>
@@ -4286,8 +4286,8 @@ sudo service php5-fpm restart
         <description>&lt;p&gt;&lt;a href=&quot;http://b0x.ee/pSYO7Z&quot;&gt;loved Brian Cox on CERN’s supercollider on Boxee&lt;/a&gt;&lt;/p&gt;
 </description>
 				<pubDate>Wed, 28 Dec 2011 10:14:31 +0900</pubDate>
-				<link>http://localhost:4000/2011-12-28/loved-brian-cox-on-cerns-supercollider-on-boxee/</link>
-				<guid isPermaLink="true">http://localhost:4000/2011-12-28/loved-brian-cox-on-cerns-supercollider-on-boxee/</guid>
+				<link>http://luiselizondo.github.io/2011-12-28/loved-brian-cox-on-cerns-supercollider-on-boxee/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2011-12-28/loved-brian-cox-on-cerns-supercollider-on-boxee/</guid>
 			</item>
 		
 			<item>
@@ -4297,8 +4297,8 @@ sudo service php5-fpm restart
 &lt;p&gt;Si me buscas ahí, me podrás encontrar como &lt;em&gt;Luis Elizondo&lt;/em&gt;&lt;/p&gt;
 </description>
 				<pubDate>Thu, 06 Jan 2011 09:37:30 +0900</pubDate>
-				<link>http://localhost:4000/2011-01-06/quora/</link>
-				<guid isPermaLink="true">http://localhost:4000/2011-01-06/quora/</guid>
+				<link>http://luiselizondo.github.io/2011-01-06/quora/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2011-01-06/quora/</guid>
 			</item>
 		
 	</channel>

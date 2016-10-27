@@ -19,8 +19,8 @@
 <meta property="og:title" content="Creating a LEMP with Docker and the Data-Only Container Pattern" />
 <meta name="description" content="&nbsp;Create a data container[code]$ docker run -v /var/data --name APPDATA busybox true[/code]This is tricky but here&#39;s what&#39;s happening:We&#39;re using the Data-Only Container Pattern to create a &quot;hidden&quot; directory where to save the dataWe create a new volume &quot;/var/data&quot; inside the container with name &quot;APPDATA&quot; which is using&nbsp; the &quot;busybox&quot; image and we run the &quot;true&quot; command so it finishes automatically.The name busybox IS actually an docker image which exists in the docker.io repository, it contains utilities.We run the true command becuase it&#39;s not needed that this image is running. It just needs to exists, so running true will create it but it will not be running.It&#39;s not neccesary to run the image with -d unless you want to prevent this container from being removed (it will be removed anyway if you do docker rm -f&quot;The name APPDATA allows us to identify it easily as a data container.The /var/www directory will be created INSIDE the container and it WILL NOT be linked to the /var/www on your host, they are different directories, period, do not confuse them.The /var/data will be availableIf you do docker inspect APPDATA you&#39;ll get something like:[code]...&quot;Volumes&quot;: {&quot;/var/www&quot;: &quot;/var/lib/docker/vfs/dir/ed5ec43a7237f2ff51159e900a336f61470b261f38b83d5f04def259f492a231&quot;}[/code]You can see that /var/www inside the container is actually mapped to &quot;/var/lib/docker/vfs/dir/ed5ec43a7237f2ff51159e900a336f61470b261f38b83d5f04def259f492a231&quot; in your host machine, if you go to that directory (as root) you&#39;re accessing the same folder that your container is accessing, but it&#39;s not recommended to do it.We only created one volume with the path /var/www but we can create as many as we want, BUT since creating volumes is inexpensive, you probably want to create one volume for each container to keep things organized.&nbsp;If you want to know more about this, read: http://docs.docker.io/use/working_with_volumes/Create the MariaDB containerBefore we do this, we need to create another data volume container to save the MariaDB data.[code]$ docker run -v /var/lib/mysql --name DBDATA busybox true[/code]I&#39;m using the dockerfile/mariadb and if you inspect the Dockerfile of that image, you&#39;ll see that it will save the data in /data so it needs a volume in /data.Now we can run the MariaDB container:[code]$ docker run -it --rm -p 3306:3306 --volumes-from DBDATA dockerfile/mariadb[/code]The --rm is something we haven&#39;t used before, it just means that the container will be removed if it exists, which is something we want, if MariaDB fails, we need to kill it and start another one, Docker will take care of the removal of this container. Launching a new container is something will do in another tutorial.Database[code]docker pull orchardup/mysql[/code][code]docker run -d -e &quot;MYSQL_ROOT_PASSWORD=123&quot; -e &quot;MYSQL_DATABASE=drupal&quot; --volumes-from DBDATA --name mysql orchardup/mysql[/code]Create the php5-nginx container[code]$ docker run -it --volumes-from APPDATA -v /var/www/siaeducacion:/var/www -p 8000:80 --name lemp luis/php5-nginx[/code]Here we use whatever volume we created in the APPDATA container and also map /var/www/siaeducacion in the host to /var/www inside the container.[code]HOME=/PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/binHOSTNAME=0035b1fb8e54TERM=xtermMYSQL_PORT=tcp://172.17.0.4:3306MYSQL_PORT_3306_TCP=tcp://172.17.0.4:3306MYSQL_PORT_3306_TCP_ADDR=172.17.0.4MYSQL_PORT_3306_TCP_PORT=3306MYSQL_PORT_3306_TCP_PROTO=tcpMYSQL_NAME=/loving_fermi/mysqlMYSQL_ENV_MYSQL_ROOT_PASSWORD=123MYSQL_ENV_MYSQL_DATABASE=drupalDEBIAN_FRONTEND=noninteractive[code]&nbsp;" />
 <meta property="og:description" content="&nbsp;Create a data container[code]$ docker run -v /var/data --name APPDATA busybox true[/code]This is tricky but here&#39;s what&#39;s happening:We&#39;re using the Data-Only Container Pattern to create a &quot;hidden&quot; directory where to save the dataWe create a new volume &quot;/var/data&quot; inside the container with name &quot;APPDATA&quot; which is using&nbsp; the &quot;busybox&quot; image and we run the &quot;true&quot; command so it finishes automatically.The name busybox IS actually an docker image which exists in the docker.io repository, it contains utilities.We run the true command becuase it&#39;s not needed that this image is running. It just needs to exists, so running true will create it but it will not be running.It&#39;s not neccesary to run the image with -d unless you want to prevent this container from being removed (it will be removed anyway if you do docker rm -f&quot;The name APPDATA allows us to identify it easily as a data container.The /var/www directory will be created INSIDE the container and it WILL NOT be linked to the /var/www on your host, they are different directories, period, do not confuse them.The /var/data will be availableIf you do docker inspect APPDATA you&#39;ll get something like:[code]...&quot;Volumes&quot;: {&quot;/var/www&quot;: &quot;/var/lib/docker/vfs/dir/ed5ec43a7237f2ff51159e900a336f61470b261f38b83d5f04def259f492a231&quot;}[/code]You can see that /var/www inside the container is actually mapped to &quot;/var/lib/docker/vfs/dir/ed5ec43a7237f2ff51159e900a336f61470b261f38b83d5f04def259f492a231&quot; in your host machine, if you go to that directory (as root) you&#39;re accessing the same folder that your container is accessing, but it&#39;s not recommended to do it.We only created one volume with the path /var/www but we can create as many as we want, BUT since creating volumes is inexpensive, you probably want to create one volume for each container to keep things organized.&nbsp;If you want to know more about this, read: http://docs.docker.io/use/working_with_volumes/Create the MariaDB containerBefore we do this, we need to create another data volume container to save the MariaDB data.[code]$ docker run -v /var/lib/mysql --name DBDATA busybox true[/code]I&#39;m using the dockerfile/mariadb and if you inspect the Dockerfile of that image, you&#39;ll see that it will save the data in /data so it needs a volume in /data.Now we can run the MariaDB container:[code]$ docker run -it --rm -p 3306:3306 --volumes-from DBDATA dockerfile/mariadb[/code]The --rm is something we haven&#39;t used before, it just means that the container will be removed if it exists, which is something we want, if MariaDB fails, we need to kill it and start another one, Docker will take care of the removal of this container. Launching a new container is something will do in another tutorial.Database[code]docker pull orchardup/mysql[/code][code]docker run -d -e &quot;MYSQL_ROOT_PASSWORD=123&quot; -e &quot;MYSQL_DATABASE=drupal&quot; --volumes-from DBDATA --name mysql orchardup/mysql[/code]Create the php5-nginx container[code]$ docker run -it --volumes-from APPDATA -v /var/www/siaeducacion:/var/www -p 8000:80 --name lemp luis/php5-nginx[/code]Here we use whatever volume we created in the APPDATA container and also map /var/www/siaeducacion in the host to /var/www inside the container.[code]HOME=/PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/binHOSTNAME=0035b1fb8e54TERM=xtermMYSQL_PORT=tcp://172.17.0.4:3306MYSQL_PORT_3306_TCP=tcp://172.17.0.4:3306MYSQL_PORT_3306_TCP_ADDR=172.17.0.4MYSQL_PORT_3306_TCP_PORT=3306MYSQL_PORT_3306_TCP_PROTO=tcpMYSQL_NAME=/loving_fermi/mysqlMYSQL_ENV_MYSQL_ROOT_PASSWORD=123MYSQL_ENV_MYSQL_DATABASE=drupalDEBIAN_FRONTEND=noninteractive[code]&nbsp;" />
-<link rel="canonical" href="http://localhost:4000/2014-05-15/creating-a-lemp-with-docker-and-the-data-only-container-pattern/" />
-<meta property="og:url" content="http://localhost:4000/2014-05-15/creating-a-lemp-with-docker-and-the-data-only-container-pattern/" />
+<link rel="canonical" href="http://luiselizondo.github.io/2014-05-15/creating-a-lemp-with-docker-and-the-data-only-container-pattern/" />
+<meta property="og:url" content="http://luiselizondo.github.io/2014-05-15/creating-a-lemp-with-docker-and-the-data-only-container-pattern/" />
 <meta property="og:site_name" content="Luis Elizondo" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2014-05-15T19:43:41+09:00" />
@@ -31,7 +31,7 @@
     "headline": "Creating a LEMP with Docker and the Data-Only Container Pattern",
     "datePublished": "2014-05-15T19:43:41+09:00",
     "description": "&nbsp;Create a data container[code]$ docker run -v /var/data --name APPDATA busybox true[/code]This is tricky but here&#39;s what&#39;s happening:We&#39;re using the Data-Only Container Pattern to create a &quot;hidden&quot; directory where to save the dataWe create a new volume &quot;/var/data&quot; inside the container with name &quot;APPDATA&quot; which is using&nbsp; the &quot;busybox&quot; image and we run the &quot;true&quot; command so it finishes automatically.The name busybox IS actually an docker image which exists in the docker.io repository, it contains utilities.We run the true command becuase it&#39;s not needed that this image is running. It just needs to exists, so running true will create it but it will not be running.It&#39;s not neccesary to run the image with -d unless you want to prevent this container from being removed (it will be removed anyway if you do docker rm -f&quot;The name APPDATA allows us to identify it easily as a data container.The /var/www directory will be created INSIDE the container and it WILL NOT be linked to the /var/www on your host, they are different directories, period, do not confuse them.The /var/data will be availableIf you do docker inspect APPDATA you&#39;ll get something like:[code]...&quot;Volumes&quot;: {&quot;/var/www&quot;: &quot;/var/lib/docker/vfs/dir/ed5ec43a7237f2ff51159e900a336f61470b261f38b83d5f04def259f492a231&quot;}[/code]You can see that /var/www inside the container is actually mapped to &quot;/var/lib/docker/vfs/dir/ed5ec43a7237f2ff51159e900a336f61470b261f38b83d5f04def259f492a231&quot; in your host machine, if you go to that directory (as root) you&#39;re accessing the same folder that your container is accessing, but it&#39;s not recommended to do it.We only created one volume with the path /var/www but we can create as many as we want, BUT since creating volumes is inexpensive, you probably want to create one volume for each container to keep things organized.&nbsp;If you want to know more about this, read: http://docs.docker.io/use/working_with_volumes/Create the MariaDB containerBefore we do this, we need to create another data volume container to save the MariaDB data.[code]$ docker run -v /var/lib/mysql --name DBDATA busybox true[/code]I&#39;m using the dockerfile/mariadb and if you inspect the Dockerfile of that image, you&#39;ll see that it will save the data in /data so it needs a volume in /data.Now we can run the MariaDB container:[code]$ docker run -it --rm -p 3306:3306 --volumes-from DBDATA dockerfile/mariadb[/code]The --rm is something we haven&#39;t used before, it just means that the container will be removed if it exists, which is something we want, if MariaDB fails, we need to kill it and start another one, Docker will take care of the removal of this container. Launching a new container is something will do in another tutorial.Database[code]docker pull orchardup/mysql[/code][code]docker run -d -e &quot;MYSQL_ROOT_PASSWORD=123&quot; -e &quot;MYSQL_DATABASE=drupal&quot; --volumes-from DBDATA --name mysql orchardup/mysql[/code]Create the php5-nginx container[code]$ docker run -it --volumes-from APPDATA -v /var/www/siaeducacion:/var/www -p 8000:80 --name lemp luis/php5-nginx[/code]Here we use whatever volume we created in the APPDATA container and also map /var/www/siaeducacion in the host to /var/www inside the container.[code]HOME=/PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/binHOSTNAME=0035b1fb8e54TERM=xtermMYSQL_PORT=tcp://172.17.0.4:3306MYSQL_PORT_3306_TCP=tcp://172.17.0.4:3306MYSQL_PORT_3306_TCP_ADDR=172.17.0.4MYSQL_PORT_3306_TCP_PORT=3306MYSQL_PORT_3306_TCP_PROTO=tcpMYSQL_NAME=/loving_fermi/mysqlMYSQL_ENV_MYSQL_ROOT_PASSWORD=123MYSQL_ENV_MYSQL_DATABASE=drupalDEBIAN_FRONTEND=noninteractive[code]&nbsp;",
-    "url": "http://localhost:4000/2014-05-15/creating-a-lemp-with-docker-and-the-data-only-container-pattern/"
+    "url": "http://luiselizondo.github.io/2014-05-15/creating-a-lemp-with-docker-and-the-data-only-container-pattern/"
   }
 </script>
 <!-- End Jekyll SEO tag -->
@@ -58,7 +58,7 @@ ga('send', 'pageview');
   <div class="content-container">
     <header>
   <h1 class="header-small">
-    <a href="http://localhost:4000">< BACK</a>
+    <a href="http://luiselizondo.github.io">< BACK</a>
   </h1>
 </header>
 <div class="post">
@@ -70,35 +70,35 @@ ga('send', 'pageview');
     <ul>
       
       <li>
-        <a href="http://localhost:4000/tags#docker" class="tag">
+        <a href="http://luiselizondo.github.io/tags#docker" class="tag">
           <span class="term">docker</span>
         </a>
       </li>
       
       
       <li>
-        <a href="http://localhost:4000/tags#lemp" class="tag">
+        <a href="http://luiselizondo.github.io/tags#lemp" class="tag">
           <span class="term">lemp</span>
         </a>
       </li>
       
       
       <li>
-        <a href="http://localhost:4000/tags#mariadb" class="tag">
+        <a href="http://luiselizondo.github.io/tags#mariadb" class="tag">
           <span class="term">mariadb</span>
         </a>
       </li>
       
       
       <li>
-        <a href="http://localhost:4000/tags#mysql" class="tag">
+        <a href="http://luiselizondo.github.io/tags#mysql" class="tag">
           <span class="term">mysql</span>
         </a>
       </li>
       
       
       <li>
-        <a href="http://localhost:4000/tags#ngnix" class="tag">
+        <a href="http://luiselizondo.github.io/tags#ngnix" class="tag">
           <span class="term">ngnix</span>
         </a>
       </li>
@@ -137,15 +137,15 @@ ga('send', 'pageview');
   <div class="post-share">
     <hr>
     <span>Share this: <br /></span>
-<a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/2014-05-15/creating-a-lemp-with-docker-and-the-data-only-container-pattern/" onclick="window.open(this.href, 'mywin',
+<a href="https://www.facebook.com/sharer/sharer.php?u=http://luiselizondo.github.io/2014-05-15/creating-a-lemp-with-docker-and-the-data-only-container-pattern/" onclick="window.open(this.href, 'mywin',
 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-facebook"></a>
-<a href="https://twitter.com/intent/tweet?text=Creating a LEMP with Docker and the Data-Only Container Pattern&url=http://localhost:4000/2014-05-15/creating-a-lemp-with-docker-and-the-data-only-container-pattern/" onclick="window.open(this.href, 'mywin',
+<a href="https://twitter.com/intent/tweet?text=Creating a LEMP with Docker and the Data-Only Container Pattern&url=http://luiselizondo.github.io/2014-05-15/creating-a-lemp-with-docker-and-the-data-only-container-pattern/" onclick="window.open(this.href, 'mywin',
 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-twitter"></a>
-<a href="https://plus.google.com/share?url=http://localhost:4000/2014-05-15/creating-a-lemp-with-docker-and-the-data-only-container-pattern/" onclick="window.open(this.href, 'mywin',
+<a href="https://plus.google.com/share?url=http://luiselizondo.github.io/2014-05-15/creating-a-lemp-with-docker-and-the-data-only-container-pattern/" onclick="window.open(this.href, 'mywin',
 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-google-plus"></a>
-<a href="https://www.tumblr.com/share?url=http://localhost:4000/2014-05-15/creating-a-lemp-with-docker-and-the-data-only-container-pattern/" onclick="window.open(this.href, 'mywin',
+<a href="https://www.tumblr.com/share?url=http://luiselizondo.github.io/2014-05-15/creating-a-lemp-with-docker-and-the-data-only-container-pattern/" onclick="window.open(this.href, 'mywin',
 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-tumblr"></a>
-<a href="mailto:?subject=Creating a LEMP with Docker and the Data-Only Container Pattern&amp;body=Check out this site http://localhost:4000/2014-05-15/creating-a-lemp-with-docker-and-the-data-only-container-pattern/" class="ssk ssk-icon ssk-email"></a>
+<a href="mailto:?subject=Creating a LEMP with Docker and the Data-Only Container Pattern&amp;body=Check out this site http://luiselizondo.github.io/2014-05-15/creating-a-lemp-with-docker-and-the-data-only-container-pattern/" class="ssk ssk-icon ssk-email"></a>
 
     <hr>
   </div>

@@ -19,8 +19,8 @@
 <meta property="og:title" content="Alloy and Titanium Studio, Part 3. Lazy Load Windows and Tabs" />
 <meta name="description" content="Speed. We don’t wait for anything. In this short tutorial I’ll show you my method to lazy load data as you need so your app bootstraps fast. Let’s say you have an API you get data from, and you have a Tab with a Window inside, inside the Window you do all the magic and the data you get from your API shows up. I’m not gonna cover that part. You probably also have a login window, and once the user signs in, then you load the rest of the app. But, if you wait until your server gives you the data to bootstrap it’s gonna take a few seconds to load the app. So, what do I do?Let’s code a simple tab with a window, our files will be myWindow.xml and myWindow.jsmyWindow.xml            // Magic goes here          &lt;/Window&gt;  &lt;/Tab&gt;&lt;/Alloy&gt;&lt;/code&gt;As you can see, I&#39;m giving my tab an id. That&#39;s all there is.On the controller, you&#39;d normally do the following: myWindow.jsfunction getData(callback) {  // get data here and then return callback with data  callback(data);}// Execute getData and set the text of name to what the server sent usgetData(function(data) {  $.name.text = data.name;});But again, we have to wait. Instead, let&#39;s add an event listener to load the data once the tab is &quot;focus&quot;, only then we&#39;ll load the data.myWindow.jsfunction getData(callback) {  // get data here and then return callback with data  callback(data);}// Wait until we focus on this tab to get the data$.myTab.addEventListener(&quot;focus&quot;, function() {  // Execute getData and set the text of name to what the server sent us  getData(function(data) {    $.name.text = data.name;  });});That&#39;s it, your app will load really fast. You may want to show and activity indicator so the user knows something is happening in the background.You may ask, why is this different? the user will have to wait anyway, so why bother? Well, good question, except that when you have multiple tabs, Titanium will execute all code on all tabs, meaning that if you get data from the server on all tabs, you will make multiple requests and the tab group will not open until the server gets a response and displays the data, even if the user will only see one tab at a time.So there you have it. Only one small note. I read (can&#39;t confirm) that this is not working on Android, but I tested it on iOS and it works great, I don&#39;t even need to test it, I can feel it&#39;s way faster, and I&#39;m also not making multiple requests to my server almost at the same time.Happy coding!" />
 <meta property="og:description" content="Speed. We don’t wait for anything. In this short tutorial I’ll show you my method to lazy load data as you need so your app bootstraps fast. Let’s say you have an API you get data from, and you have a Tab with a Window inside, inside the Window you do all the magic and the data you get from your API shows up. I’m not gonna cover that part. You probably also have a login window, and once the user signs in, then you load the rest of the app. But, if you wait until your server gives you the data to bootstrap it’s gonna take a few seconds to load the app. So, what do I do?Let’s code a simple tab with a window, our files will be myWindow.xml and myWindow.jsmyWindow.xml            // Magic goes here          &lt;/Window&gt;  &lt;/Tab&gt;&lt;/Alloy&gt;&lt;/code&gt;As you can see, I&#39;m giving my tab an id. That&#39;s all there is.On the controller, you&#39;d normally do the following: myWindow.jsfunction getData(callback) {  // get data here and then return callback with data  callback(data);}// Execute getData and set the text of name to what the server sent usgetData(function(data) {  $.name.text = data.name;});But again, we have to wait. Instead, let&#39;s add an event listener to load the data once the tab is &quot;focus&quot;, only then we&#39;ll load the data.myWindow.jsfunction getData(callback) {  // get data here and then return callback with data  callback(data);}// Wait until we focus on this tab to get the data$.myTab.addEventListener(&quot;focus&quot;, function() {  // Execute getData and set the text of name to what the server sent us  getData(function(data) {    $.name.text = data.name;  });});That&#39;s it, your app will load really fast. You may want to show and activity indicator so the user knows something is happening in the background.You may ask, why is this different? the user will have to wait anyway, so why bother? Well, good question, except that when you have multiple tabs, Titanium will execute all code on all tabs, meaning that if you get data from the server on all tabs, you will make multiple requests and the tab group will not open until the server gets a response and displays the data, even if the user will only see one tab at a time.So there you have it. Only one small note. I read (can&#39;t confirm) that this is not working on Android, but I tested it on iOS and it works great, I don&#39;t even need to test it, I can feel it&#39;s way faster, and I&#39;m also not making multiple requests to my server almost at the same time.Happy coding!" />
-<link rel="canonical" href="http://localhost:4000/2013-09-04/alloy-and-titanium-studio-part-3-lazy-load-windows-and-tabs/" />
-<meta property="og:url" content="http://localhost:4000/2013-09-04/alloy-and-titanium-studio-part-3-lazy-load-windows-and-tabs/" />
+<link rel="canonical" href="http://luiselizondo.github.io/2013-09-04/alloy-and-titanium-studio-part-3-lazy-load-windows-and-tabs/" />
+<meta property="og:url" content="http://luiselizondo.github.io/2013-09-04/alloy-and-titanium-studio-part-3-lazy-load-windows-and-tabs/" />
 <meta property="og:site_name" content="Luis Elizondo" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2013-09-04T08:42:55+09:00" />
@@ -31,7 +31,7 @@
     "headline": "Alloy and Titanium Studio, Part 3. Lazy Load Windows and Tabs",
     "datePublished": "2013-09-04T08:42:55+09:00",
     "description": "Speed. We don’t wait for anything. In this short tutorial I’ll show you my method to lazy load data as you need so your app bootstraps fast. Let’s say you have an API you get data from, and you have a Tab with a Window inside, inside the Window you do all the magic and the data you get from your API shows up. I’m not gonna cover that part. You probably also have a login window, and once the user signs in, then you load the rest of the app. But, if you wait until your server gives you the data to bootstrap it’s gonna take a few seconds to load the app. So, what do I do?Let’s code a simple tab with a window, our files will be myWindow.xml and myWindow.jsmyWindow.xml            // Magic goes here          &lt;/Window&gt;  &lt;/Tab&gt;&lt;/Alloy&gt;&lt;/code&gt;As you can see, I&#39;m giving my tab an id. That&#39;s all there is.On the controller, you&#39;d normally do the following: myWindow.jsfunction getData(callback) {  // get data here and then return callback with data  callback(data);}// Execute getData and set the text of name to what the server sent usgetData(function(data) {  $.name.text = data.name;});But again, we have to wait. Instead, let&#39;s add an event listener to load the data once the tab is &quot;focus&quot;, only then we&#39;ll load the data.myWindow.jsfunction getData(callback) {  // get data here and then return callback with data  callback(data);}// Wait until we focus on this tab to get the data$.myTab.addEventListener(&quot;focus&quot;, function() {  // Execute getData and set the text of name to what the server sent us  getData(function(data) {    $.name.text = data.name;  });});That&#39;s it, your app will load really fast. You may want to show and activity indicator so the user knows something is happening in the background.You may ask, why is this different? the user will have to wait anyway, so why bother? Well, good question, except that when you have multiple tabs, Titanium will execute all code on all tabs, meaning that if you get data from the server on all tabs, you will make multiple requests and the tab group will not open until the server gets a response and displays the data, even if the user will only see one tab at a time.So there you have it. Only one small note. I read (can&#39;t confirm) that this is not working on Android, but I tested it on iOS and it works great, I don&#39;t even need to test it, I can feel it&#39;s way faster, and I&#39;m also not making multiple requests to my server almost at the same time.Happy coding!",
-    "url": "http://localhost:4000/2013-09-04/alloy-and-titanium-studio-part-3-lazy-load-windows-and-tabs/"
+    "url": "http://luiselizondo.github.io/2013-09-04/alloy-and-titanium-studio-part-3-lazy-load-windows-and-tabs/"
   }
 </script>
 <!-- End Jekyll SEO tag -->
@@ -58,7 +58,7 @@ ga('send', 'pageview');
   <div class="content-container">
     <header>
   <h1 class="header-small">
-    <a href="http://localhost:4000">< BACK</a>
+    <a href="http://luiselizondo.github.io">< BACK</a>
   </h1>
 </header>
 <div class="post">
@@ -70,42 +70,42 @@ ga('send', 'pageview');
     <ul>
       
       <li>
-        <a href="http://localhost:4000/tags#alloy" class="tag">
+        <a href="http://luiselizondo.github.io/tags#alloy" class="tag">
           <span class="term">alloy</span>
         </a>
       </li>
       
       
       <li>
-        <a href="http://localhost:4000/tags#android" class="tag">
+        <a href="http://luiselizondo.github.io/tags#android" class="tag">
           <span class="term">android</span>
         </a>
       </li>
       
       
       <li>
-        <a href="http://localhost:4000/tags#ios" class="tag">
+        <a href="http://luiselizondo.github.io/tags#ios" class="tag">
           <span class="term">ios</span>
         </a>
       </li>
       
       
       <li>
-        <a href="http://localhost:4000/tags#lazyload" class="tag">
+        <a href="http://luiselizondo.github.io/tags#lazyload" class="tag">
           <span class="term">lazyload</span>
         </a>
       </li>
       
       
       <li>
-        <a href="http://localhost:4000/tags#tabgroup" class="tag">
+        <a href="http://luiselizondo.github.io/tags#tabgroup" class="tag">
           <span class="term">tabgroup</span>
         </a>
       </li>
       
       
       <li>
-        <a href="http://localhost:4000/tags#titaniumstudio" class="tag">
+        <a href="http://luiselizondo.github.io/tags#titaniumstudio" class="tag">
           <span class="term">titaniumstudio</span>
         </a>
       </li>
@@ -182,15 +182,15 @@ Happy coding!
   <div class="post-share">
     <hr>
     <span>Share this: <br /></span>
-<a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/2013-09-04/alloy-and-titanium-studio-part-3-lazy-load-windows-and-tabs/" onclick="window.open(this.href, 'mywin',
+<a href="https://www.facebook.com/sharer/sharer.php?u=http://luiselizondo.github.io/2013-09-04/alloy-and-titanium-studio-part-3-lazy-load-windows-and-tabs/" onclick="window.open(this.href, 'mywin',
 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-facebook"></a>
-<a href="https://twitter.com/intent/tweet?text=Alloy and Titanium Studio, Part 3. Lazy Load Windows and Tabs&url=http://localhost:4000/2013-09-04/alloy-and-titanium-studio-part-3-lazy-load-windows-and-tabs/" onclick="window.open(this.href, 'mywin',
+<a href="https://twitter.com/intent/tweet?text=Alloy and Titanium Studio, Part 3. Lazy Load Windows and Tabs&url=http://luiselizondo.github.io/2013-09-04/alloy-and-titanium-studio-part-3-lazy-load-windows-and-tabs/" onclick="window.open(this.href, 'mywin',
 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-twitter"></a>
-<a href="https://plus.google.com/share?url=http://localhost:4000/2013-09-04/alloy-and-titanium-studio-part-3-lazy-load-windows-and-tabs/" onclick="window.open(this.href, 'mywin',
+<a href="https://plus.google.com/share?url=http://luiselizondo.github.io/2013-09-04/alloy-and-titanium-studio-part-3-lazy-load-windows-and-tabs/" onclick="window.open(this.href, 'mywin',
 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-google-plus"></a>
-<a href="https://www.tumblr.com/share?url=http://localhost:4000/2013-09-04/alloy-and-titanium-studio-part-3-lazy-load-windows-and-tabs/" onclick="window.open(this.href, 'mywin',
+<a href="https://www.tumblr.com/share?url=http://luiselizondo.github.io/2013-09-04/alloy-and-titanium-studio-part-3-lazy-load-windows-and-tabs/" onclick="window.open(this.href, 'mywin',
 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-tumblr"></a>
-<a href="mailto:?subject=Alloy and Titanium Studio, Part 3. Lazy Load Windows and Tabs&amp;body=Check out this site http://localhost:4000/2013-09-04/alloy-and-titanium-studio-part-3-lazy-load-windows-and-tabs/" class="ssk ssk-icon ssk-email"></a>
+<a href="mailto:?subject=Alloy and Titanium Studio, Part 3. Lazy Load Windows and Tabs&amp;body=Check out this site http://luiselizondo.github.io/2013-09-04/alloy-and-titanium-studio-part-3-lazy-load-windows-and-tabs/" class="ssk ssk-icon ssk-email"></a>
 
     <hr>
   </div>
