@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mongoose vs mongojs on Node.js</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/assets/css/main.css" type="text/css">
+  <link rel="stylesheet" href="/assets/css/social-share-kit.css" type="text/css">
+
+  <!-- Font -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+
+
+  <link rel="alternate" type="application/rss+xml" title="RSS Feed for Luis Elizondo" href="/feed.xml" />
+  <!-- Begin Jekyll SEO tag v2.0.0 -->
+<title>Mongoose vs mongojs on Node.js - Luis Elizondo</title>
+<meta property="og:title" content="Mongoose vs mongojs on Node.js" />
+<meta name="description" content="Quick post. I&#8217;ve been using Node.js a lot, to be honest, I love it, along with Node, I&#8217;ve been using MongoDB which, as you may know if you read my last post, doesn&#8217;t support joins.My first choice on a project was to use mongojs because it was plain simple. It uses the same structure you use on MongoDB directly with a very few exceptions, the main one is the ability to pass a callback as an argument.I moved really fast with mongojs, but then I hit a wall. Joins. Is just not possible to do it with MongoJS for the same reason you can&#8217;t do it with MongoDB, you have to use some sort of black magic to do them, and this is when Mongoose excells.To be honest, I tried to avoid Mongoose because I thought it was hard to use, defining a model was just &#8220;a waste of time&#8221; when with MongoJS you don&#8217;t need to. I was wrong.Bottom line. If your project is really simple, no joins, no complicated features, go with MongoJS, is really easy but limited. If you&#8217;re trying to save the world with your crazy idea and you need more powers than Superman, spend some time learning Mongoose and use it, it will take you there.Trust me, I just spent two days rewriting everything using Mongoose, I wish someone told me before." />
+<meta property="og:description" content="Quick post. I&#8217;ve been using Node.js a lot, to be honest, I love it, along with Node, I&#8217;ve been using MongoDB which, as you may know if you read my last post, doesn&#8217;t support joins.My first choice on a project was to use mongojs because it was plain simple. It uses the same structure you use on MongoDB directly with a very few exceptions, the main one is the ability to pass a callback as an argument.I moved really fast with mongojs, but then I hit a wall. Joins. Is just not possible to do it with MongoJS for the same reason you can&#8217;t do it with MongoDB, you have to use some sort of black magic to do them, and this is when Mongoose excells.To be honest, I tried to avoid Mongoose because I thought it was hard to use, defining a model was just &#8220;a waste of time&#8221; when with MongoJS you don&#8217;t need to. I was wrong.Bottom line. If your project is really simple, no joins, no complicated features, go with MongoJS, is really easy but limited. If you&#8217;re trying to save the world with your crazy idea and you need more powers than Superman, spend some time learning Mongoose and use it, it will take you there.Trust me, I just spent two days rewriting everything using Mongoose, I wish someone told me before." />
+<link rel="canonical" href="http://localhost:4000/2012-08-11/mongoose-vs-mongojs-on-node-js/" />
+<meta property="og:url" content="http://localhost:4000/2012-08-11/mongoose-vs-mongojs-on-node-js/" />
+<meta property="og:site_name" content="Luis Elizondo" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2012-08-11T09:48:52+09:00" />
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Mongoose vs mongojs on Node.js",
+    "datePublished": "2012-08-11T09:48:52+09:00",
+    "description": "Quick post. I&#8217;ve been using Node.js a lot, to be honest, I love it, along with Node, I&#8217;ve been using MongoDB which, as you may know if you read my last post, doesn&#8217;t support joins.My first choice on a project was to use mongojs because it was plain simple. It uses the same structure you use on MongoDB directly with a very few exceptions, the main one is the ability to pass a callback as an argument.I moved really fast with mongojs, but then I hit a wall. Joins. Is just not possible to do it with MongoJS for the same reason you can&#8217;t do it with MongoDB, you have to use some sort of black magic to do them, and this is when Mongoose excells.To be honest, I tried to avoid Mongoose because I thought it was hard to use, defining a model was just &#8220;a waste of time&#8221; when with MongoJS you don&#8217;t need to. I was wrong.Bottom line. If your project is really simple, no joins, no complicated features, go with MongoJS, is really easy but limited. If you&#8217;re trying to save the world with your crazy idea and you need more powers than Superman, spend some time learning Mongoose and use it, it will take you there.Trust me, I just spent two days rewriting everything using Mongoose, I wish someone told me before.",
+    "url": "http://localhost:4000/2012-08-11/mongoose-vs-mongojs-on-node-js/"
+  }
+</script>
+<!-- End Jekyll SEO tag -->
+
+
+  <!-- Google Analytics -->
+
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-39814139-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+
+
+
+</head>
+
+<body>
+  <div class="content-container">
+    <header>
+  <h1 class="header-small">
+    <a href="http://localhost:4000">< BACK</a>
+  </h1>
+</header>
+<div class="post">
+  <h1 class="post-title">Mongoose vs mongojs on Node.js</h1>
+  <span class="post-date">
+    <time>11 Aug 2012</time>
+  </span>
+  <div class="post-tag">
+    <ul>
+      
+      <li>
+        <a href="http://localhost:4000/tags#mongodb" class="tag">
+          <span class="term">mongodb</span>
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="http://localhost:4000/tags#mongojs" class="tag">
+          <span class="term">mongojs</span>
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="http://localhost:4000/tags#mongoose" class="tag">
+          <span class="term">mongoose</span>
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="http://localhost:4000/tags#node-js" class="tag">
+          <span class="term">node-js</span>
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="http://localhost:4000/tags#nodejs" class="tag">
+          <span class="term">nodejs</span>
+        </a>
+      </li>
+      
+      
+    </ul>
+  </div>
+
+  <p>Quick post. I&#8217;ve been using Node.js a lot, to be honest, I love it, along with Node, I&#8217;ve been using MongoDB which, as you may know if you read my last post, doesn&#8217;t support joins.</p>
+<p>My first choice on a project was to use mongojs because it was plain simple. It uses the same structure you use on MongoDB directly with a very few exceptions, the main one is the ability to pass a callback as an argument.</p>
+<p>I moved really fast with mongojs, but then I hit a wall. Joins. Is just not possible to do it with MongoJS for the same reason you can&#8217;t do it with MongoDB, you have to use some sort of black magic to do them, and this is when Mongoose excells.</p>
+<p>To be honest, I tried to avoid Mongoose because I thought it was hard to use, defining a model was just &#8220;a waste of time&#8221; when with MongoJS you don&#8217;t need to. I was wrong.</p>
+<p>Bottom line. If your project is really simple, no joins, no complicated features, go with MongoJS, is really easy but limited. If you&#8217;re trying to save the world with your crazy idea and you need more powers than Superman, spend some time learning Mongoose and use it, it will take you there.</p>
+<p>Trust me, I just spent two days rewriting everything using Mongoose, I wish someone told me before.</p>
+
+
+
+  <!-- Share -->
+  
+  <div class="post-share">
+    <hr>
+    <span>Share this: <br /></span>
+<a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/2012-08-11/mongoose-vs-mongojs-on-node-js/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-facebook"></a>
+<a href="https://twitter.com/intent/tweet?text=Mongoose vs mongojs on Node.js&url=http://localhost:4000/2012-08-11/mongoose-vs-mongojs-on-node-js/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-twitter"></a>
+<a href="https://plus.google.com/share?url=http://localhost:4000/2012-08-11/mongoose-vs-mongojs-on-node-js/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-google-plus"></a>
+<a href="https://www.tumblr.com/share?url=http://localhost:4000/2012-08-11/mongoose-vs-mongojs-on-node-js/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-tumblr"></a>
+<a href="mailto:?subject=Mongoose vs mongojs on Node.js&amp;body=Check out this site http://localhost:4000/2012-08-11/mongoose-vs-mongojs-on-node-js/" class="ssk ssk-icon ssk-email"></a>
+
+    <hr>
+  </div>
+  
+
+  <!-- Disqus -->
+  
+  <section id="disqus_thread"></section>
+  <script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables */
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = '//luiselizondobaez.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+</div>
+
+
+    <!-- Documents about icons are here: http://fontawesome.io/icons/ -->
+<div class="footer">
+	<hr />
+	<div class="footer-link">
+		
+
+		
+		<a href="https://twitter.com/lelizondo"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+		
+
+		
+		<a href="https://github.com/luiselizondo"><i class="fa fa-github" aria-hidden="true"></i></a>
+		
+
+		
+		<a href="https://www.linkedin.com/in/luiselizondobaez"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
+		
+
+		
+
+		
+
+		
+
+	</div>
+	© 2016 Luis Elizondo. All rights reserved.
+</div>
+
+  </div>
+</body>
+</html>

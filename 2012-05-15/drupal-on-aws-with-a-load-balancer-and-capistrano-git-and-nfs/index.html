@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Drupal on AWS with a Load Balancer and Capistrano, Git and NFS</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/assets/css/main.css" type="text/css">
+  <link rel="stylesheet" href="/assets/css/social-share-kit.css" type="text/css">
+
+  <!-- Font -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+
+
+  <link rel="alternate" type="application/rss+xml" title="RSS Feed for Luis Elizondo" href="/feed.xml" />
+  <!-- Begin Jekyll SEO tag v2.0.0 -->
+<title>Drupal on AWS with a Load Balancer and Capistrano, Git and NFS - Luis Elizondo</title>
+<meta property="og:title" content="Drupal on AWS with a Load Balancer and Capistrano, Git and NFS" />
+<meta name="description" content="Things can get complicated when you grow older. The same thing happens to your site if you want to handle millions of page requests.Let me describe you the problem and then I&#8217;ll go into possible solutions.One website, multiple AWS instances to support the traffic, one NFS server (thinking about moving to GlusterFS BTW) and one big MySQL Dedicated server with no fancy master-slave replication right now.So what&#8217;s the problem? The problem is maintenance, how do you update this whole thing without having nightmares at night? Possible solutions are:Put all the Drupal code on the NFS and just use the instances to connect to NFS, one single code-base and multiple instances running apache to support the traffic.Multiple isolated code-bases just sharing the files directoryWhich way to go?Solution 1, is no solution really, because if NFS fails it will bring down all your sites with it.Solution 2 seems more reasonable but still presents a number of issues related to maintenance.What happens when you install a module or upgrade one? Well, for that you could use capistrano to deploy the changes to all your servers and is really easy, no more than 4 lines of code, literally.But then, capistrano will update one by one your sites, if you have 20 instances it will take a few minutes to do it and with high traffic sites, you could still have problems.Another possible solution is to use Git and have one big site, that could work, but I&#8217;m no fan of having a huge git project, specially because Git can&#8217;t handle git repositories inside a git repository, and I usually clone multiple projects into the site so that&#8217;s a problem. The solution here could be to use SVN but I really never bothered learning SVN (I don&#8217;t think it would take me more than half an hour but I don&#8217;t really want to lean Subversion).So, what do we do? To be honest, I think the answer depends on your needs, as usual, but neither of the approaches described above are 100% safe and satisfactory. What do you think?" />
+<meta property="og:description" content="Things can get complicated when you grow older. The same thing happens to your site if you want to handle millions of page requests.Let me describe you the problem and then I&#8217;ll go into possible solutions.One website, multiple AWS instances to support the traffic, one NFS server (thinking about moving to GlusterFS BTW) and one big MySQL Dedicated server with no fancy master-slave replication right now.So what&#8217;s the problem? The problem is maintenance, how do you update this whole thing without having nightmares at night? Possible solutions are:Put all the Drupal code on the NFS and just use the instances to connect to NFS, one single code-base and multiple instances running apache to support the traffic.Multiple isolated code-bases just sharing the files directoryWhich way to go?Solution 1, is no solution really, because if NFS fails it will bring down all your sites with it.Solution 2 seems more reasonable but still presents a number of issues related to maintenance.What happens when you install a module or upgrade one? Well, for that you could use capistrano to deploy the changes to all your servers and is really easy, no more than 4 lines of code, literally.But then, capistrano will update one by one your sites, if you have 20 instances it will take a few minutes to do it and with high traffic sites, you could still have problems.Another possible solution is to use Git and have one big site, that could work, but I&#8217;m no fan of having a huge git project, specially because Git can&#8217;t handle git repositories inside a git repository, and I usually clone multiple projects into the site so that&#8217;s a problem. The solution here could be to use SVN but I really never bothered learning SVN (I don&#8217;t think it would take me more than half an hour but I don&#8217;t really want to lean Subversion).So, what do we do? To be honest, I think the answer depends on your needs, as usual, but neither of the approaches described above are 100% safe and satisfactory. What do you think?" />
+<link rel="canonical" href="http://localhost:4000/2012-05-15/drupal-on-aws-with-a-load-balancer-and-capistrano-git-and-nfs/" />
+<meta property="og:url" content="http://localhost:4000/2012-05-15/drupal-on-aws-with-a-load-balancer-and-capistrano-git-and-nfs/" />
+<meta property="og:site_name" content="Luis Elizondo" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2012-05-15T03:56:00+09:00" />
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Drupal on AWS with a Load Balancer and Capistrano, Git and NFS",
+    "datePublished": "2012-05-15T03:56:00+09:00",
+    "description": "Things can get complicated when you grow older. The same thing happens to your site if you want to handle millions of page requests.Let me describe you the problem and then I&#8217;ll go into possible solutions.One website, multiple AWS instances to support the traffic, one NFS server (thinking about moving to GlusterFS BTW) and one big MySQL Dedicated server with no fancy master-slave replication right now.So what&#8217;s the problem? The problem is maintenance, how do you update this whole thing without having nightmares at night? Possible solutions are:Put all the Drupal code on the NFS and just use the instances to connect to NFS, one single code-base and multiple instances running apache to support the traffic.Multiple isolated code-bases just sharing the files directoryWhich way to go?Solution 1, is no solution really, because if NFS fails it will bring down all your sites with it.Solution 2 seems more reasonable but still presents a number of issues related to maintenance.What happens when you install a module or upgrade one? Well, for that you could use capistrano to deploy the changes to all your servers and is really easy, no more than 4 lines of code, literally.But then, capistrano will update one by one your sites, if you have 20 instances it will take a few minutes to do it and with high traffic sites, you could still have problems.Another possible solution is to use Git and have one big site, that could work, but I&#8217;m no fan of having a huge git project, specially because Git can&#8217;t handle git repositories inside a git repository, and I usually clone multiple projects into the site so that&#8217;s a problem. The solution here could be to use SVN but I really never bothered learning SVN (I don&#8217;t think it would take me more than half an hour but I don&#8217;t really want to lean Subversion).So, what do we do? To be honest, I think the answer depends on your needs, as usual, but neither of the approaches described above are 100% safe and satisfactory. What do you think?",
+    "url": "http://localhost:4000/2012-05-15/drupal-on-aws-with-a-load-balancer-and-capistrano-git-and-nfs/"
+  }
+</script>
+<!-- End Jekyll SEO tag -->
+
+
+  <!-- Google Analytics -->
+
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-39814139-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+
+
+
+</head>
+
+<body>
+  <div class="content-container">
+    <header>
+  <h1 class="header-small">
+    <a href="http://localhost:4000">< BACK</a>
+  </h1>
+</header>
+<div class="post">
+  <h1 class="post-title">Drupal on AWS with a Load Balancer and Capistrano, Git and NFS</h1>
+  <span class="post-date">
+    <time>15 May 2012</time>
+  </span>
+  <div class="post-tag">
+    <ul>
+      
+      <li>
+        <a href="http://localhost:4000/tags#aws" class="tag">
+          <span class="term">aws</span>
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="http://localhost:4000/tags#capistrano" class="tag">
+          <span class="term">capistrano</span>
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="http://localhost:4000/tags#drupal" class="tag">
+          <span class="term">drupal</span>
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="http://localhost:4000/tags#drush" class="tag">
+          <span class="term">drush</span>
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="http://localhost:4000/tags#git" class="tag">
+          <span class="term">git</span>
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="http://localhost:4000/tags#loadbalancer" class="tag">
+          <span class="term">loadbalancer</span>
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="http://localhost:4000/tags#nfs" class="tag">
+          <span class="term">nfs</span>
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="http://localhost:4000/tags#svn" class="tag">
+          <span class="term">svn</span>
+        </a>
+      </li>
+      
+      
+    </ul>
+  </div>
+
+  <p>Things can get complicated when you grow older. The same thing happens to your site if you want to handle millions of page requests.</p>
+<p>Let me describe you the problem and then I&#8217;ll go into possible solutions.</p>
+<p>One website, multiple AWS instances to support the traffic, one NFS server (thinking about moving to GlusterFS BTW) and one big MySQL Dedicated server with no fancy master-slave replication right now.</p>
+<p>So what&#8217;s the problem? The problem is maintenance, how do you update this whole thing without having nightmares at night? Possible solutions are:</p>
+<ol><li>Put all the Drupal code on the NFS and just use the instances to connect to NFS, one single code-base and multiple instances running apache to support the traffic.</li>
+<li>Multiple isolated code-bases just sharing the files directory</li>
+</ol>
+<p>Which way to go?</p>
+<p>Solution 1, is no solution really, because if NFS fails it will bring down all your sites with it.</p>
+<p>Solution 2 seems more reasonable but still presents a number of issues related to maintenance.</p>
+<p>What happens when you install a module or upgrade one? Well, for that you could use capistrano to deploy the changes to all your servers and is really easy, no more than 4 lines of code, literally.</p>
+<p>But then, capistrano will update one by one your sites, if you have 20 instances it will take a few minutes to do it and with high traffic sites, you could still have problems.</p>
+<p>Another possible solution is to use <strong>Git</strong> and have one big site, that could work, but I&#8217;m no fan of having a huge git project, specially because Git can&#8217;t handle git repositories inside a git repository, and I usually clone multiple projects into the site so that&#8217;s a problem. The solution here could be to use SVN but I really never bothered learning SVN (I don&#8217;t think it would take me more than half an hour but I don&#8217;t really want to lean Subversion).</p>
+<p>So, what do we do? To be honest, I think the answer depends on your needs, as usual, but neither of the approaches described above are 100% safe and satisfactory. What do you think?</p>
+
+
+
+  <!-- Share -->
+  
+  <div class="post-share">
+    <hr>
+    <span>Share this: <br /></span>
+<a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/2012-05-15/drupal-on-aws-with-a-load-balancer-and-capistrano-git-and-nfs/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-facebook"></a>
+<a href="https://twitter.com/intent/tweet?text=Drupal on AWS with a Load Balancer and Capistrano, Git and NFS&url=http://localhost:4000/2012-05-15/drupal-on-aws-with-a-load-balancer-and-capistrano-git-and-nfs/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-twitter"></a>
+<a href="https://plus.google.com/share?url=http://localhost:4000/2012-05-15/drupal-on-aws-with-a-load-balancer-and-capistrano-git-and-nfs/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-google-plus"></a>
+<a href="https://www.tumblr.com/share?url=http://localhost:4000/2012-05-15/drupal-on-aws-with-a-load-balancer-and-capistrano-git-and-nfs/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-tumblr"></a>
+<a href="mailto:?subject=Drupal on AWS with a Load Balancer and Capistrano, Git and NFS&amp;body=Check out this site http://localhost:4000/2012-05-15/drupal-on-aws-with-a-load-balancer-and-capistrano-git-and-nfs/" class="ssk ssk-icon ssk-email"></a>
+
+    <hr>
+  </div>
+  
+
+  <!-- Disqus -->
+  
+  <section id="disqus_thread"></section>
+  <script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables */
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = '//luiselizondobaez.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+</div>
+
+
+    <!-- Documents about icons are here: http://fontawesome.io/icons/ -->
+<div class="footer">
+	<hr />
+	<div class="footer-link">
+		
+
+		
+		<a href="https://twitter.com/lelizondo"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+		
+
+		
+		<a href="https://github.com/luiselizondo"><i class="fa fa-github" aria-hidden="true"></i></a>
+		
+
+		
+		<a href="https://www.linkedin.com/in/luiselizondobaez"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
+		
+
+		
+
+		
+
+		
+
+	</div>
+	© 2016 Luis Elizondo. All rights reserved.
+</div>
+
+  </div>
+</body>
+</html>

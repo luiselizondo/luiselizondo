@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Use Vagrant and Packer to develop locally and deploy to Digital Ocean the same environment</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/assets/css/main.css" type="text/css">
+  <link rel="stylesheet" href="/assets/css/social-share-kit.css" type="text/css">
+
+  <!-- Font -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+
+
+  <link rel="alternate" type="application/rss+xml" title="RSS Feed for Luis Elizondo" href="/feed.xml" />
+  <!-- Begin Jekyll SEO tag v2.0.0 -->
+<title>Use Vagrant and Packer to develop locally and deploy to Digital Ocean the same environment - Luis Elizondo</title>
+<meta property="og:title" content="Use Vagrant and Packer to develop locally and deploy to Digital Ocean the same environment" />
+<meta name="description" content="I&#39;ve been using Vagrant and Packer.io for the last week and I&#39;m really excited of the new possibilities it opens for developers and how it changes the way we develop, test and deploy. There&#39;s not a lot of tutorials on how to integrate Vagrant and Packer so I&#39;ll try to explain everything from the beginning.Vagrant and Packer.ioBoth Vagrant and Packer.io were created by the same user and both are really cool. Vagrant is just a software that sits on top of a VM software (Virtualbox, VMWare, etc) to build and manage environments. What this means is no matter what VM software you&#39;re using, you configure Vagrant throught template files to manage the box and always have the same environment. This is really useful since the same box (think of a pre-configured ISO with your Operating System of choice) can be used in development, testing and production. All your libraries, all the software you install on your OS to run that app configured the same way for developement, testing and production. Packer is another beauty, it allows you to create a preconfigured box.If you got lost in the last paragraph, keep reading, maybe an example of what I&#39;m trying to do will clarify things a bit.I have a Node.js app, among the software I need to run the app are:node.jsforever (a node.js module)nginxImageMagickIn an imperfect world, I would need to install the same versions for each of those packages in my development, testing and production environment. I would also need to have the same configuration for each environment. Any difference that I&#39;m not aware of, can cause problems and does not guarantee consistensy across environments. I need the same OS image everywhere, configured the same way, running the same software and on different locations, my development environment runs locally and both testing/stage and production run on Digital Ocean.So how to solve this riddle? Easy. With Packer and some scripts we can create a .box image of our operating system preconfigured for both VirtualBox and DigitalOcean, both images wil have little to no difference, and finally with Vagrant we can manage those boxes.To use Packer.io I had to fork an existing example on Github by, but that didn&#39;t work because it was build for an older version of Packer, so I had to change a few things. You can get the files I&#39;ll be working on from https://github.com/luiselizondo/packer-exampleIn packer.json we define properties that packer will take to build the box, in the packer directory I have bash scripts that will be executed by packer when building the box, you have commands to install software that you need your box to have; you&#39;ll see a preseed.cfg file too, this file will be used by packer to send instructions to the installer. The Vagrantfile will be loaded everytime you provision a box and you can use it to configure your network or even to run scripts that need to be run.Let&#39;s analyse the packer.json file: {  &quot;provisioners&quot;: [    {      &quot;type&quot;: &quot;shell&quot;,      &quot;scripts&quot;: [        &quot;packer/base.sh&quot;,        &quot;packer/vagrant.sh&quot;,        &quot;packer/virtualbox.sh&quot;,        &quot;packer/cleanup.sh&quot;,        &quot;packer/zerodisk.sh&quot;      ],      &quot;override&quot;: {        &quot;virtualbox-iso&quot;: {          &quot;execute_command&quot;: &quot;echo &#39;vagrant&#39;|sudo -S sh &#39;&#39;&quot;        }      }    }  ],  &quot;builders&quot;: [    {      &quot;type&quot;: &quot;virtualbox-iso&quot;,      &quot;boot_command&quot;: [        &quot;&quot;,        &quot;/install/vmlinuz noapic preseed/url=http://:/preseed.cfg &quot;,        &quot;debian-installer=en_US auto locale=en_US kbd-chooser/method=us &quot;,        &quot;hostname=vagrant &quot;,        &quot;fb=false debconf/frontend=noninteractive &quot;,        &quot;keyboard-configuration/modelcode=SKIP keyboard-configuration/layout=USA keyboard-configuration/variant=USA console-setup/ask_detect=false &quot;,        &quot;initrd=/install/initrd.gz -- &quot;      ],      &quot;boot_wait&quot;: &quot;4s&quot;,      &quot;disk_size&quot;: 10140,      &quot;guest_os_type&quot;: &quot;Ubuntu_64&quot;,      &quot;http_directory&quot;: &quot;packer&quot;,      &quot;iso_checksum&quot;: &quot;2cbe868812a871242cdcdd8f2fd6feb9&quot;,      &quot;iso_checksum_type&quot;: &quot;md5&quot;,      &quot;iso_url&quot;: &quot;http://releases.ubuntu.com/12.04/ubuntu-12.04.3-server-amd64.iso&quot;,      &quot;ssh_username&quot;: &quot;vagrant&quot;,      &quot;ssh_password&quot;: &quot;vagrant&quot;,      &quot;ssh_port&quot;: 22,      &quot;ssh_wait_timeout&quot;: &quot;10m&quot;,      &quot;shutdown_command&quot;: &quot;echo &#39;shutdown -P now&#39; &gt; shutdown.sh; echo &#39;vagrant&#39;|sudo -S sh &#39;shutdown.sh&#39;&quot;,      &quot;guest_additions_path&quot;: &quot;VBoxGuestAdditions_.iso&quot;,      &quot;virtualbox_version_file&quot;: &quot;.vbox_version&quot;,      &quot;vboxmanage&quot;: [        [          &quot;modifyvm&quot;,          &quot;&quot;,          &quot;--memory&quot;,          &quot;512&quot;        ],        [          &quot;modifyvm&quot;,          &quot;&quot;,          &quot;--cpus&quot;,          &quot;2&quot;        ]      ]    },    {      &quot;type&quot;: &quot;digitalocean&quot;,      &quot;api_key&quot;: &quot;YOUR_API_KEY&quot;,      &quot;client_id&quot;: &quot;YOUR_CLIENT_ID&quot;,      &quot;private_networking&quot;: false,      &quot;snapshot_name&quot;: &quot;mybox-&quot;,      &quot;ssh_username&quot;: &quot;vagrant&quot;    }  ],  &quot;post-processors&quot;: [&quot;vagrant&quot;]}&lt;/code&gt;This is just a JSON file with some things Packer needs. Provisioners are tasks that will execute after the installer finishes but before the image gets created, meaning that if you install Apache and configure it, your image will come with Apache installed and configured. This tasks can be shell scripts or you can use Puppet/Chef/Salt if you want.On the Builders section you specify what kind of image you want to create, in my case, I need two boxes, one to use it with VirtualBox and another one living on Digital Ocean. We also set some properties for each builder that are unique depending on the type of BuilderFinally, in the Post Processors section you specify if you&#39;ll manage this using Vagrant or vSphereTo run Packer, just dopacker build packer.jsonThis command will create a file for you to use with Virtualbox on your local machine and a new Digital Ocean box and we&#39;ll use vagrant to manage both.To use vagrant, you’ll need to add the new file to the list of boxes vagrant can use. To do it just do:vagrant box add mycoolbox file_packer_created.boxYou can see a list of boxes vagrant knows about by issuing the command:vagrant box listThe Vagrantfile is also easy to read, you set configurations for each provider or general configurations that will be used for all providers. Since the Vagrantfile accepts comments, I&#39;ll use the same file to explain each line-- mode: ruby --vi: set ft=ruby :Vagrantfile API/syntax version. Don’t touch unless you know what you’re doing!VAGRANTFILE_API_VERSION = “2”Tell vagrant to use the Version 2 of the APIVagrant.configure(VAGRANTFILE_API_VERSION) do |config|# Vagrant will use “mycoolbox” to boot the machine, you can choose any box you’ve added or listed with the vagrant box list command  config.vm.box = “mycoolbox”  # Run this script each time we provision this box  config.vm.provision :shell, :path =&gt; “vagrant/bootstrap-stage.sh”  # Forward the port 80 on the VM machine, to the port 8080 on the host machine  config.vm.network :forwarded_port, host: 8080, guest: 80  # Run this command too  config.vm.provision :shell, :inline =&gt; “/etc/init.d/networking restart”# Forward the ssh agent  config.ssh.forward_agent = true# The path to my ssh key  config.ssh.private_key_path = “~/.ssh/id_rsa”config.vm.provider :digital_ocean do |provider, override|      override.ssh.private_key_path = ‘~/.ssh/id_rsa’    override.vm.box = ‘digital_ocean’    override.vm.box_url = “https://github.com/smdahlen/vagrant-digitalocean/raw/master/box/digital_ocean.box”provider.image = &quot;Ubuntu 12.04.3 x64&quot;provider.client_id = &#39;YOUR_CLIENT_ID&#39;provider.api_key = &#39;YOUR_API_KEY&#39;   end end &lt;/code&gt;To run your new box, just run vagrant up and you&#39;ll be able to ssh using vagrant sshIntegrate everythingI added the packer and vagrant files to my application source code, this way, any developer can build the same machine exactly to use it on Virtualbox and Digital ocean. The box will have a symlink to between /vagrant and /var/www. This is important since /vagrant is a shared folder between the guest and the host machine.DisclaimerRemember that digital ocean will charge you for each box you create, it’s cheap and only charges by hour but if you forget to turn off your machine I will not be responsible and most importantly I will not help you pay your bill. Amazon Web Services offers a Free tier plan that you can use for free for a limited amount of hours." />
+<meta property="og:description" content="I&#39;ve been using Vagrant and Packer.io for the last week and I&#39;m really excited of the new possibilities it opens for developers and how it changes the way we develop, test and deploy. There&#39;s not a lot of tutorials on how to integrate Vagrant and Packer so I&#39;ll try to explain everything from the beginning.Vagrant and Packer.ioBoth Vagrant and Packer.io were created by the same user and both are really cool. Vagrant is just a software that sits on top of a VM software (Virtualbox, VMWare, etc) to build and manage environments. What this means is no matter what VM software you&#39;re using, you configure Vagrant throught template files to manage the box and always have the same environment. This is really useful since the same box (think of a pre-configured ISO with your Operating System of choice) can be used in development, testing and production. All your libraries, all the software you install on your OS to run that app configured the same way for developement, testing and production. Packer is another beauty, it allows you to create a preconfigured box.If you got lost in the last paragraph, keep reading, maybe an example of what I&#39;m trying to do will clarify things a bit.I have a Node.js app, among the software I need to run the app are:node.jsforever (a node.js module)nginxImageMagickIn an imperfect world, I would need to install the same versions for each of those packages in my development, testing and production environment. I would also need to have the same configuration for each environment. Any difference that I&#39;m not aware of, can cause problems and does not guarantee consistensy across environments. I need the same OS image everywhere, configured the same way, running the same software and on different locations, my development environment runs locally and both testing/stage and production run on Digital Ocean.So how to solve this riddle? Easy. With Packer and some scripts we can create a .box image of our operating system preconfigured for both VirtualBox and DigitalOcean, both images wil have little to no difference, and finally with Vagrant we can manage those boxes.To use Packer.io I had to fork an existing example on Github by, but that didn&#39;t work because it was build for an older version of Packer, so I had to change a few things. You can get the files I&#39;ll be working on from https://github.com/luiselizondo/packer-exampleIn packer.json we define properties that packer will take to build the box, in the packer directory I have bash scripts that will be executed by packer when building the box, you have commands to install software that you need your box to have; you&#39;ll see a preseed.cfg file too, this file will be used by packer to send instructions to the installer. The Vagrantfile will be loaded everytime you provision a box and you can use it to configure your network or even to run scripts that need to be run.Let&#39;s analyse the packer.json file: {  &quot;provisioners&quot;: [    {      &quot;type&quot;: &quot;shell&quot;,      &quot;scripts&quot;: [        &quot;packer/base.sh&quot;,        &quot;packer/vagrant.sh&quot;,        &quot;packer/virtualbox.sh&quot;,        &quot;packer/cleanup.sh&quot;,        &quot;packer/zerodisk.sh&quot;      ],      &quot;override&quot;: {        &quot;virtualbox-iso&quot;: {          &quot;execute_command&quot;: &quot;echo &#39;vagrant&#39;|sudo -S sh &#39;&#39;&quot;        }      }    }  ],  &quot;builders&quot;: [    {      &quot;type&quot;: &quot;virtualbox-iso&quot;,      &quot;boot_command&quot;: [        &quot;&quot;,        &quot;/install/vmlinuz noapic preseed/url=http://:/preseed.cfg &quot;,        &quot;debian-installer=en_US auto locale=en_US kbd-chooser/method=us &quot;,        &quot;hostname=vagrant &quot;,        &quot;fb=false debconf/frontend=noninteractive &quot;,        &quot;keyboard-configuration/modelcode=SKIP keyboard-configuration/layout=USA keyboard-configuration/variant=USA console-setup/ask_detect=false &quot;,        &quot;initrd=/install/initrd.gz -- &quot;      ],      &quot;boot_wait&quot;: &quot;4s&quot;,      &quot;disk_size&quot;: 10140,      &quot;guest_os_type&quot;: &quot;Ubuntu_64&quot;,      &quot;http_directory&quot;: &quot;packer&quot;,      &quot;iso_checksum&quot;: &quot;2cbe868812a871242cdcdd8f2fd6feb9&quot;,      &quot;iso_checksum_type&quot;: &quot;md5&quot;,      &quot;iso_url&quot;: &quot;http://releases.ubuntu.com/12.04/ubuntu-12.04.3-server-amd64.iso&quot;,      &quot;ssh_username&quot;: &quot;vagrant&quot;,      &quot;ssh_password&quot;: &quot;vagrant&quot;,      &quot;ssh_port&quot;: 22,      &quot;ssh_wait_timeout&quot;: &quot;10m&quot;,      &quot;shutdown_command&quot;: &quot;echo &#39;shutdown -P now&#39; &gt; shutdown.sh; echo &#39;vagrant&#39;|sudo -S sh &#39;shutdown.sh&#39;&quot;,      &quot;guest_additions_path&quot;: &quot;VBoxGuestAdditions_.iso&quot;,      &quot;virtualbox_version_file&quot;: &quot;.vbox_version&quot;,      &quot;vboxmanage&quot;: [        [          &quot;modifyvm&quot;,          &quot;&quot;,          &quot;--memory&quot;,          &quot;512&quot;        ],        [          &quot;modifyvm&quot;,          &quot;&quot;,          &quot;--cpus&quot;,          &quot;2&quot;        ]      ]    },    {      &quot;type&quot;: &quot;digitalocean&quot;,      &quot;api_key&quot;: &quot;YOUR_API_KEY&quot;,      &quot;client_id&quot;: &quot;YOUR_CLIENT_ID&quot;,      &quot;private_networking&quot;: false,      &quot;snapshot_name&quot;: &quot;mybox-&quot;,      &quot;ssh_username&quot;: &quot;vagrant&quot;    }  ],  &quot;post-processors&quot;: [&quot;vagrant&quot;]}&lt;/code&gt;This is just a JSON file with some things Packer needs. Provisioners are tasks that will execute after the installer finishes but before the image gets created, meaning that if you install Apache and configure it, your image will come with Apache installed and configured. This tasks can be shell scripts or you can use Puppet/Chef/Salt if you want.On the Builders section you specify what kind of image you want to create, in my case, I need two boxes, one to use it with VirtualBox and another one living on Digital Ocean. We also set some properties for each builder that are unique depending on the type of BuilderFinally, in the Post Processors section you specify if you&#39;ll manage this using Vagrant or vSphereTo run Packer, just dopacker build packer.jsonThis command will create a file for you to use with Virtualbox on your local machine and a new Digital Ocean box and we&#39;ll use vagrant to manage both.To use vagrant, you’ll need to add the new file to the list of boxes vagrant can use. To do it just do:vagrant box add mycoolbox file_packer_created.boxYou can see a list of boxes vagrant knows about by issuing the command:vagrant box listThe Vagrantfile is also easy to read, you set configurations for each provider or general configurations that will be used for all providers. Since the Vagrantfile accepts comments, I&#39;ll use the same file to explain each line-- mode: ruby --vi: set ft=ruby :Vagrantfile API/syntax version. Don’t touch unless you know what you’re doing!VAGRANTFILE_API_VERSION = “2”Tell vagrant to use the Version 2 of the APIVagrant.configure(VAGRANTFILE_API_VERSION) do |config|# Vagrant will use “mycoolbox” to boot the machine, you can choose any box you’ve added or listed with the vagrant box list command  config.vm.box = “mycoolbox”  # Run this script each time we provision this box  config.vm.provision :shell, :path =&gt; “vagrant/bootstrap-stage.sh”  # Forward the port 80 on the VM machine, to the port 8080 on the host machine  config.vm.network :forwarded_port, host: 8080, guest: 80  # Run this command too  config.vm.provision :shell, :inline =&gt; “/etc/init.d/networking restart”# Forward the ssh agent  config.ssh.forward_agent = true# The path to my ssh key  config.ssh.private_key_path = “~/.ssh/id_rsa”config.vm.provider :digital_ocean do |provider, override|      override.ssh.private_key_path = ‘~/.ssh/id_rsa’    override.vm.box = ‘digital_ocean’    override.vm.box_url = “https://github.com/smdahlen/vagrant-digitalocean/raw/master/box/digital_ocean.box”provider.image = &quot;Ubuntu 12.04.3 x64&quot;provider.client_id = &#39;YOUR_CLIENT_ID&#39;provider.api_key = &#39;YOUR_API_KEY&#39;   end end &lt;/code&gt;To run your new box, just run vagrant up and you&#39;ll be able to ssh using vagrant sshIntegrate everythingI added the packer and vagrant files to my application source code, this way, any developer can build the same machine exactly to use it on Virtualbox and Digital ocean. The box will have a symlink to between /vagrant and /var/www. This is important since /vagrant is a shared folder between the guest and the host machine.DisclaimerRemember that digital ocean will charge you for each box you create, it’s cheap and only charges by hour but if you forget to turn off your machine I will not be responsible and most importantly I will not help you pay your bill. Amazon Web Services offers a Free tier plan that you can use for free for a limited amount of hours." />
+<link rel="canonical" href="http://localhost:4000/2014-01-11/use-vagrant-and-packer-to-develop-locally-and-deploy-to-digital-ocean-the-same-environment/" />
+<meta property="og:url" content="http://localhost:4000/2014-01-11/use-vagrant-and-packer-to-develop-locally-and-deploy-to-digital-ocean-the-same-environment/" />
+<meta property="og:site_name" content="Luis Elizondo" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2014-01-11T19:39:07+09:00" />
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Use Vagrant and Packer to develop locally and deploy to Digital Ocean the same environment",
+    "datePublished": "2014-01-11T19:39:07+09:00",
+    "description": "I&#39;ve been using Vagrant and Packer.io for the last week and I&#39;m really excited of the new possibilities it opens for developers and how it changes the way we develop, test and deploy. There&#39;s not a lot of tutorials on how to integrate Vagrant and Packer so I&#39;ll try to explain everything from the beginning.Vagrant and Packer.ioBoth Vagrant and Packer.io were created by the same user and both are really cool. Vagrant is just a software that sits on top of a VM software (Virtualbox, VMWare, etc) to build and manage environments. What this means is no matter what VM software you&#39;re using, you configure Vagrant throught template files to manage the box and always have the same environment. This is really useful since the same box (think of a pre-configured ISO with your Operating System of choice) can be used in development, testing and production. All your libraries, all the software you install on your OS to run that app configured the same way for developement, testing and production. Packer is another beauty, it allows you to create a preconfigured box.If you got lost in the last paragraph, keep reading, maybe an example of what I&#39;m trying to do will clarify things a bit.I have a Node.js app, among the software I need to run the app are:node.jsforever (a node.js module)nginxImageMagickIn an imperfect world, I would need to install the same versions for each of those packages in my development, testing and production environment. I would also need to have the same configuration for each environment. Any difference that I&#39;m not aware of, can cause problems and does not guarantee consistensy across environments. I need the same OS image everywhere, configured the same way, running the same software and on different locations, my development environment runs locally and both testing/stage and production run on Digital Ocean.So how to solve this riddle? Easy. With Packer and some scripts we can create a .box image of our operating system preconfigured for both VirtualBox and DigitalOcean, both images wil have little to no difference, and finally with Vagrant we can manage those boxes.To use Packer.io I had to fork an existing example on Github by, but that didn&#39;t work because it was build for an older version of Packer, so I had to change a few things. You can get the files I&#39;ll be working on from https://github.com/luiselizondo/packer-exampleIn packer.json we define properties that packer will take to build the box, in the packer directory I have bash scripts that will be executed by packer when building the box, you have commands to install software that you need your box to have; you&#39;ll see a preseed.cfg file too, this file will be used by packer to send instructions to the installer. The Vagrantfile will be loaded everytime you provision a box and you can use it to configure your network or even to run scripts that need to be run.Let&#39;s analyse the packer.json file: {  &quot;provisioners&quot;: [    {      &quot;type&quot;: &quot;shell&quot;,      &quot;scripts&quot;: [        &quot;packer/base.sh&quot;,        &quot;packer/vagrant.sh&quot;,        &quot;packer/virtualbox.sh&quot;,        &quot;packer/cleanup.sh&quot;,        &quot;packer/zerodisk.sh&quot;      ],      &quot;override&quot;: {        &quot;virtualbox-iso&quot;: {          &quot;execute_command&quot;: &quot;echo &#39;vagrant&#39;|sudo -S sh &#39;&#39;&quot;        }      }    }  ],  &quot;builders&quot;: [    {      &quot;type&quot;: &quot;virtualbox-iso&quot;,      &quot;boot_command&quot;: [        &quot;&quot;,        &quot;/install/vmlinuz noapic preseed/url=http://:/preseed.cfg &quot;,        &quot;debian-installer=en_US auto locale=en_US kbd-chooser/method=us &quot;,        &quot;hostname=vagrant &quot;,        &quot;fb=false debconf/frontend=noninteractive &quot;,        &quot;keyboard-configuration/modelcode=SKIP keyboard-configuration/layout=USA keyboard-configuration/variant=USA console-setup/ask_detect=false &quot;,        &quot;initrd=/install/initrd.gz -- &quot;      ],      &quot;boot_wait&quot;: &quot;4s&quot;,      &quot;disk_size&quot;: 10140,      &quot;guest_os_type&quot;: &quot;Ubuntu_64&quot;,      &quot;http_directory&quot;: &quot;packer&quot;,      &quot;iso_checksum&quot;: &quot;2cbe868812a871242cdcdd8f2fd6feb9&quot;,      &quot;iso_checksum_type&quot;: &quot;md5&quot;,      &quot;iso_url&quot;: &quot;http://releases.ubuntu.com/12.04/ubuntu-12.04.3-server-amd64.iso&quot;,      &quot;ssh_username&quot;: &quot;vagrant&quot;,      &quot;ssh_password&quot;: &quot;vagrant&quot;,      &quot;ssh_port&quot;: 22,      &quot;ssh_wait_timeout&quot;: &quot;10m&quot;,      &quot;shutdown_command&quot;: &quot;echo &#39;shutdown -P now&#39; &gt; shutdown.sh; echo &#39;vagrant&#39;|sudo -S sh &#39;shutdown.sh&#39;&quot;,      &quot;guest_additions_path&quot;: &quot;VBoxGuestAdditions_.iso&quot;,      &quot;virtualbox_version_file&quot;: &quot;.vbox_version&quot;,      &quot;vboxmanage&quot;: [        [          &quot;modifyvm&quot;,          &quot;&quot;,          &quot;--memory&quot;,          &quot;512&quot;        ],        [          &quot;modifyvm&quot;,          &quot;&quot;,          &quot;--cpus&quot;,          &quot;2&quot;        ]      ]    },    {      &quot;type&quot;: &quot;digitalocean&quot;,      &quot;api_key&quot;: &quot;YOUR_API_KEY&quot;,      &quot;client_id&quot;: &quot;YOUR_CLIENT_ID&quot;,      &quot;private_networking&quot;: false,      &quot;snapshot_name&quot;: &quot;mybox-&quot;,      &quot;ssh_username&quot;: &quot;vagrant&quot;    }  ],  &quot;post-processors&quot;: [&quot;vagrant&quot;]}&lt;/code&gt;This is just a JSON file with some things Packer needs. Provisioners are tasks that will execute after the installer finishes but before the image gets created, meaning that if you install Apache and configure it, your image will come with Apache installed and configured. This tasks can be shell scripts or you can use Puppet/Chef/Salt if you want.On the Builders section you specify what kind of image you want to create, in my case, I need two boxes, one to use it with VirtualBox and another one living on Digital Ocean. We also set some properties for each builder that are unique depending on the type of BuilderFinally, in the Post Processors section you specify if you&#39;ll manage this using Vagrant or vSphereTo run Packer, just dopacker build packer.jsonThis command will create a file for you to use with Virtualbox on your local machine and a new Digital Ocean box and we&#39;ll use vagrant to manage both.To use vagrant, you’ll need to add the new file to the list of boxes vagrant can use. To do it just do:vagrant box add mycoolbox file_packer_created.boxYou can see a list of boxes vagrant knows about by issuing the command:vagrant box listThe Vagrantfile is also easy to read, you set configurations for each provider or general configurations that will be used for all providers. Since the Vagrantfile accepts comments, I&#39;ll use the same file to explain each line-- mode: ruby --vi: set ft=ruby :Vagrantfile API/syntax version. Don’t touch unless you know what you’re doing!VAGRANTFILE_API_VERSION = “2”Tell vagrant to use the Version 2 of the APIVagrant.configure(VAGRANTFILE_API_VERSION) do |config|# Vagrant will use “mycoolbox” to boot the machine, you can choose any box you’ve added or listed with the vagrant box list command  config.vm.box = “mycoolbox”  # Run this script each time we provision this box  config.vm.provision :shell, :path =&gt; “vagrant/bootstrap-stage.sh”  # Forward the port 80 on the VM machine, to the port 8080 on the host machine  config.vm.network :forwarded_port, host: 8080, guest: 80  # Run this command too  config.vm.provision :shell, :inline =&gt; “/etc/init.d/networking restart”# Forward the ssh agent  config.ssh.forward_agent = true# The path to my ssh key  config.ssh.private_key_path = “~/.ssh/id_rsa”config.vm.provider :digital_ocean do |provider, override|      override.ssh.private_key_path = ‘~/.ssh/id_rsa’    override.vm.box = ‘digital_ocean’    override.vm.box_url = “https://github.com/smdahlen/vagrant-digitalocean/raw/master/box/digital_ocean.box”provider.image = &quot;Ubuntu 12.04.3 x64&quot;provider.client_id = &#39;YOUR_CLIENT_ID&#39;provider.api_key = &#39;YOUR_API_KEY&#39;   end end &lt;/code&gt;To run your new box, just run vagrant up and you&#39;ll be able to ssh using vagrant sshIntegrate everythingI added the packer and vagrant files to my application source code, this way, any developer can build the same machine exactly to use it on Virtualbox and Digital ocean. The box will have a symlink to between /vagrant and /var/www. This is important since /vagrant is a shared folder between the guest and the host machine.DisclaimerRemember that digital ocean will charge you for each box you create, it’s cheap and only charges by hour but if you forget to turn off your machine I will not be responsible and most importantly I will not help you pay your bill. Amazon Web Services offers a Free tier plan that you can use for free for a limited amount of hours.",
+    "url": "http://localhost:4000/2014-01-11/use-vagrant-and-packer-to-develop-locally-and-deploy-to-digital-ocean-the-same-environment/"
+  }
+</script>
+<!-- End Jekyll SEO tag -->
+
+
+  <!-- Google Analytics -->
+
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-39814139-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+
+
+
+</head>
+
+<body>
+  <div class="content-container">
+    <header>
+  <h1 class="header-small">
+    <a href="http://localhost:4000">< BACK</a>
+  </h1>
+</header>
+<div class="post">
+  <h1 class="post-title">Use Vagrant and Packer to develop locally and deploy to Digital Ocean the same environment</h1>
+  <span class="post-date">
+    <time>11 Jan 2014</time>
+  </span>
+  <div class="post-tag">
+    <ul>
+      
+      <li>
+        <a href="http://localhost:4000/tags#digitalocean" class="tag">
+          <span class="term">digitalocean</span>
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="http://localhost:4000/tags#packer" class="tag">
+          <span class="term">packer</span>
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="http://localhost:4000/tags#vagrant" class="tag">
+          <span class="term">vagrant</span>
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="http://localhost:4000/tags#virtualbox" class="tag">
+          <span class="term">virtualbox</span>
+        </a>
+      </li>
+      
+      
+    </ul>
+  </div>
+
+  <p>I've been using Vagrant and Packer.io for the last week and I'm really excited of the new possibilities it opens for developers and how it changes the way we develop, test and deploy. There's not a lot of tutorials on how to integrate Vagrant and Packer so I'll try to explain everything from the beginning.</p>
+<p>Vagrant and Packer.io</p>
+<p>Both Vagrant and Packer.io were created by the same user and both are really cool. Vagrant is just a software that sits on top of a VM software (Virtualbox, VMWare, etc) to build and manage environments. What this means is no matter what VM software you're using, you configure Vagrant throught template files to <strong>manage</strong> the box and always have the same environment. This is really useful since the same box (think of a pre-configured ISO with your Operating System of choice) can be used in development, testing and production. All your libraries, all the software you install on your OS to run that app configured the same way for developement, testing and production. P<span style="line-height: 1.6em;">acker is another beauty, it allows you to create a preconfigured box.</span></p>
+<p>If you got lost in the last paragraph, keep reading, maybe an example of what I'm trying to do will clarify things a bit.</p>
+<p>I have a Node.js app, among the software I need to run the app are:</p>
+<ul><li>node.js</li><li>forever (a node.js module)</li><li>nginx</li><li>ImageMagick</li></ul>
+<p>In an imperfect world, I would need to install the same versions for each of those packages in my development, testing and production environment. I would also need to have the same configuration for each environment. Any difference that I'm not aware of, can cause problems and does not guarantee consistensy across environments. I need the same OS image everywhere, configured the same way, running the same software and on different locations, my development environment runs locally and both testing/stage and production run on Digital Ocean.</p>
+<p>So how to solve this riddle? Easy. With Packer and some scripts we can create a .box image of our operating system preconfigured for both VirtualBox and DigitalOcean, both images wil have little to no difference, and finally with Vagrant we can manage those boxes.</p>
+<p>To use Packer.io I had to fork an existing example on Github by, but that didn't work because it was build for an older version of Packer, so I had to change a few things. You can get the files I'll be working on from <a href="https://github.com/luiselizondo/packer-example">https://github.com/luiselizondo/packer-example</a></p>
+<p>In packer.json we define properties that packer will take to build the box, in the packer directory I have bash scripts that will be executed by packer when building the box, you have commands to install software that you need your box to have; you'll see a preseed.cfg file too, this file will be used by packer to send instructions to the installer. The Vagrantfile will be loaded everytime you provision a box and you can use it to configure your network or even to run scripts that need to be run.</p>
+<p>Let's analyse the packer.json file:</p>
+<p> </p>
+<p><code>
+{
+  "provisioners": [
+    {
+      "type": "shell",
+      "scripts": [
+        "packer/base.sh",
+        "packer/vagrant.sh",
+        "packer/virtualbox.sh",
+        "packer/cleanup.sh",
+        "packer/zerodisk.sh"
+      ],
+      "override": {
+        "virtualbox-iso": {
+          "execute_command": "echo 'vagrant'|sudo -S sh ''"
+        }
+      }
+    }
+  ],
+  "builders": [
+    {
+      "type": "virtualbox-iso",
+      "boot_command": [
+        "<esc><esc><enter><wait>",
+        "/install/vmlinuz noapic preseed/url=http://:/preseed.cfg <wait>",
+        "debian-installer=en_US auto locale=en_US kbd-chooser/method=us <wait>",
+        "hostname=vagrant <wait>",
+        "fb=false debconf/frontend=noninteractive <wait>",
+        "keyboard-configuration/modelcode=SKIP keyboard-configuration/layout=USA keyboard-configuration/variant=USA console-setup/ask_detect=false <wait>",
+        "initrd=/install/initrd.gz -- <enter><wait>"
+      ],
+      "boot_wait": "4s",
+      "disk_size": 10140,
+      "guest_os_type": "Ubuntu_64",
+      "http_directory": "packer",
+      "iso_checksum": "2cbe868812a871242cdcdd8f2fd6feb9",
+      "iso_checksum_type": "md5",
+      "iso_url": "http://releases.ubuntu.com/12.04/ubuntu-12.04.3-server-amd64.iso",
+      "ssh_username": "vagrant",
+      "ssh_password": "vagrant",
+      "ssh_port": 22,
+      "ssh_wait_timeout": "10m",
+      "shutdown_command": "echo 'shutdown -P now' &gt; shutdown.sh; echo 'vagrant'|sudo -S sh 'shutdown.sh'",
+      "guest_additions_path": "VBoxGuestAdditions_.iso",
+      "virtualbox_version_file": ".vbox_version",
+      "vboxmanage": [
+        [
+          "modifyvm",
+          "",
+          "--memory",
+          "512"
+        ],
+        [
+          "modifyvm",
+          "",
+          "--cpus",
+          "2"
+        ]
+      ]
+    },
+    {
+      "type": "digitalocean",
+      "api_key": "YOUR_API_KEY",
+      "client_id": "YOUR_CLIENT_ID",
+      "private_networking": false,
+      "snapshot_name": "mybox-",
+      "ssh_username": "vagrant"
+    }
+  ],
+  "post-processors": ["vagrant"]
+}
+&lt;/code&gt;</wait></enter></wait></wait></wait></wait></wait></wait></enter></esc></esc></code></p>
+
+<p>This is just a JSON file with some things Packer needs. Provisioners are tasks that will execute after the installer finishes but before the image gets created, meaning that if you install Apache and configure it, your image will come with Apache installed and configured. This tasks can be shell scripts or you can use Puppet/Chef/Salt if you want.</p>
+
+<p>On the Builders section you specify what kind of image you want to create, in my case, I need two boxes, one to use it with VirtualBox and another one living on Digital Ocean. We also set some properties for each builder that are unique depending on the type of Builder</p>
+
+<p>Finally, in the Post Processors section you specify if you'll manage this using Vagrant or vSphere</p>
+
+<p>To run Packer, just do</p>
+
+<p><code>
+packer build packer.json
+</code></p>
+
+<p>This command will create a file for you to use with Virtualbox on your local machine and a new Digital Ocean box and we'll use vagrant to manage both.</p>
+
+<p>To use vagrant, you’ll need to add the new file to the list of boxes vagrant can use. To do it just do:</p>
+
+<p><code>
+vagrant box add mycoolbox file_packer_created.box
+</code></p>
+
+<p>You can see a list of boxes vagrant knows about by issuing the command:</p>
+
+<p><code>
+vagrant box list
+</code></p>
+
+<p>
+The Vagrantfile is also easy to read, you set configurations for each provider or general configurations that will be used for all providers. Since the Vagrantfile accepts comments, I'll use the same file to explain each line
+</p>
+
+<p><code></code></p>
+<h1 id="mode-ruby---">-<em>- mode: ruby -</em>-</h1>
+<h1 id="vi-set-ftruby-">vi: set ft=ruby :</h1>
+
+<h1 id="vagrantfile-apisyntax-version-dont-touch-unless-you-know-what-youre-doing">Vagrantfile API/syntax version. Don’t touch unless you know what you’re doing!</h1>
+<p>VAGRANTFILE_API_VERSION = “2”</p>
+
+<h1 id="tell-vagrant-to-use-the-version-2-of-the-api">Tell vagrant to use the Version 2 of the API</h1>
+<p>Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|</p>
+
+<p># Vagrant will use “mycoolbox” to boot the machine, you can choose any box you’ve added or listed with the vagrant box list command
+  config.vm.box = “mycoolbox”
+  # Run this script each time we provision this box
+  config.vm.provision :shell, :path =&gt; “vagrant/bootstrap-stage.sh”
+  # Forward the port 80 on the VM machine, to the port 8080 on the host machine
+  config.vm.network :forwarded_port, host: 8080, guest: 80
+  # Run this command too
+  config.vm.provision :shell, :inline =&gt; “/etc/init.d/networking restart”</p>
+
+<p># Forward the ssh agent
+  config.ssh.forward_agent = true</p>
+
+<p># The path to my ssh key
+  config.ssh.private_key_path = “~/.ssh/id_rsa”</p>
+
+<p>config.vm.provider :digital_ocean do |provider, override|  <br />
+    override.ssh.private_key_path = ‘~/.ssh/id_rsa’
+    override.vm.box = ‘digital_ocean’
+    override.vm.box_url = “https://github.com/smdahlen/vagrant-digitalocean/raw/master/box/digital_ocean.box”</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>provider.image = "Ubuntu 12.04.3 x64"
+provider.client_id = 'YOUR_CLIENT_ID'
+provider.api_key = 'YOUR_API_KEY'   end end &lt;/code&gt;
+</code></pre>
+</div>
+
+<p>To run your new box, just run <strong>vagrant up</strong> and you'll be able to ssh using <strong>vagrant ssh</strong></p>
+
+<h3>Integrate everything</h3>
+<p>I added the packer and vagrant files to my application source code, this way, any developer can build the same machine exactly to use it on Virtualbox and Digital ocean. The box will have a symlink to between /vagrant and /var/www. This is important since /vagrant is a shared folder between the guest and the host machine.</p>
+
+<h3>Disclaimer</h3>
+<p>Remember that digital ocean will charge you for each box you create, it’s cheap and only charges by hour but if you forget to turn off your machine I will not be responsible and most importantly I will not help you pay your bill. Amazon Web Services offers a Free tier plan that you can use for free for a limited amount of hours.</p>
+
+
+
+
+  <!-- Share -->
+  
+  <div class="post-share">
+    <hr>
+    <span>Share this: <br /></span>
+<a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/2014-01-11/use-vagrant-and-packer-to-develop-locally-and-deploy-to-digital-ocean-the-same-environment/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-facebook"></a>
+<a href="https://twitter.com/intent/tweet?text=Use Vagrant and Packer to develop locally and deploy to Digital Ocean the same environment&url=http://localhost:4000/2014-01-11/use-vagrant-and-packer-to-develop-locally-and-deploy-to-digital-ocean-the-same-environment/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-twitter"></a>
+<a href="https://plus.google.com/share?url=http://localhost:4000/2014-01-11/use-vagrant-and-packer-to-develop-locally-and-deploy-to-digital-ocean-the-same-environment/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-google-plus"></a>
+<a href="https://www.tumblr.com/share?url=http://localhost:4000/2014-01-11/use-vagrant-and-packer-to-develop-locally-and-deploy-to-digital-ocean-the-same-environment/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-tumblr"></a>
+<a href="mailto:?subject=Use Vagrant and Packer to develop locally and deploy to Digital Ocean the same environment&amp;body=Check out this site http://localhost:4000/2014-01-11/use-vagrant-and-packer-to-develop-locally-and-deploy-to-digital-ocean-the-same-environment/" class="ssk ssk-icon ssk-email"></a>
+
+    <hr>
+  </div>
+  
+
+  <!-- Disqus -->
+  
+  <section id="disqus_thread"></section>
+  <script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables */
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = '//luiselizondobaez.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+</div>
+
+
+    <!-- Documents about icons are here: http://fontawesome.io/icons/ -->
+<div class="footer">
+	<hr />
+	<div class="footer-link">
+		
+
+		
+		<a href="https://twitter.com/lelizondo"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+		
+
+		
+		<a href="https://github.com/luiselizondo"><i class="fa fa-github" aria-hidden="true"></i></a>
+		
+
+		
+		<a href="https://www.linkedin.com/in/luiselizondobaez"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
+		
+
+		
+
+		
+
+		
+
+	</div>
+	© 2016 Luis Elizondo. All rights reserved.
+</div>
+
+  </div>
+</body>
+</html>

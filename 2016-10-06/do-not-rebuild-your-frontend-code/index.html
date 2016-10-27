@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Do not rebuild your frontend code</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/assets/css/main.css" type="text/css">
+  <link rel="stylesheet" href="/assets/css/social-share-kit.css" type="text/css">
+
+  <!-- Font -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+
+
+  <link rel="alternate" type="application/rss+xml" title="RSS Feed for Luis Elizondo" href="/feed.xml" />
+  <!-- Begin Jekyll SEO tag v2.0.0 -->
+<title>Do not rebuild your frontend code - Luis Elizondo</title>
+<meta property="og:title" content="Do not rebuild your frontend code" />
+<meta name="description" content="I was recently working on a frontend project that uses Angular2. We have 3 environments, development; staging and production so the frontend points to a different API url for each of the environments." />
+<meta property="og:description" content="I was recently working on a frontend project that uses Angular2. We have 3 environments, development; staging and production so the frontend points to a different API url for each of the environments." />
+<link rel="canonical" href="http://localhost:4000/2016-10-06/do-not-rebuild-your-frontend-code/" />
+<meta property="og:url" content="http://localhost:4000/2016-10-06/do-not-rebuild-your-frontend-code/" />
+<meta property="og:site_name" content="Luis Elizondo" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2016-10-06T05:59:44+09:00" />
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Do not rebuild your frontend code",
+    "datePublished": "2016-10-06T05:59:44+09:00",
+    "description": "I was recently working on a frontend project that uses Angular2. We have 3 environments, development; staging and production so the frontend points to a different API url for each of the environments.",
+    "url": "http://localhost:4000/2016-10-06/do-not-rebuild-your-frontend-code/"
+  }
+</script>
+<!-- End Jekyll SEO tag -->
+
+
+  <!-- Google Analytics -->
+
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-39814139-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+
+
+
+</head>
+
+<body>
+  <div class="content-container">
+    <header>
+  <h1 class="header-small">
+    <a href="http://localhost:4000">< BACK</a>
+  </h1>
+</header>
+<div class="post">
+  <h1 class="post-title">Do not rebuild your frontend code</h1>
+  <span class="post-date">
+    <time>06 Oct 2016</time>
+  </span>
+  <div class="post-tag">
+    <ul>
+      
+      <li>
+        <a href="http://localhost:4000/tags#angular-js" class="tag">
+          <span class="term">angular-js</span>
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="http://localhost:4000/tags#angularjs" class="tag">
+          <span class="term">angularjs</span>
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="http://localhost:4000/tags#docker" class="tag">
+          <span class="term">docker</span>
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="http://localhost:4000/tags#javascript" class="tag">
+          <span class="term">javascript</span>
+        </a>
+      </li>
+      
+      
+    </ul>
+  </div>
+
+  <p>I was recently working on a frontend project that uses Angular2. We have 3 environments, development; staging and production so the frontend points to a different API url for each of the environments.</p>
+
+<p>The project didn’t use Docker so one of the first things I did when I got in charge of the project was to Dockerize the whole thing. The problem was that there is no way the frontend, served by Nginx, detected the environment that it was running on.</p>
+
+<p>The solution to this problems is usually to rebuild the whole project each time we promote from one environment to the next one, the problem with this approach is exactly that, you’re rebuilding the project on each environment, causing potential problems that you might not be aware of.</p>
+
+<p>The solution was rather simple, inject an environment variable telling the project to point to a different API on runtime, but this is not as simple as it sounds because the frontend cannot read the environment variable that says which environment is the code running on.</p>
+
+<p>The solution, as it usually is, was very simple, create a script to run Nginx but before, replace some variables on all built files.</p>
+
+<p>We have a configuration file like this:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>// file config.js
+config.url = "http://localhost:3000/api"
+</code></pre>
+</div>
+
+<p>And our container will run this script each time it starts:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="c">#!/bin/sh</span>
+<span class="c"># file /opt/start-nginx.sh</span>
+
+sed -i <span class="s2">"s|http://localhost:3000/api|</span><span class="k">${</span><span class="nv">API</span><span class="k">}</span><span class="s2">|g"</span> <span class="k">*</span>.js
+
+<span class="nb">echo</span> <span class="s2">"Starting nginx in the foreground"</span>
+<span class="nb">exec </span>nginx -g <span class="s1">'daemon off;'</span> <span class="s2">"</span><span class="nv">$@</span><span class="s2">"</span>
+</code></pre>
+</div>
+
+<p>where ${API} is the url of the API we want to point to on each environment. Notice that we replace the string http://localhost:3000/api, which is our development url on each js file that we find. Also notice how we use “ instead of ‘, this is so the variables are replaced correctly.</p>
+
+<p>Finally, our Dockerfile looks like this:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>FROM nginx:alpine
+COPY dist /usr/share/nginx/html
+WORKDIR /usr/share/nginx/html
+CMD ["/opt/start-nginx.sh"]
+</code></pre>
+</div>
+
+<p>This way, we don’t rebuild the project each time. Problem solved.</p>
+
+
+
+  <!-- Share -->
+  
+  <div class="post-share">
+    <hr>
+    <span>Share this: <br /></span>
+<a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/2016-10-06/do-not-rebuild-your-frontend-code/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-facebook"></a>
+<a href="https://twitter.com/intent/tweet?text=Do not rebuild your frontend code&url=http://localhost:4000/2016-10-06/do-not-rebuild-your-frontend-code/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-twitter"></a>
+<a href="https://plus.google.com/share?url=http://localhost:4000/2016-10-06/do-not-rebuild-your-frontend-code/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-google-plus"></a>
+<a href="https://www.tumblr.com/share?url=http://localhost:4000/2016-10-06/do-not-rebuild-your-frontend-code/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-tumblr"></a>
+<a href="mailto:?subject=Do not rebuild your frontend code&amp;body=Check out this site http://localhost:4000/2016-10-06/do-not-rebuild-your-frontend-code/" class="ssk ssk-icon ssk-email"></a>
+
+    <hr>
+  </div>
+  
+
+  <!-- Disqus -->
+  
+  <section id="disqus_thread"></section>
+  <script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables */
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = '//luiselizondobaez.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+</div>
+
+
+    <!-- Documents about icons are here: http://fontawesome.io/icons/ -->
+<div class="footer">
+	<hr />
+	<div class="footer-link">
+		
+
+		
+		<a href="https://twitter.com/lelizondo"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+		
+
+		
+		<a href="https://github.com/luiselizondo"><i class="fa fa-github" aria-hidden="true"></i></a>
+		
+
+		
+		<a href="https://www.linkedin.com/in/luiselizondobaez"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
+		
+
+		
+
+		
+
+		
+
+	</div>
+	© 2016 Luis Elizondo. All rights reserved.
+</div>
+
+  </div>
+</body>
+</html>

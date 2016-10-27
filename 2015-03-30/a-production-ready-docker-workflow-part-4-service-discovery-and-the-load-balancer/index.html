@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>A production ready Docker workflow. Part 4: Service Discovery and the load balancer</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/assets/css/main.css" type="text/css">
+  <link rel="stylesheet" href="/assets/css/social-share-kit.css" type="text/css">
+
+  <!-- Font -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+
+
+  <link rel="alternate" type="application/rss+xml" title="RSS Feed for Luis Elizondo" href="/feed.xml" />
+  <!-- Begin Jekyll SEO tag v2.0.0 -->
+<title>A production ready Docker workflow. Part 4: Service Discovery and the load balancer - Luis Elizondo</title>
+<meta property="og:title" content="A production ready Docker workflow. Part 4: Service Discovery and the load balancer" />
+<meta name="description" content="This is the final part of a series of posts about how we’re using Docker in production at IIIEPE" />
+<meta property="og:description" content="This is the final part of a series of posts about how we’re using Docker in production at IIIEPE" />
+<link rel="canonical" href="http://localhost:4000/2015-03-30/a-production-ready-docker-workflow-part-4-service-discovery-and-the-load-balancer/" />
+<meta property="og:url" content="http://localhost:4000/2015-03-30/a-production-ready-docker-workflow-part-4-service-discovery-and-the-load-balancer/" />
+<meta property="og:site_name" content="Luis Elizondo" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2015-03-30T18:23:12+09:00" />
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "A production ready Docker workflow. Part 4: Service Discovery and the load balancer",
+    "datePublished": "2015-03-30T18:23:12+09:00",
+    "description": "This is the final part of a series of posts about how we’re using Docker in production at IIIEPE",
+    "url": "http://localhost:4000/2015-03-30/a-production-ready-docker-workflow-part-4-service-discovery-and-the-load-balancer/"
+  }
+</script>
+<!-- End Jekyll SEO tag -->
+
+
+  <!-- Google Analytics -->
+
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-39814139-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+
+
+
+</head>
+
+<body>
+  <div class="content-container">
+    <header>
+  <h1 class="header-small">
+    <a href="http://localhost:4000">< BACK</a>
+  </h1>
+</header>
+<div class="post">
+  <h1 class="post-title">A production ready Docker workflow. Part 4: Service Discovery and the load balancer</h1>
+  <span class="post-date">
+    <time>30 Mar 2015</time>
+  </span>
+  <div class="post-tag">
+    <ul>
+      
+    </ul>
+  </div>
+
+  <p>This is the final part of a series of posts about how we’re using Docker in production at <a href="https://iiiepe.edu.mx">IIIEPE</a>. If you haven’t, please read <a href="http://www.luiselizondo.net/a-production-ready-docker-workflow/">Part 1</a>, <a href="http://www.luiselizondo.net/a-production-ready-docker-workflow-part-2-the-storage-problem/">Part 2</a> and <a href="http://www.luiselizondo.net/a-production-ready-docker-workflow-part-3-orchestration-tools">Part 3</a> before continuing. In this post, I’ll discuss how we configured Service Discovery and the load balancer.</p>
+
+<p>### Service Discovery
+There’s plenty of Service Discovery solutions out there, but we only tested <a href="https://github.com/coreos/etcd">etcd</a> and <a href="https://consul.io/">Consul.io</a>. Etcd is part of CoreOS, and while you can use it without CoreOS, you soon realise that you need to learn more than just etcd. Consul.io is really easy to use, runs with Docker and has a nice ecosystem.</p>
+
+<p>Before I dig deeper, in case you don’t know what Service Discovery is, let me say that it has nothing to do with load balancing, is just a piece of software that knows about the current state of (in this case) the containers running across the infrastructure. That’s it, Service Discovery has nothing to do with how you send information to it.</p>
+
+<p>Like any Service Discovery tool, Consul.io solves one problem, it stores the IP, port and state of an application. To register applications into Consul.io (the correct term is service) we used <a href="https://github.com/gliderlabs/registrator">Registrator</a>. Once Consul.io knows about the application something needs to happen, in our case, we need to reload the load balancer configuration, so we used <a href="https://github.com/hashicorp/consul-template">Consul-Template</a>.</p>
+
+<p>Since both Consul.io and Registrator run inside Docker containers, implementing both was even easier than we thought.</p>
+
+<p>As for Consul-Template, the hardest part was to figure out the template syntax.</p>
+
+<h4 id="load-balancer">Load balancer</h4>
+<p>We are using Nginx as a load balancer, since we’ve been using it for years, we know how to configure it and solutions like HAproxy just added a level of complexity to the whole workflow. Since this was the last piece of the puzzle, we just took the easy way out. Eventually, we’d like to replace Nginx with HAproxy but that will have to wait a few more weeks.</p>
+
+<p>On a normal load balancing scenario, you configure Nginx like this:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>upstream myapp {
+  ip_hash;
+  server 10.10.10.10:14001 fail_timeout=0;
+  keepalive 64;
+}
+
+server {
+  listen 80;
+  server_name example.com;
+  location / {
+    proxy_pass          http://myapp;
+  }
+}
+</code></pre>
+</div>
+
+<p>The problem arises when you want to dynamically assign a list of IPs and ports inside the upstream block. Using consul-template we created a template file at /etc/nginx/templates/template with blocks for each application we handle with this load balancer:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>upstream myapp {
+  ip_hash;
+  
+  server : fail_timeout=0;
+  
+  keepalive 64;
+}
+
+server {
+  listen 80;
+  server_name example.com;
+  location / {
+    proxy_pass          http://myapp;
+  }
+}
+</code></pre>
+</div>
+
+<p>For websites using SSL the template is a little bigger:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code># this part handles the list of IPs and ports
+upstream myapp {
+  ip_hash;
+  
+  server : fail_timeout=0;
+  
+  keepalive 64;
+}
+
+# this section handles requests to port 80, which we'll redirect to the port 445
+server {
+        listen  						80;
+        server_name             		example.com;
+        return 301 https://$host$request_uri;
+}
+
+server {
+        listen  						443 ssl spdy;
+        server_name             		example.com;
+        keepalive_timeout 75 75;
+
+        ssl                     		on;
+        ssl_certificate         		/etc/nginx/cert/path_to_cert.crt;
+        ssl_certificate_key     		/etc/nginx/cert/path_to_key.key;
+        ssl_session_cache       		builtin:1000 shared:SSL:10m;
+        ssl_protocols           		TLSv1 TLSv1.1 TLSv1.2;
+        ssl_ciphers             		HIGH:!aNULL:!eNULL:!EXPORT:!CAMELLIA:!DES:!MD5:!PSK:!RC4;
+        ssl_prefer_server_ciphers       on;
+
+        add_header              		Strict-Transport-Security max-age=31536000;
+
+        location / {
+                proxy_pass              http://myapp;
+                proxy_set_header        Host $host;
+                proxy_set_header        X-Forwarded-Proto $scheme;
+                proxy_set_header        X-Real-IP $remote_addr;
+                proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_connect_timeout   150;
+                proxy_send_timeout      100;
+                proxy_read_timeout      90;
+                proxy_buffers           4 32k;
+                client_max_body_size    500m;
+                client_body_buffer_size 128k;
+                proxy_redirect          http:// https://;
+        }
+}
+</code></pre>
+</div>
+
+<p>Every time Consul-Template runs, it will query Consul.io for the service “myapp” and for each container found, it will add the IP and port to the upstream block.</p>
+
+<p>Since we needed Consul.io and Consul-Template to start when the server reboots, we created an Upstart Job to handle this:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>description	"Consul Template"
+author		"Luis Elizondo"
+
+start on filesystem or runlevel [2345]
+stop on shutdown
+
+script
+	echo $$ &gt; /var/run/consul-template.pid
+	exec consul-template \
+		-consul IP_OF_CONSUL:PORT_OF_CONSUL \
+		-template "/etc/nginx/templates/template:/etc/nginx/sites-enabled/default:service nginx restart"
+end script
+
+pre-start script
+	echo "[`date`] Consul Template Starting" &gt;&gt; /var/log/consul-template.log
+end script
+
+pre-stop script
+	rm /var/run/consul-template.pid
+	echo "[`date`] Consul Template Stoping" &gt;&gt; /var/log/consul-template.log
+end script
+</code></pre>
+</div>
+
+<p>The same for Consul.io:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>description	"Consul"
+author		"Luis Elizondo"
+
+start on filesystem or runlevel [2345]
+stop on shutdown
+
+script
+	echo $$ &gt; /var/run/consul.pid
+	exec docker start consul
+end script
+
+pre-start script
+	echo "[`date`] Consul Starting" &gt;&gt; /var/log/consul.log
+end script
+
+pre-stop script
+	rm /var/run/consul.pid
+	exec docker stop consul
+	echo "[`date`] Consul Stoping" &gt;&gt; /var/log/consul.log
+end script
+</code></pre>
+</div>
+
+<p>And for registrator too, only this time, Registrator runs not on the LB but on each of the web nodes:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>
+description	"Registrator"
+author		"Luis Elizondo"
+
+start on filesystem or runlevel [2345]
+stop on shutdown
+
+script
+	echo $$ &gt; /var/run/registrator.pid
+	exec docker start registrator
+end script
+
+pre-start script
+	echo "[`date`] Registrator Starting" &gt;&gt; /var/log/registrator.log
+end script
+
+pre-stop script
+	rm /var/run/registrator.pid
+	exec docker stop registrator
+	echo "[`date`] Registrator Stoping" &gt;&gt; /var/log/registrator.log
+</code></pre>
+</div>
+
+<p>Before we started this journey in November 2014, we didn’t find enough information about a complete workflow that we could adopt or adapt given our circumstances, that is my main motivation to share this with you. As a member of a team of two who did this, I realise our workflow is far from perfect and that with time there might be situations we didn’t anticipate, right now there are things we’d like to improve like moving to HAproxy (nothing personal Nginx) among other things, but our workflow and infrastructure is configured in a way that helps us do our job (my main responsibility is being a developer, not as a sysadmin) instead of complicating our existence.</p>
+
+<p>Testing, installing and implementing the new workflow, and then migrating all of our applications took us 2 and a half months, but it was worth it. We used Digital Ocean to anticipate most of the problems and situations before we moved everything and it was a great solution for us because it was really cheap (we spent about $5), doing it this way allowed us to document every step.</p>
+
+<p>If you have any questions, please don’t hesitate to post a comment here or mention me on Twitter <a href="https://twitter.com/lelizondo">@lelizondo</a>. You can also follow me on <a href="https://github.com/luiselizondo">Github</a>, fork and contribute to one of the projects of our <a href="https://github.com/iiiepe">organisation</a> or use our <a href="https://hub.docker.com/u/iiiepe">images</a>. Thanks.</p>
+
+
+
+  <!-- Share -->
+  
+  <div class="post-share">
+    <hr>
+    <span>Share this: <br /></span>
+<a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/2015-03-30/a-production-ready-docker-workflow-part-4-service-discovery-and-the-load-balancer/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-facebook"></a>
+<a href="https://twitter.com/intent/tweet?text=A production ready Docker workflow. Part 4: Service Discovery and the load balancer&url=http://localhost:4000/2015-03-30/a-production-ready-docker-workflow-part-4-service-discovery-and-the-load-balancer/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-twitter"></a>
+<a href="https://plus.google.com/share?url=http://localhost:4000/2015-03-30/a-production-ready-docker-workflow-part-4-service-discovery-and-the-load-balancer/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-google-plus"></a>
+<a href="https://www.tumblr.com/share?url=http://localhost:4000/2015-03-30/a-production-ready-docker-workflow-part-4-service-discovery-and-the-load-balancer/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-tumblr"></a>
+<a href="mailto:?subject=A production ready Docker workflow. Part 4: Service Discovery and the load balancer&amp;body=Check out this site http://localhost:4000/2015-03-30/a-production-ready-docker-workflow-part-4-service-discovery-and-the-load-balancer/" class="ssk ssk-icon ssk-email"></a>
+
+    <hr>
+  </div>
+  
+
+  <!-- Disqus -->
+  
+  <section id="disqus_thread"></section>
+  <script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables */
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = '//luiselizondobaez.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+</div>
+
+
+    <!-- Documents about icons are here: http://fontawesome.io/icons/ -->
+<div class="footer">
+	<hr />
+	<div class="footer-link">
+		
+
+		
+		<a href="https://twitter.com/lelizondo"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+		
+
+		
+		<a href="https://github.com/luiselizondo"><i class="fa fa-github" aria-hidden="true"></i></a>
+		
+
+		
+		<a href="https://www.linkedin.com/in/luiselizondobaez"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
+		
+
+		
+
+		
+
+		
+
+	</div>
+	© 2016 Luis Elizondo. All rights reserved.
+</div>
+
+  </div>
+</body>
+</html>

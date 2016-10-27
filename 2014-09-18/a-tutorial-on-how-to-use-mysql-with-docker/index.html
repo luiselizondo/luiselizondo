@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>A tutorial on how to use MySQL with Docker</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/assets/css/main.css" type="text/css">
+  <link rel="stylesheet" href="/assets/css/social-share-kit.css" type="text/css">
+
+  <!-- Font -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+
+
+  <link rel="alternate" type="application/rss+xml" title="RSS Feed for Luis Elizondo" href="/feed.xml" />
+  <!-- Begin Jekyll SEO tag v2.0.0 -->
+<title>A tutorial on how to use MySQL with Docker - Luis Elizondo</title>
+<meta property="og:title" content="A tutorial on how to use MySQL with Docker" />
+<meta name="description" content="So you&#39;re learning how to use Docker and you want to install Wordpress, Drupal or any project that needs MySQL? Well, you&#39;ve come to the right place. Docker can be hard sometimes, and when you add complexity to something that it&#39;s already hard (at least for beginners), you end up drinking more coffee than your body can take." />
+<meta property="og:description" content="So you&#39;re learning how to use Docker and you want to install Wordpress, Drupal or any project that needs MySQL? Well, you&#39;ve come to the right place. Docker can be hard sometimes, and when you add complexity to something that it&#39;s already hard (at least for beginners), you end up drinking more coffee than your body can take." />
+<link rel="canonical" href="http://localhost:4000/2014-09-18/a-tutorial-on-how-to-use-mysql-with-docker/" />
+<meta property="og:url" content="http://localhost:4000/2014-09-18/a-tutorial-on-how-to-use-mysql-with-docker/" />
+<meta property="og:site_name" content="Luis Elizondo" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2014-09-18T05:06:51+09:00" />
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "A tutorial on how to use MySQL with Docker",
+    "datePublished": "2014-09-18T05:06:51+09:00",
+    "description": "So you&#39;re learning how to use Docker and you want to install Wordpress, Drupal or any project that needs MySQL? Well, you&#39;ve come to the right place. Docker can be hard sometimes, and when you add complexity to something that it&#39;s already hard (at least for beginners), you end up drinking more coffee than your body can take.",
+    "url": "http://localhost:4000/2014-09-18/a-tutorial-on-how-to-use-mysql-with-docker/"
+  }
+</script>
+<!-- End Jekyll SEO tag -->
+
+
+  <!-- Google Analytics -->
+
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-39814139-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+
+
+
+</head>
+
+<body>
+  <div class="content-container">
+    <header>
+  <h1 class="header-small">
+    <a href="http://localhost:4000">< BACK</a>
+  </h1>
+</header>
+<div class="post">
+  <h1 class="post-title">A tutorial on how to use MySQL with Docker</h1>
+  <span class="post-date">
+    <time>18 Sep 2014</time>
+  </span>
+  <div class="post-tag">
+    <ul>
+      
+      <li>
+        <a href="http://localhost:4000/tags#docker" class="tag">
+          <span class="term">docker</span>
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="http://localhost:4000/tags#mysql" class="tag">
+          <span class="term">mysql</span>
+        </a>
+      </li>
+      
+      
+    </ul>
+  </div>
+
+  <p><span style="line-height: 1.6em;">So you're learning how to use Docker and you want to install Wordpress, Drupal or any project that needs MySQL? Well, you've come to the right place. Docker can be hard sometimes, and when you add complexity to something that it's already hard (at least for beginners), you end up drinking more coffee than your body can take.</span></p>
+
+<p>The thing about Docker is that you can run any service, like MySQL or Apache inside a container. You can run more than one service inside the container but it's not a good practice. You must also know that containers are pretty much disposable, and that you can run multiple containers on a machine, each one doing just one thing at a time.&nbsp;</p>
+
+<p>MySQL as you might know is a database server, when you run the MySQL server process, you need to get into MySQL using the MySQL client and create a database, a user, grant permissions, etc. How to do this while using Docker? Well, <em>you need to create a Docker container running MySQL server and then create another container running MySQL client that can connect to the container running MySQL Server</em>.</p>
+<p>Before I continue let me explain images. Images are like templates for your containers, there's hundreds of images for pretty much anything you can imagine. With an image everything is installed and configured for you so you can create one or many containers using the same image. You can also create your own images, but I recommend that you go step by step.</p>
+<p>In this case we'll be using this <a href="https://registry.hub.docker.com/_/mysql/">MySQL image</a>. Remember, with the same image, we'll be running two containers, one with MySQL server running and another one with MySQL client talking to the container running the server.</p>
+<p>The command to run MySQL server is the following:</p>
+
+<p><code>docker run --name some-mysql -e MYSQL_ROOT_PASSWORD=mysecretpassword -d mysql</code></p>
+
+<p>Let’s explain each part of that command:</p>
+
+<ul><li><em>docker</em> is the command so there's not too much to say about it</li><li><em>run</em> is the first argument and is used to tell docker that we want to run a container</li><li><em>--name some-mysql</em> is the name argument following the name&nbsp;of the container. This is not really neccesary but it's very helpful. Since we can use the same image to run multiple containers of the same image, we need to name them. Docker is smart enough to name the containers for us in case we don't name it, but the names are random.</li><li><em>-e</em> The "-e" part is just telling docker to pass and environment variable to the container with a name and a value. With environment variables we pass information to the container that the container will use to do something. In this case to set the root password.</li><li><em>MYSQL_ROOT_PASSWORD=mysecretpassword</em> is the environment variable name and the value of the variable. You can pass any variable that you want, some containers need a variable to do something and are waiting for it. Others don't need any variables, it really depends on the image and what you want to do with the variable inside the container. In this case, as I mentioned earlier, we use them to set automatically the root password.</li><li><em>-d</em> The "-d" argument is just to tell docker that we want to daemonize the container and leave it running until it dies or until we kill it.</li><li><em>mysql</em> is the name of the image and if it doesn't exists on our computer docker will pull it from the docker public repository.</li></ul>
+<p>Ok that part was easy, if you run that command you'll have a docker container running MySQL server. But how do we connect to it? We still need to create a database. Well, you can connect to the container using the following command:</p>
+
+<p><code>docker run -it --link some-mysql:mysql --rm mysql sh -c 'exec mysql -h"$MYSQL_PORT_3306_TCP_ADDR" -P"$MYSQL_PORT_3306_TCP_PORT" -uroot -p"$MYSQL_ENV_MYSQL_ROOT_PASSWORD"'</code></p>
+
+<p>That’s a little bit more complicated but all we’re doing is using the same mysql image to create an interactive container and then run the command “exec mysql” with a bunch of arguments and environment variables.</p>
+
+<p>You might be asking right now if you need to enter that command every time you want to connect to MySQL server. The answer is yes, but there’s a better way.</p>
+
+<p>Last night, I created Docker-MySQL-Scripts, a collection of 4 scripts written in python to helps you interact with a dockerized MySQL.</p>
+
+<p>You can download them at https://github.com/luiselizondo/docker-mysql-scripts</p>
+
+<h4>dmysql-server</h4>
+
+<p>Replaces the first command I explained earlier. With it you can run a MySQL container really easy. All you have to do is pass the container name and the root password:</p>
+
+<p><code>dmysql-server myappdb 123</code></p>
+
+<p>In this case, the name of the container will be “myappdb” and the root password will be 123. Easy right?</p>
+
+<h4>dmysql-client</h4>
+<p>Replaces the second command I mentioned earlier. With it you can run MySQL client and connect to a container running MySQL. All you have to do is pass the name of the container running MySQL Server that you want to connect to:</p>
+
+<p><code>dmysql myappdb</code></p>
+
+<p>In this case, it will connect to the MySQL server running on the container named “myappdb”</p>
+
+<h4>dmysql-create-database</h4>
+<p>The name says what it does, it will create a database inside the container. All you have to do is pass the MySQL container name you want to connect to and the name of the database you want to create.</p>
+
+<p><code>dmysql-create-database myappdb myblog</code></p>
+
+<p>In this case it will connect to the container “myappdb” and issue the command CREATE DATABASE myblog</p>
+
+<h4>dmysql-import-database</h4>
+<p>Again, the name says what it does, it will take a file and import it to a database. This is a little more complicated than the rest of the commands but it’s easier than using a docker command. You have to pass the name of the container, the SQL file you want to import (right now it only accepts *.sql files so you’ll have to ungzip them first) and the database you want to import the file into. The database is optional since the sql file can create one for you.</p>
+
+<p><code>dmysql-import-database myappdb /Users/me/myblog-monday-backup.sql --database myblog</code></p>
+
+<p>In this case, it will import the file myblog-monday-backup.sql into the database myblog running on the container myappdb.</p>
+
+<p>That’s it. Using those simple commands you can save yourself hours of frustration. If you need help or if you have an idea please leave a comment or even better, you can fork the project and submit a pull request.&lt;/p&gt;&lt;p&gt;<strong>Update 10/29/2014</strong>&lt;/p&gt;&lt;p&gt;<span style="line-height: 1.6em;">The latest version of the official MySQL image now supports creating a Database user with a password and a database if the environment variables are passed. The scripts are still working but now you have another option to create a database.</span>&lt;/p&gt;</p>
+
+
+
+  <!-- Share -->
+  
+  <div class="post-share">
+    <hr>
+    <span>Share this: <br /></span>
+<a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/2014-09-18/a-tutorial-on-how-to-use-mysql-with-docker/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-facebook"></a>
+<a href="https://twitter.com/intent/tweet?text=A tutorial on how to use MySQL with Docker&url=http://localhost:4000/2014-09-18/a-tutorial-on-how-to-use-mysql-with-docker/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-twitter"></a>
+<a href="https://plus.google.com/share?url=http://localhost:4000/2014-09-18/a-tutorial-on-how-to-use-mysql-with-docker/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-google-plus"></a>
+<a href="https://www.tumblr.com/share?url=http://localhost:4000/2014-09-18/a-tutorial-on-how-to-use-mysql-with-docker/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-tumblr"></a>
+<a href="mailto:?subject=A tutorial on how to use MySQL with Docker&amp;body=Check out this site http://localhost:4000/2014-09-18/a-tutorial-on-how-to-use-mysql-with-docker/" class="ssk ssk-icon ssk-email"></a>
+
+    <hr>
+  </div>
+  
+
+  <!-- Disqus -->
+  
+  <section id="disqus_thread"></section>
+  <script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables */
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = '//luiselizondobaez.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+</div>
+
+
+    <!-- Documents about icons are here: http://fontawesome.io/icons/ -->
+<div class="footer">
+	<hr />
+	<div class="footer-link">
+		
+
+		
+		<a href="https://twitter.com/lelizondo"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+		
+
+		
+		<a href="https://github.com/luiselizondo"><i class="fa fa-github" aria-hidden="true"></i></a>
+		
+
+		
+		<a href="https://www.linkedin.com/in/luiselizondobaez"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
+		
+
+		
+
+		
+
+		
+
+	</div>
+	© 2016 Luis Elizondo. All rights reserved.
+</div>
+
+  </div>
+</body>
+</html>

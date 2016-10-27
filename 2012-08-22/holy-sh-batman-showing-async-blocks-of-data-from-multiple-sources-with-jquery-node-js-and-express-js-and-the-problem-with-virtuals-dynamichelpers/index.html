@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Holy sh$% Batman: showing async blocks of data from multiple sources with jQuery, Node JS and Express JS and the problem with Virtuals, DynamicHelpers</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/assets/css/main.css" type="text/css">
+  <link rel="stylesheet" href="/assets/css/social-share-kit.css" type="text/css">
+
+  <!-- Font -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+
+
+  <link rel="alternate" type="application/rss+xml" title="RSS Feed for Luis Elizondo" href="/feed.xml" />
+  <!-- Begin Jekyll SEO tag v2.0.0 -->
+<title>Holy sh$% Batman: showing async blocks of data from multiple sources with jQuery, Node JS and Express JS and the problem with Virtuals, DynamicHelpers - Luis Elizondo</title>
+<meta property="og:title" content="Holy sh$% Batman: showing async blocks of data from multiple sources with jQuery, Node JS and Express JS and the problem with Virtuals, DynamicHelpers" />
+<meta name="description" content="I&#8217;ve been using Node.js lately, and it has some problems like everything on planet Earth because it&#8217;s not perfect. I&#8217;ll give you an example and my solution:You have a page, that shows a list of something that comes from the database. This is just main content, could be a list of blogs or something. On the sidebar you have totally unrelated (or related) content that also comes from the database. The problem with Node.js (especially using Express JS) is that you have to build the render object before you pass it to res.render which in turn will pass it to the template file (jade or whatever). I&#8217;ll explain the two ways of doing this:Using asyncRemember you have to query the database to get &#8220;somedata&#8221; and &#8220;somextradata&#8221; to pass both of them to res.render:res.render(&#8220;myview&#8221;, {listone: somedata, listtwo: someextradata});Using async you&#8217;ll do something like this:Easy. You just executed two queries in series, first one, then the other one, and when both finish, you execute a last callback which is gonna have a results object with the data from each of the callbacks you executed in series. With that object (the results object) you can do whatever you want, like passing it to res.render(&#8220;myview&#8221;, results);The problem with this approach is that you don&#8217;t really have lots of reusable code and you have to wait until all queries finish.Using callback hellLove it or hate it, callback hell works like this:What happened there? We first do the first query, save the results in the var someData and after we have the results we do the second totatlly unrelated query, when we have the results from the second query we save it in the var someExtraData. Since we only have two queries, we build an object &#8220;results&#8221; that includes someData and someExtraData and we pass both results to callback or even to res.render(&#8220;myview&#8221;, results)The problem is the code, no wonder why they call it callback hell. And again, both ways are async. So, you can&#8217;t show the page to the user unless everything is finished building.But, again, back to the original question, what if someExtraData is just a meaningless peace of content, that kind of content you use just to populate the right side of your page? You don&#8217;t really want to have all those problems do you? And what if it is dynamic? What if you don&#8217;t have to actually wait for the first query to return?Well, I&#8217;m still trying to find a good approach to solve this problem, in the meantime I&#8217;m using jQuery. Yes, jQuery.This is my approach:First, build the important data into the main content area like you would do if you didn&#8217;t need someExtraData.Then, create another app.get route to fetch only the someExtraData. Something like thisWith that you can query http://example.com/someExtraData and get a json object. This will be in a total different time from the main content. And with jQuery you just do:Now, this approach works, and I think is pretty good, if you have any comments please let me know here will you?Partials and dynamicHelpers (locals in 3.0)Finally I don&#8217;t want to end without talking about those guys.Partials are a thing of express/jade (don&#8217;t really know) in which you can reuse small peaces of jade code to do things you always do, the best thing is that it uses dynamic placeholders so you can pass inside jade a variable to the partial.Something like this:partial(&#8220;myMenu&#8221;, {menu: items})Items will be a full collection of menu items. Inside the myMenu.jade partial file, you&#8217;re supposed to render &#8220;items&#8221;. The problem with partials is that partials need data but this data always come from the main .jade file, which in turn, comes from the same source. So, both the main.jade and partial.jade files use the same data source: res.render(&#8220;main&#8221;, {myData: myData})Now, dynamicHelpers or locals in Express 3.0 are a different thing, those are like &#8220;global&#8221; variables. Let&#8217;s say you print the version of your site on every .jade file you have. You don&#8217;t want to do:res.render(&#8220;somefile&#8221;, {version: getVersion}everytime do you? Instead, you use dynamicHelpers to process the getVersion, and inside all your jade files you&#8217;ll have always #{version}. What it&#8217;s also nice is the fact that you have access to req and res arguments.VirtualsVirtuals in Mongoose are a special property of the object you query, the property doesn&#8217;t exists in your model, you create it &#8220;on-the-fly&#8221;. Let&#8217;s say you have a firstName and a lastName in your model, and you always want to use the fullName, the problem&#8217;s you don&#8217;t have it, you need to build it using firstName and lastName. You do that with virtuals.The problem with virtuals and dynamicHelpers are almost the same, the async problem. Node.js won&#8217;t wait till dynamicHelpers/Virtuals query the database. Node.js already rendered the page to the user by the time you&#8217;re thinking about querying the database. So, whatever you query, it won&#8217;t show up in your page.I will post the solution at Github: https://github.com/lelizondo/nodejs-async-blocks-exampleSo, what do you think?" />
+<meta property="og:description" content="I&#8217;ve been using Node.js lately, and it has some problems like everything on planet Earth because it&#8217;s not perfect. I&#8217;ll give you an example and my solution:You have a page, that shows a list of something that comes from the database. This is just main content, could be a list of blogs or something. On the sidebar you have totally unrelated (or related) content that also comes from the database. The problem with Node.js (especially using Express JS) is that you have to build the render object before you pass it to res.render which in turn will pass it to the template file (jade or whatever). I&#8217;ll explain the two ways of doing this:Using asyncRemember you have to query the database to get &#8220;somedata&#8221; and &#8220;somextradata&#8221; to pass both of them to res.render:res.render(&#8220;myview&#8221;, {listone: somedata, listtwo: someextradata});Using async you&#8217;ll do something like this:Easy. You just executed two queries in series, first one, then the other one, and when both finish, you execute a last callback which is gonna have a results object with the data from each of the callbacks you executed in series. With that object (the results object) you can do whatever you want, like passing it to res.render(&#8220;myview&#8221;, results);The problem with this approach is that you don&#8217;t really have lots of reusable code and you have to wait until all queries finish.Using callback hellLove it or hate it, callback hell works like this:What happened there? We first do the first query, save the results in the var someData and after we have the results we do the second totatlly unrelated query, when we have the results from the second query we save it in the var someExtraData. Since we only have two queries, we build an object &#8220;results&#8221; that includes someData and someExtraData and we pass both results to callback or even to res.render(&#8220;myview&#8221;, results)The problem is the code, no wonder why they call it callback hell. And again, both ways are async. So, you can&#8217;t show the page to the user unless everything is finished building.But, again, back to the original question, what if someExtraData is just a meaningless peace of content, that kind of content you use just to populate the right side of your page? You don&#8217;t really want to have all those problems do you? And what if it is dynamic? What if you don&#8217;t have to actually wait for the first query to return?Well, I&#8217;m still trying to find a good approach to solve this problem, in the meantime I&#8217;m using jQuery. Yes, jQuery.This is my approach:First, build the important data into the main content area like you would do if you didn&#8217;t need someExtraData.Then, create another app.get route to fetch only the someExtraData. Something like thisWith that you can query http://example.com/someExtraData and get a json object. This will be in a total different time from the main content. And with jQuery you just do:Now, this approach works, and I think is pretty good, if you have any comments please let me know here will you?Partials and dynamicHelpers (locals in 3.0)Finally I don&#8217;t want to end without talking about those guys.Partials are a thing of express/jade (don&#8217;t really know) in which you can reuse small peaces of jade code to do things you always do, the best thing is that it uses dynamic placeholders so you can pass inside jade a variable to the partial.Something like this:partial(&#8220;myMenu&#8221;, {menu: items})Items will be a full collection of menu items. Inside the myMenu.jade partial file, you&#8217;re supposed to render &#8220;items&#8221;. The problem with partials is that partials need data but this data always come from the main .jade file, which in turn, comes from the same source. So, both the main.jade and partial.jade files use the same data source: res.render(&#8220;main&#8221;, {myData: myData})Now, dynamicHelpers or locals in Express 3.0 are a different thing, those are like &#8220;global&#8221; variables. Let&#8217;s say you print the version of your site on every .jade file you have. You don&#8217;t want to do:res.render(&#8220;somefile&#8221;, {version: getVersion}everytime do you? Instead, you use dynamicHelpers to process the getVersion, and inside all your jade files you&#8217;ll have always #{version}. What it&#8217;s also nice is the fact that you have access to req and res arguments.VirtualsVirtuals in Mongoose are a special property of the object you query, the property doesn&#8217;t exists in your model, you create it &#8220;on-the-fly&#8221;. Let&#8217;s say you have a firstName and a lastName in your model, and you always want to use the fullName, the problem&#8217;s you don&#8217;t have it, you need to build it using firstName and lastName. You do that with virtuals.The problem with virtuals and dynamicHelpers are almost the same, the async problem. Node.js won&#8217;t wait till dynamicHelpers/Virtuals query the database. Node.js already rendered the page to the user by the time you&#8217;re thinking about querying the database. So, whatever you query, it won&#8217;t show up in your page.I will post the solution at Github: https://github.com/lelizondo/nodejs-async-blocks-exampleSo, what do you think?" />
+<link rel="canonical" href="http://localhost:4000/2012-08-22/holy-sh-batman-showing-async-blocks-of-data-from-multiple-sources-with-jquery-node-js-and-express-js-and-the-problem-with-virtuals-dynamichelpers/" />
+<meta property="og:url" content="http://localhost:4000/2012-08-22/holy-sh-batman-showing-async-blocks-of-data-from-multiple-sources-with-jquery-node-js-and-express-js-and-the-problem-with-virtuals-dynamichelpers/" />
+<meta property="og:site_name" content="Luis Elizondo" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2012-08-22T20:46:00+09:00" />
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Holy sh$% Batman: showing async blocks of data from multiple sources with jQuery, Node JS and Express JS and the problem with Virtuals, DynamicHelpers",
+    "datePublished": "2012-08-22T20:46:00+09:00",
+    "description": "I&#8217;ve been using Node.js lately, and it has some problems like everything on planet Earth because it&#8217;s not perfect. I&#8217;ll give you an example and my solution:You have a page, that shows a list of something that comes from the database. This is just main content, could be a list of blogs or something. On the sidebar you have totally unrelated (or related) content that also comes from the database. The problem with Node.js (especially using Express JS) is that you have to build the render object before you pass it to res.render which in turn will pass it to the template file (jade or whatever). I&#8217;ll explain the two ways of doing this:Using asyncRemember you have to query the database to get &#8220;somedata&#8221; and &#8220;somextradata&#8221; to pass both of them to res.render:res.render(&#8220;myview&#8221;, {listone: somedata, listtwo: someextradata});Using async you&#8217;ll do something like this:Easy. You just executed two queries in series, first one, then the other one, and when both finish, you execute a last callback which is gonna have a results object with the data from each of the callbacks you executed in series. With that object (the results object) you can do whatever you want, like passing it to res.render(&#8220;myview&#8221;, results);The problem with this approach is that you don&#8217;t really have lots of reusable code and you have to wait until all queries finish.Using callback hellLove it or hate it, callback hell works like this:What happened there? We first do the first query, save the results in the var someData and after we have the results we do the second totatlly unrelated query, when we have the results from the second query we save it in the var someExtraData. Since we only have two queries, we build an object &#8220;results&#8221; that includes someData and someExtraData and we pass both results to callback or even to res.render(&#8220;myview&#8221;, results)The problem is the code, no wonder why they call it callback hell. And again, both ways are async. So, you can&#8217;t show the page to the user unless everything is finished building.But, again, back to the original question, what if someExtraData is just a meaningless peace of content, that kind of content you use just to populate the right side of your page? You don&#8217;t really want to have all those problems do you? And what if it is dynamic? What if you don&#8217;t have to actually wait for the first query to return?Well, I&#8217;m still trying to find a good approach to solve this problem, in the meantime I&#8217;m using jQuery. Yes, jQuery.This is my approach:First, build the important data into the main content area like you would do if you didn&#8217;t need someExtraData.Then, create another app.get route to fetch only the someExtraData. Something like thisWith that you can query http://example.com/someExtraData and get a json object. This will be in a total different time from the main content. And with jQuery you just do:Now, this approach works, and I think is pretty good, if you have any comments please let me know here will you?Partials and dynamicHelpers (locals in 3.0)Finally I don&#8217;t want to end without talking about those guys.Partials are a thing of express/jade (don&#8217;t really know) in which you can reuse small peaces of jade code to do things you always do, the best thing is that it uses dynamic placeholders so you can pass inside jade a variable to the partial.Something like this:partial(&#8220;myMenu&#8221;, {menu: items})Items will be a full collection of menu items. Inside the myMenu.jade partial file, you&#8217;re supposed to render &#8220;items&#8221;. The problem with partials is that partials need data but this data always come from the main .jade file, which in turn, comes from the same source. So, both the main.jade and partial.jade files use the same data source: res.render(&#8220;main&#8221;, {myData: myData})Now, dynamicHelpers or locals in Express 3.0 are a different thing, those are like &#8220;global&#8221; variables. Let&#8217;s say you print the version of your site on every .jade file you have. You don&#8217;t want to do:res.render(&#8220;somefile&#8221;, {version: getVersion}everytime do you? Instead, you use dynamicHelpers to process the getVersion, and inside all your jade files you&#8217;ll have always #{version}. What it&#8217;s also nice is the fact that you have access to req and res arguments.VirtualsVirtuals in Mongoose are a special property of the object you query, the property doesn&#8217;t exists in your model, you create it &#8220;on-the-fly&#8221;. Let&#8217;s say you have a firstName and a lastName in your model, and you always want to use the fullName, the problem&#8217;s you don&#8217;t have it, you need to build it using firstName and lastName. You do that with virtuals.The problem with virtuals and dynamicHelpers are almost the same, the async problem. Node.js won&#8217;t wait till dynamicHelpers/Virtuals query the database. Node.js already rendered the page to the user by the time you&#8217;re thinking about querying the database. So, whatever you query, it won&#8217;t show up in your page.I will post the solution at Github: https://github.com/lelizondo/nodejs-async-blocks-exampleSo, what do you think?",
+    "url": "http://localhost:4000/2012-08-22/holy-sh-batman-showing-async-blocks-of-data-from-multiple-sources-with-jquery-node-js-and-express-js-and-the-problem-with-virtuals-dynamichelpers/"
+  }
+</script>
+<!-- End Jekyll SEO tag -->
+
+
+  <!-- Google Analytics -->
+
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-39814139-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+
+
+
+</head>
+
+<body>
+  <div class="content-container">
+    <header>
+  <h1 class="header-small">
+    <a href="http://localhost:4000">< BACK</a>
+  </h1>
+</header>
+<div class="post">
+  <h1 class="post-title">Holy sh$% Batman: showing async blocks of data from multiple sources with jQuery, Node JS and Express JS and the problem with Virtuals, DynamicHelpers</h1>
+  <span class="post-date">
+    <time>22 Aug 2012</time>
+  </span>
+  <div class="post-tag">
+    <ul>
+      
+    </ul>
+  </div>
+
+  <p>I&#8217;ve been using Node.js lately, and it has some problems like everything on planet Earth because it&#8217;s not perfect. I&#8217;ll give you an example and my solution:</p>
+<p>You have a page, that shows a list of something that comes from the database. This is just main content, could be a list of blogs or something. On the sidebar you have totally unrelated (or related) content that also comes from the database. The problem with Node.js (especially using Express JS) is that you have to build the render object before you pass it to res.render which in turn will pass it to the template file (jade or whatever). I&#8217;ll explain the two ways of doing this:</p>
+<p>Using async</p>
+<p>Remember you have to query the database to get &#8220;somedata&#8221; and &#8220;somextradata&#8221; to pass both of them to res.render:</p>
+<p>res.render(&#8220;myview&#8221;, {listone: somedata, listtwo: someextradata});</p>
+<p>Using async you&#8217;ll do something like this:</p>
+<p>Easy. You just executed two queries in series, first one, then the other one, and when both finish, you execute a last callback which is gonna have a results object with the data from each of the callbacks you executed in series. With that object (the results object) you can do whatever you want, like passing it to res.render(&#8220;myview&#8221;, results);</p>
+<p>The problem with this approach is that you don&#8217;t really have lots of reusable code and you have to wait until all queries finish.</p>
+<p>Using callback hell</p>
+<p>Love it or hate it, callback hell works like this:</p>
+<p>What happened there? We first do the first query, save the results in the var someData and after we have the results we do the second totatlly unrelated query, when we have the results from the second query we save it in the var someExtraData. Since we only have two queries, we build an object &#8220;results&#8221; that includes someData and someExtraData and we pass both results to callback or even to res.render(&#8220;myview&#8221;, results)</p>
+<p>The problem is the code, no wonder why they call it callback hell. And again, both ways are async. So, you can&#8217;t show the page to the user unless everything is finished building.</p>
+<p>But, again, back to the original question, what if someExtraData is just a meaningless peace of content, that kind of content you use just to populate the right side of your page? You don&#8217;t really want to have all those problems do you? And what if it is dynamic? What if you don&#8217;t have to actually wait for the first query to return?</p>
+<p>Well, I&#8217;m still trying to find a good approach to solve this problem, in the meantime I&#8217;m using jQuery. Yes, jQuery.</p>
+<p>This is my approach:</p>
+<p>First, build the important data into the main content area like you would do if you didn&#8217;t need someExtraData.</p>
+<p>Then, create another app.get route to fetch only the someExtraData. Something like this</p>
+<p>With that you can query <a href="http://example.com/someExtraData">http://example.com/someExtraData</a> and get a json object. This will be in a total different time from the main content. And with jQuery you just do:</p>
+<p>Now, this approach works, and I think is pretty good, if you have any comments please let me know here will you?</p>
+<p>Partials and dynamicHelpers (locals in 3.0)</p>
+<p>Finally I don&#8217;t want to end without talking about those guys.</p>
+<p>Partials are a thing of express/jade (don&#8217;t really know) in which you can reuse small peaces of jade code to do things you always do, the best thing is that it uses dynamic placeholders so you can pass inside jade a variable to the partial.</p>
+<p>Something like this:</p>
+<p>partial(&#8220;myMenu&#8221;, {menu: items})</p>
+<p>Items will be a full collection of menu items. Inside the myMenu.jade partial file, you&#8217;re supposed to render &#8220;items&#8221;. The problem with partials is that partials need data but this data always come from the main .jade file, which in turn, comes from the same source. So, both the main.jade and partial.jade files use the same data source: res.render(&#8220;main&#8221;, {myData: myData})</p>
+<p>Now, dynamicHelpers or locals in Express 3.0 are a different thing, those are like &#8220;global&#8221; variables. Let&#8217;s say you print the version of your site on every .jade file you have. You don&#8217;t want to do:</p>
+<p>res.render(&#8220;somefile&#8221;, {version: getVersion}</p>
+<p>everytime do you? Instead, you use dynamicHelpers to process the getVersion, and inside all your jade files you&#8217;ll have always #{version}. What it&#8217;s also nice is the fact that you have access to req and res arguments.</p>
+<p>Virtuals</p>
+<p>Virtuals in Mongoose are a special property of the object you query, the property doesn&#8217;t exists in your model, you create it &#8220;on-the-fly&#8221;. Let&#8217;s say you have a firstName and a lastName in your model, and you always want to use the fullName, the problem&#8217;s you don&#8217;t have it, you need to build it using firstName and lastName. You do that with virtuals.</p>
+<p>The problem with virtuals and dynamicHelpers are almost the same, the async problem. Node.js won&#8217;t wait till dynamicHelpers/Virtuals query the database. Node.js already rendered the page to the user by the time you&#8217;re thinking about querying the database. So, whatever you query, it won&#8217;t show up in your page.</p>
+<p>I will post the solution at Github: <a href="https://github.com/lelizondo/nodejs-async-blocks-example">https://github.com/lelizondo/nodejs-async-blocks-example</a></p>
+<p>So, what do you think?</p>
+
+
+
+  <!-- Share -->
+  
+  <div class="post-share">
+    <hr>
+    <span>Share this: <br /></span>
+<a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/2012-08-22/holy-sh-batman-showing-async-blocks-of-data-from-multiple-sources-with-jquery-node-js-and-express-js-and-the-problem-with-virtuals-dynamichelpers/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-facebook"></a>
+<a href="https://twitter.com/intent/tweet?text=Holy sh$% Batman: showing async blocks of data from multiple sources with jQuery, Node JS and Express JS and the problem with Virtuals, DynamicHelpers&url=http://localhost:4000/2012-08-22/holy-sh-batman-showing-async-blocks-of-data-from-multiple-sources-with-jquery-node-js-and-express-js-and-the-problem-with-virtuals-dynamichelpers/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-twitter"></a>
+<a href="https://plus.google.com/share?url=http://localhost:4000/2012-08-22/holy-sh-batman-showing-async-blocks-of-data-from-multiple-sources-with-jquery-node-js-and-express-js-and-the-problem-with-virtuals-dynamichelpers/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-google-plus"></a>
+<a href="https://www.tumblr.com/share?url=http://localhost:4000/2012-08-22/holy-sh-batman-showing-async-blocks-of-data-from-multiple-sources-with-jquery-node-js-and-express-js-and-the-problem-with-virtuals-dynamichelpers/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-tumblr"></a>
+<a href="mailto:?subject=Holy sh$% Batman: showing async blocks of data from multiple sources with jQuery, Node JS and Express JS and the problem with Virtuals, DynamicHelpers&amp;body=Check out this site http://localhost:4000/2012-08-22/holy-sh-batman-showing-async-blocks-of-data-from-multiple-sources-with-jquery-node-js-and-express-js-and-the-problem-with-virtuals-dynamichelpers/" class="ssk ssk-icon ssk-email"></a>
+
+    <hr>
+  </div>
+  
+
+  <!-- Disqus -->
+  
+  <section id="disqus_thread"></section>
+  <script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables */
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = '//luiselizondobaez.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+</div>
+
+
+    <!-- Documents about icons are here: http://fontawesome.io/icons/ -->
+<div class="footer">
+	<hr />
+	<div class="footer-link">
+		
+
+		
+		<a href="https://twitter.com/lelizondo"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+		
+
+		
+		<a href="https://github.com/luiselizondo"><i class="fa fa-github" aria-hidden="true"></i></a>
+		
+
+		
+		<a href="https://www.linkedin.com/in/luiselizondobaez"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
+		
+
+		
+
+		
+
+		
+
+	</div>
+	© 2016 Luis Elizondo. All rights reserved.
+</div>
+
+  </div>
+</body>
+</html>

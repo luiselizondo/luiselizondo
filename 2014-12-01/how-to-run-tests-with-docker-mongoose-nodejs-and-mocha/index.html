@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How to run tests with #Docker, #Mongoose, #Nodejs and #Mocha</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/assets/css/main.css" type="text/css">
+  <link rel="stylesheet" href="/assets/css/social-share-kit.css" type="text/css">
+
+  <!-- Font -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+
+
+  <link rel="alternate" type="application/rss+xml" title="RSS Feed for Luis Elizondo" href="/feed.xml" />
+  <!-- Begin Jekyll SEO tag v2.0.0 -->
+<title>How to run tests with #Docker, #Mongoose, #Nodejs and #Mocha - Luis Elizondo</title>
+<meta property="og:title" content="How to run tests with #Docker, #Mongoose, #Nodejs and #Mocha" />
+<meta name="description" content="I thought about posting here how I’m testing a Node.js application that needs to be connected to a Database running MongoDB with Mongoose. I’m using Mocha as a testing framework and it can be tricky to configure everything to get you up and running." />
+<meta property="og:description" content="I thought about posting here how I’m testing a Node.js application that needs to be connected to a Database running MongoDB with Mongoose. I’m using Mocha as a testing framework and it can be tricky to configure everything to get you up and running." />
+<link rel="canonical" href="http://localhost:4000/2014-12-01/how-to-run-tests-with-docker-mongoose-nodejs-and-mocha/" />
+<meta property="og:url" content="http://localhost:4000/2014-12-01/how-to-run-tests-with-docker-mongoose-nodejs-and-mocha/" />
+<meta property="og:site_name" content="Luis Elizondo" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2014-12-01T18:38:17+09:00" />
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "How to run tests with #Docker, #Mongoose, #Nodejs and #Mocha",
+    "datePublished": "2014-12-01T18:38:17+09:00",
+    "description": "I thought about posting here how I’m testing a Node.js application that needs to be connected to a Database running MongoDB with Mongoose. I’m using Mocha as a testing framework and it can be tricky to configure everything to get you up and running.",
+    "url": "http://localhost:4000/2014-12-01/how-to-run-tests-with-docker-mongoose-nodejs-and-mocha/"
+  }
+</script>
+<!-- End Jekyll SEO tag -->
+
+
+  <!-- Google Analytics -->
+
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-39814139-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+
+
+
+</head>
+
+<body>
+  <div class="content-container">
+    <header>
+  <h1 class="header-small">
+    <a href="http://localhost:4000">< BACK</a>
+  </h1>
+</header>
+<div class="post">
+  <h1 class="post-title">How to run tests with #Docker, #Mongoose, #Nodejs and #Mocha</h1>
+  <span class="post-date">
+    <time>01 Dec 2014</time>
+  </span>
+  <div class="post-tag">
+    <ul>
+      
+    </ul>
+  </div>
+
+  <p>I thought about posting here how I’m testing a Node.js application that needs to be connected to a Database running MongoDB with Mongoose. I’m using Mocha as a testing framework and it can be tricky to configure everything to get you up and running.</p>
+
+<p>You will need:</p>
+
+<ol>
+  <li><a href="http://docker.com">Docker</a></li>
+  <li><a href="http://www.fig.sh/">Fig</a></li>
+  <li><a href="http://mochajs.org/">Mocha.js</a></li>
+  <li><a href="https://github.com/shouldjs/should.js">Should.js</a></li>
+  <li><a href="https://registry.hub.docker.com/u/luis/nodejs/">Node.js docker image</a></li>
+  <li><a href="https://registry.hub.docker.com/u/luis/mongodb/">MongoDB docker image</a></li>
+  <li><a href="https://github.com/petejkim/factory-lady">Factory Lady</a></li>
+  <li><a href="http://chancejs.com/">Chance.js</a></li>
+  <li><a href="http://mongoosejs.com/">Mongoose</a></li>
+  <li><a href="http://en.wikipedia.org/wiki/Patience">Patience</a></li>
+</ol>
+
+<h3 id="testmochaopts">/test/mocha.opts</h3>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>	--require should
+	-R spec
+	--ui bdd
+	--timeout 90
+	--colors
+</code></pre>
+</div>
+
+<h3 id="testdbjs">/test/db.js</h3>
+<p>This is the file I’m using to connect to the database</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>	/**
+	 * @file
+	 * hooks to run before and after tests
+	 * it does not need to define a module.exports since
+	 * mocha will run the hooks just by requiring the file
+	 */
+
+	'use strict';
+
+	var mongoose = require("mongoose");
+	var config = require("express-config");
+
+	/**
+	 * Util function to clear the database
+	 * @param  {Function} callback A callback to return when done
+	 */
+	function clearDB(callback) {
+	 for (var i in mongoose.connection.collections) {
+	   mongoose.connection.collections[i].remove(function() {});
+	 }
+	 return callback(false);
+	}
+
+	/**
+	 * Run before everything
+	 * Checks the state of the connection, if is is connected,
+	 * disconnect and then try again
+	 */
+	before(function() {
+		if(mongoose.connection.readyState === 1) {
+			mongoose.disconnect();
+		}
+		return mongoose.connect(config.mongodb.uri);
+	});
+
+	/**
+	 * Before each test is run, we clear the DB
+	 */
+	beforeEach(function (done) {
+		clearDB(function() {
+			done();
+		});
+	});
+
+	/**
+	 * After all tests are done, disconnect
+	 * @param  {Function} done [description]
+	 * @return {[type]}        [description]
+	 */
+	after(function (done) {
+	 mongoose.disconnect();
+	 return done();
+	});
+</code></pre>
+</div>
+
+<h3 id="testfactoryjs">/test/factory.js</h3>
+<p>I’m using Factory Lady, it helps you to interact directly with Mongoose by creating an object based on a Model definition. This is the file I’m using.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>	var Factory = require("factory-lady");
+	var Chance = require("chance");
+	var chance = new Chance();
+	var include = require("include");
+
+	// Models
+	var User = include("app/models/User");
+
+    var counter = 1;
+
+	Factory.define('user', User, {
+    	username: function(cb) { cb( 'user' + counter++); },
+        fullname: chance.name(),
+        password: chance.hash({length: 8}),
+        email:  function(cb) { cb( 'user' + counter++ + "@example.com"); },
+        gender: chance.gender().toLowerCase(),
+        locale: 'en-US'
+    });
+</code></pre>
+</div>
+
+<h3 id="testunituserrepositoryjs">/test/unit/UserRepository.js</h3>
+<p>And now my test:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>	'use strict';
+
+	var assert = require("assert");
+	var should = require("should");
+	var include = require("include");
+	var db = include("test/db");
+	var Factory = include("test/factory");
+	var Chance = require("chance");
+	var chance = new Chance();
+	var User = include("app/repositories/UserRepository");
+
+	describe("UserRepository", function() {
+		describe("Save", function() {
+			it("Should fail when data is not provided", function(done) {
+				var data = {};
+				User.save(data, function(err, result) {
+					err.should.equal("Input is empty");
+					done();
+				});
+			});
+
+			it("Should fail to create a user when not providing a username", function(done) {
+				Factory.build("user", {username: null}, function(data) {
+					User.save(data, function(err, result) {
+						result.should.be.false;
+						err.should.equal("A username is required, please enter one");
+						done();
+					});
+				});
+			});
+
+		});
+	});
+</code></pre>
+</div>
+
+<h3 id="makefile">/Makefile</h3>
+<p>I’m using a Makefile to run my application, the test command assumes that the application is installed, which means that a the MongoDB and Redis containers should be running before you run the tests (I’m doing this with make install). Since I’m also using fig, it will create a container with a name using the convention <em>CurrentDirectoryName_ServiceName_N</em>, so, if the directory of my application is webapp, fig will create webapp_mongodb_1 and webapp_redis_1, you’ll need to replace those:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>	CURRENT_DIRECTORY := $(shell pwd)
+
+	test:
+		@docker run --rm -e NODE_ENV=test -v $(CURRENT_DIRECTORY):/var/www -p 3999:3000 --link current_directory_name_mongodb_1:mongodb --name mocka luis/nodejs npm test
+
+	start-all:
+		@fig start
+
+    clean:
+		@fig stop
+
+	install:
+		@fig up -d
+
+	start:
+		@fig start web
+
+	stop:
+		@fig stop web
+
+	restart:
+		@fig stop web
+		@fig start web
+
+	.PHONY: test start-all clean install start stop restart
+</code></pre>
+</div>
+
+<h3 id="figyml">/fig.yml</h3>
+<p>To use Fig you need a fig configuration file, this is the one I’m using:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>mongodb:
+  image: luis/mongodb
+  expose:
+    - "27017"
+  volumes:
+    - /var/data:/data/db
+web:
+  image: luis/nodejs
+  links:
+    - mongodb:mongodb
+  ports:
+    - "3000:3000"
+  environment:
+    NODE_ENV: development
+  volumes:
+    - .:/var/www
+    - ./docker:/etc/supervisor/conf.d
+    - /var/log/docker:/var/log/supervisor
+</code></pre>
+</div>
+
+<h3 id="dockersupervisord-nodejsconf">/docker/supervisord-nodejs.conf</h3>
+<p>The luis/nodejs image by default will run Node.js using supervisor and it will run the start.js file, if you want to change it, here is my supervisor configuration file, just change the file you want to start with node.js:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>[supervisord]
+nodaemon=true
+
+[program:nodejs]
+directory=/var/www
+command=nodejs app.js
+autorestart = true
+stdout_logfile=/var/log/supervisor/%(program_name)s.log
+stderr_logfile=/var/log/supervisor/%(program_name)s.log
+</code></pre>
+</div>
+
+<h2 id="notes">Notes</h2>
+<ul>
+  <li>The db.js file does not export a function, mocha will execute it when is required in the test file.</li>
+  <li>I’m using express-config to load the configuration from a /config/test.js file, inside that file is the configuration needed to connect Mongoose to MongoDB.</li>
+</ul>
+
+<h2 id="run-with">Run with:</h2>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>	make test
+</code></pre>
+</div>
+
+
+
+  <!-- Share -->
+  
+  <div class="post-share">
+    <hr>
+    <span>Share this: <br /></span>
+<a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/2014-12-01/how-to-run-tests-with-docker-mongoose-nodejs-and-mocha/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-facebook"></a>
+<a href="https://twitter.com/intent/tweet?text=How to run tests with #Docker, #Mongoose, #Nodejs and #Mocha&url=http://localhost:4000/2014-12-01/how-to-run-tests-with-docker-mongoose-nodejs-and-mocha/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-twitter"></a>
+<a href="https://plus.google.com/share?url=http://localhost:4000/2014-12-01/how-to-run-tests-with-docker-mongoose-nodejs-and-mocha/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-google-plus"></a>
+<a href="https://www.tumblr.com/share?url=http://localhost:4000/2014-12-01/how-to-run-tests-with-docker-mongoose-nodejs-and-mocha/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-tumblr"></a>
+<a href="mailto:?subject=How to run tests with #Docker, #Mongoose, #Nodejs and #Mocha&amp;body=Check out this site http://localhost:4000/2014-12-01/how-to-run-tests-with-docker-mongoose-nodejs-and-mocha/" class="ssk ssk-icon ssk-email"></a>
+
+    <hr>
+  </div>
+  
+
+  <!-- Disqus -->
+  
+  <section id="disqus_thread"></section>
+  <script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables */
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = '//luiselizondobaez.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+</div>
+
+
+    <!-- Documents about icons are here: http://fontawesome.io/icons/ -->
+<div class="footer">
+	<hr />
+	<div class="footer-link">
+		
+
+		
+		<a href="https://twitter.com/lelizondo"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+		
+
+		
+		<a href="https://github.com/luiselizondo"><i class="fa fa-github" aria-hidden="true"></i></a>
+		
+
+		
+		<a href="https://www.linkedin.com/in/luiselizondobaez"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
+		
+
+		
+
+		
+
+		
+
+	</div>
+	© 2016 Luis Elizondo. All rights reserved.
+</div>
+
+  </div>
+</body>
+</html>

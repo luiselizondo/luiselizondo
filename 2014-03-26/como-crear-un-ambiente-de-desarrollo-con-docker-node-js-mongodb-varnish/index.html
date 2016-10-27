@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>¿Cómo crear un ambiente de desarrollo con Docker + Node.js + MongoDB + Varnish?</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/assets/css/main.css" type="text/css">
+  <link rel="stylesheet" href="/assets/css/social-share-kit.css" type="text/css">
+
+  <!-- Font -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+
+
+  <link rel="alternate" type="application/rss+xml" title="RSS Feed for Luis Elizondo" href="/feed.xml" />
+  <!-- Begin Jekyll SEO tag v2.0.0 -->
+<title>¿Cómo crear un ambiente de desarrollo con Docker + Node.js + MongoDB + Varnish? - Luis Elizondo</title>
+<meta property="og:title" content="¿Cómo crear un ambiente de desarrollo con Docker + Node.js + MongoDB + Varnish?" />
+<meta name="description" content="El fin de semana pasado empecé a aprender Docker.io y debo decir que es fantástico. Desafortunadamente, al ser un proyecto relativamente nuevo, no hay mucha documentación ni tutoriales en línea. Al principio, batallé un poco pero aquí está toda la explicación para que tu no tengas que batallar. Lo que vamos a hacer es crear un blog sencillo escrito en Node.js, corriendo en una base de datos MongoDB junto con Varnish como balanceador de carga (cubierto en otro post). Vamos a usar Docker y recomiendo ampliamente que uses Vagrant para que no destruyas tu ambiente principal. En este tutorial, no voy a cubrir cómo instalar Docker o las cosas más básicas ya que hay suficiente información al respecto en la web.Lo primero que necesitamos hacer es crear un nuevo directorio, en este directorio voy a descargar 3 proyectos Git.Nuestra aplicación de Blog hecha con Node.js y Express.js MVCLa imagen de Docker para Node.jsLa imagen de Docker para MongoDBDespués de que descargues todo, puedes revisar los archivos Dockerfile. A continuación, voy a explicar qué están haciendo cada uno y cómo correrlos.Imagen Docker para Node.jsFROM ubuntu:12.04MAINTAINER Luis Elizondo &quot;lelizondo@gmail.com&quot;RUN echo &quot;deb http://archive.ubuntu.com/ubuntu precise main universe&quot; &gt; /etc/apt/sources.listRUN apt-get updateRUN apt-get install -y python-software-properties curl gitRUN add-apt-repository -y ppa:chris-lea/node.jsRUN apt-get -qq updateRUN apt-get install -y nodejsRUN npm install -g expressjsmvc express nodemon bowerEXPOSE 3000ADD start.sh /start.shRUN chmod +x /start.shCMD [&quot;/start.sh&quot;]Este proyecto tiene un archivo Dockerfile, un README, un archivo run.sh y un archivo start.sh. El archivo start.sh se usa dentro del contenedor, así que no lo vas a estar usando realmente pero es importante que no lo modifiques a menos que sepas lo que estas haciendo.El archivo run.sh está ahí para que puedas escribir “sh run.sh” en lugar de todo el comando de docker que puede ser muy largo.El archivo Dockerfile va a instalar Node.js, usar npm para instalar expressjsvmc, express, bower y nodemon; y después va a exponer el puerto 3000 antes de agregar ‘start.sh’ al contenedor para después correrlo.Antes de continuar, tengo que explicar algo con lo que batallé un poco. Cuando estas usando archivos Dockerfiles (y para ahora deberías saber qué son) básicamente construyes una imagen para que puedas correr contenedores en base a esta imagen y este contenedor va a correr como está especificado en el archivo Dockerfile. Lo que esto significa es que puedes crear un contenedor que va a correr un comando tan pronto como se crea o puedes hacer este comando opcional.Aquí hay una gran diferencia y realmente depende del servicio que estés configurando. Cuando usas la propiedad ENTRYPOINT en tu archivo Dockerfile, básicamente le estás diciendo a la imagen que corra eses comando tan pronto el contenedor es creado, así que si haces algo como lo siguiente:Dockerfile:ENTRYPOINT [&quot;/start.sh&quot;]Significa que el contenedor va a correr el archivo ‘start.sh’ cuando se cree. Si después queires hacer algo como:$ docker run -it luis/nodejs bashPara acceder al contenedor, simplemente no va a funcionar, ya que el contenedor va a ignorar cualquier comando que pases (en este caso bash) y va a correr ‘start.sh’.Así que para poder tener ambos, a veces necesitas usar CMD en lugar de ENTRYPOINT, de esta manera, el contenedor va a correr el comando si no le pasas ningún otro comando, pero si le pasas un comando, va a correrlo.Si reemplazo mi Dockerfile con:CMD [&quot;/start.sh&quot;]Entonces$ docker run -it luis/nodejs bashVa a correr bash, y:$ docker run -it luis/nodejsVa a correr start.shImagen de Docker para MongoDBFROM ubuntu:12.04MAINTAINER Luis Elizondo, lelizondo@gmail.comRUN apt-get update################## BEGIN INSTALLATION####################### Install MongoDB Following the Instructions at MongoDB DocsRef: http://docs.mongodb.org/manual/tutorial/install-mongodb-on-ubuntu/Add the package verification keyRUN apt-key adv –keyserver hkp://keyserver.ubuntu.com:80 –recv 7F0CEB10Add MongoDB to the repository sources listRUN echo ‘deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen’ | tee /etc/apt/sources.list.d/mongodb.listUpdate the repository sources list once moreRUN apt-get updateInstall MongoDB package (.deb)RUN apt-get install -y mongodb-10genCreate the default data directoryRUN mkdir -p /data/db##################### INSTALLATION END #####################Expose the default portEXPOSE 27017Default port to execute the entrypoint (MongoDB)CMD [”–port 27017”]Set default container commandENTRYPOINT /usr/bin/mongod&lt;/code&gt;Esta imagen es más simple, va a exponer dos puertos, y después va a correr el servicio mongod usando ENTRYPOINT, así que realmente no se puede acceder al contenedor a menos que reescribamos el entrypoint.Construir las imágenesEl siguiente paso es construir las imágenes, ve a cada directorio que contenga un Dockerfile y corre:$ docker build -t myname/image-name .Este comando va a construir la imagen y nombrarla con un nombre, los comandos que yo use son:$ docker build -t luis/nodejs .$ docker build -t luis/mongodb .Si quiero listar todas mis imágenes, solo hago:$ docker imagesREPOSITORY          TAG                 IMAGE ID                      luis/nodejs         latest              3e9589892ef9               luis/mongodb        latest              79868a4506c7               &lt;/code&gt;¿Cómo enlazar mis contenedores?Para este momento, ya deberías de poder correr contenedores y deberían funcionar, pero no están enlazados unos a otros, necesitamos que el contenedor de Node pueda acceder al contenedor de MongoDB. Lo primero que vamos a hacer es iniciar el contenedor de MongoDB.$ docker run -itd -p 27017 --name mongodb luis/mongodbCuando corremos este comando, Docker va a crear un nuevo contendor con la imagen “luis/mongodb”, y nombrar ese contenedor como “mongodb”, también va a detectar el puerto 27017 y va a correr este comando como un daemon. Esto último es muy importante ya que deseamos crear el contenedor y que siga corriendo.Espera, ¿y los archivos?Tanto MongoDB como la aplicación, van a necesitar leer/escribir datos en el disco duro, y probablemente quieres que esos datos persistan fuera del contenedor, ya que este es desechable. La solución es enlazar volúmenes. Primero hagamos esto con MongoDB.De manera predeterminada, MongoDB, dentro del contenedor, va a guardar los datos en /data/db, y esto está bien, de hecho nosotros creamos ese directorio en el archivo Dockerfile. MongoDB va a pensar que está guardando la información en /data/db pero en realidad, la va a estar guardando fuera del contenedor en un directorio que nosotros especifiquemos.Creemos un nuevo directorio para guardar los datos de MongoDB fuera del contenedor.$ sudo mkdir -p /var/mongodbY ahora, engañemos a MongoDB para que guarde los datos en /var/mongodb$ docker run -itd -p 27017 -v /var/mongodb:/data/db --name mongodb luis/mongodbLo que estamos haciendo diferente aquí es enlazar /var/mongodb (fuera del contenedor) a /data/db (dentro del contenedor).El mismo principio va a aplicar para los archivos de la aplicación.Enlazando contenedoresAhora podemos regresar a enlazar nuestros contenedores. Primero, tenemos que clonar la aplicación, en este caso yo estoy usando una aplicación en Node.js que cree antes ,mis archivos estarán en /home/luis/Docker/blog-example.Ahora, para correr el contenedor de node.js enlazado a MongoDB debo hacer:$ docker run -itd -p 8000:3000 --name nodejs --link mongodb:mongodb -v /home/luis/Docker/blog-example:/var/www luis/nodejsExpliquemos qué es lo que estamos haciendo con ese comando. Primero, se que mi contenedor está exponiendo el puerto 3000, así que estoy redirigiendo ese puerto al puerto 8000 (eventualmente tendremos que modificar esto pero por ahora está bien dejarlo así). Segundo, le damos un nombre a nuestro contenedor. Tercero, enlazamos el contenedor de MongoDB, que básicamente permite al contenedor de Node.js acceder al contenedor de MongoDB. Finalmente, establecemos la ruta real de /var/www, engañando a nuestro contenedor sobre la ubicación real de nuestros archivos.Mi aplicación no está funcionandoLa aplicación necesita instalar varias cosas antes de correr, así que vamos a instalar dependencias antes de correrla.Matemos a nuestro contenedor primero:$ docker rm -f nodejsY ahora, entremos usando bash:$ docker run -it -p 8000:3000 --link mongodb:mongodb -v /home/luis/Docker/blog-example:/var/www luis/nodejs bashNota que no estamos daemonizing (demonizando) nuestro contenedor para que podamos acceder a él.Si listamos todos los archivos en /var/www veremos que nuestra aplicación ahí está:$ ls -la /var/wwwdrwxr-xr-x  7 1000 1000 4096 Mar 25 05:09 .drwxr-xr-x 20 root root 4096 Mar 25 05:20 ..-rw-r--r--  1 1000 1000   34 Mar 25 05:09 .bowerrcdrwxr-xr-x  8 1000 1000 4096 Mar 25 05:09 .git-rw-r--r--  1 1000 1000   44 Mar 25 05:09 .gitignore-rw-r--r--  1 1000 1000 1377 Mar 25 05:09 app.js-rw-r--r--  1 1000 1000  260 Mar 25 05:09 bower.jsondrwxr-xr-x  4 1000 1000 4096 Mar 25 05:09 components-rw-r--r--  1 1000 1000  169 Mar 25 05:09 expressjsmvc.jsondrwxr-xr-x  2 1000 1000 4096 Mar 25 05:09 lib-rw-r--r--  1 1000 1000  327 Mar 25 05:09 package.jsondrwxr-xr-x  4 1000 1000 4096 Mar 25 05:09 public-rw-r--r--  1 1000 1000  824 Mar 25 05:09 start.jsdrwxr-xr-x  2 1000 1000 4096 Mar 25 05:09 viewsVariables de ambiente o Environment variablesAntes de instalar todo, quiero mostrarte algo muy interesante llamado variables de ambiente o environment variables. Estas variables pueden ser accesadas por nuestro sistema, solo tenemos que hacer:$ envHOSTNAME=7921e0543e40MONGODB_NAME=/focused_engelbart/mongodbMONGODB_PORT_27017_TCP=tcp://172.17.0.2:27017TERM=xtermMONGODB_PORT=tcp://172.17.0.2:27017MONGODB_PORT_27017_TCP_PORT=27017PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/binPWD=/MONGODB_PORT_27017_TCP_PROTO=tcpSHLVL=1HOME=/MONGODB_PORT_27017_TCP_ADDR=172.17.0.2_=/usr/bin/envComo puedes ver, tengo múltiples variables que referencian a MongoDB, esto es por el enlace que creamos. Si echamos un vistazo a nuestra aplicación, veremos que estamos utilizando estas mismas variables:var address = process.env.MONGODB_PORT_27017_TCP_ADDR;var port = process.env.MONGODB_PORT_27017_TCP_PORT;mongoose.connect(&quot;mongodb://&quot; + address + &quot;:&quot; + port + &quot;/blog&quot;);Ahora instalemos nuestras dependencias:$ cd /var/www$ npm install ; expressjsmvc installY salgamos de nuestro contenedor:$ exitCorramos de nuevo el contenedor:$ docker run -itd -p 8000:3000 --name nodejs --link mongodb:mongodb -v /home/luis/Docker/blog-example:/var/www luis/nodejsY ahora veamos qué está pasando dentro de nuestro contenedor:$ docker logs nodejsSi no vemos ningún error, podemos finalmente abrir el navegador e ir a http://localhost:8000Deberías ver la aplicación corriendo. Puedes agregar un nuevo blog si vas a http://localhost:8000/blogs/add¿Y Varnish?Este post quedó muy largo, así que va a tener que esperar para otro día." />
+<meta property="og:description" content="El fin de semana pasado empecé a aprender Docker.io y debo decir que es fantástico. Desafortunadamente, al ser un proyecto relativamente nuevo, no hay mucha documentación ni tutoriales en línea. Al principio, batallé un poco pero aquí está toda la explicación para que tu no tengas que batallar. Lo que vamos a hacer es crear un blog sencillo escrito en Node.js, corriendo en una base de datos MongoDB junto con Varnish como balanceador de carga (cubierto en otro post). Vamos a usar Docker y recomiendo ampliamente que uses Vagrant para que no destruyas tu ambiente principal. En este tutorial, no voy a cubrir cómo instalar Docker o las cosas más básicas ya que hay suficiente información al respecto en la web.Lo primero que necesitamos hacer es crear un nuevo directorio, en este directorio voy a descargar 3 proyectos Git.Nuestra aplicación de Blog hecha con Node.js y Express.js MVCLa imagen de Docker para Node.jsLa imagen de Docker para MongoDBDespués de que descargues todo, puedes revisar los archivos Dockerfile. A continuación, voy a explicar qué están haciendo cada uno y cómo correrlos.Imagen Docker para Node.jsFROM ubuntu:12.04MAINTAINER Luis Elizondo &quot;lelizondo@gmail.com&quot;RUN echo &quot;deb http://archive.ubuntu.com/ubuntu precise main universe&quot; &gt; /etc/apt/sources.listRUN apt-get updateRUN apt-get install -y python-software-properties curl gitRUN add-apt-repository -y ppa:chris-lea/node.jsRUN apt-get -qq updateRUN apt-get install -y nodejsRUN npm install -g expressjsmvc express nodemon bowerEXPOSE 3000ADD start.sh /start.shRUN chmod +x /start.shCMD [&quot;/start.sh&quot;]Este proyecto tiene un archivo Dockerfile, un README, un archivo run.sh y un archivo start.sh. El archivo start.sh se usa dentro del contenedor, así que no lo vas a estar usando realmente pero es importante que no lo modifiques a menos que sepas lo que estas haciendo.El archivo run.sh está ahí para que puedas escribir “sh run.sh” en lugar de todo el comando de docker que puede ser muy largo.El archivo Dockerfile va a instalar Node.js, usar npm para instalar expressjsvmc, express, bower y nodemon; y después va a exponer el puerto 3000 antes de agregar ‘start.sh’ al contenedor para después correrlo.Antes de continuar, tengo que explicar algo con lo que batallé un poco. Cuando estas usando archivos Dockerfiles (y para ahora deberías saber qué son) básicamente construyes una imagen para que puedas correr contenedores en base a esta imagen y este contenedor va a correr como está especificado en el archivo Dockerfile. Lo que esto significa es que puedes crear un contenedor que va a correr un comando tan pronto como se crea o puedes hacer este comando opcional.Aquí hay una gran diferencia y realmente depende del servicio que estés configurando. Cuando usas la propiedad ENTRYPOINT en tu archivo Dockerfile, básicamente le estás diciendo a la imagen que corra eses comando tan pronto el contenedor es creado, así que si haces algo como lo siguiente:Dockerfile:ENTRYPOINT [&quot;/start.sh&quot;]Significa que el contenedor va a correr el archivo ‘start.sh’ cuando se cree. Si después queires hacer algo como:$ docker run -it luis/nodejs bashPara acceder al contenedor, simplemente no va a funcionar, ya que el contenedor va a ignorar cualquier comando que pases (en este caso bash) y va a correr ‘start.sh’.Así que para poder tener ambos, a veces necesitas usar CMD en lugar de ENTRYPOINT, de esta manera, el contenedor va a correr el comando si no le pasas ningún otro comando, pero si le pasas un comando, va a correrlo.Si reemplazo mi Dockerfile con:CMD [&quot;/start.sh&quot;]Entonces$ docker run -it luis/nodejs bashVa a correr bash, y:$ docker run -it luis/nodejsVa a correr start.shImagen de Docker para MongoDBFROM ubuntu:12.04MAINTAINER Luis Elizondo, lelizondo@gmail.comRUN apt-get update################## BEGIN INSTALLATION####################### Install MongoDB Following the Instructions at MongoDB DocsRef: http://docs.mongodb.org/manual/tutorial/install-mongodb-on-ubuntu/Add the package verification keyRUN apt-key adv –keyserver hkp://keyserver.ubuntu.com:80 –recv 7F0CEB10Add MongoDB to the repository sources listRUN echo ‘deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen’ | tee /etc/apt/sources.list.d/mongodb.listUpdate the repository sources list once moreRUN apt-get updateInstall MongoDB package (.deb)RUN apt-get install -y mongodb-10genCreate the default data directoryRUN mkdir -p /data/db##################### INSTALLATION END #####################Expose the default portEXPOSE 27017Default port to execute the entrypoint (MongoDB)CMD [”–port 27017”]Set default container commandENTRYPOINT /usr/bin/mongod&lt;/code&gt;Esta imagen es más simple, va a exponer dos puertos, y después va a correr el servicio mongod usando ENTRYPOINT, así que realmente no se puede acceder al contenedor a menos que reescribamos el entrypoint.Construir las imágenesEl siguiente paso es construir las imágenes, ve a cada directorio que contenga un Dockerfile y corre:$ docker build -t myname/image-name .Este comando va a construir la imagen y nombrarla con un nombre, los comandos que yo use son:$ docker build -t luis/nodejs .$ docker build -t luis/mongodb .Si quiero listar todas mis imágenes, solo hago:$ docker imagesREPOSITORY          TAG                 IMAGE ID                      luis/nodejs         latest              3e9589892ef9               luis/mongodb        latest              79868a4506c7               &lt;/code&gt;¿Cómo enlazar mis contenedores?Para este momento, ya deberías de poder correr contenedores y deberían funcionar, pero no están enlazados unos a otros, necesitamos que el contenedor de Node pueda acceder al contenedor de MongoDB. Lo primero que vamos a hacer es iniciar el contenedor de MongoDB.$ docker run -itd -p 27017 --name mongodb luis/mongodbCuando corremos este comando, Docker va a crear un nuevo contendor con la imagen “luis/mongodb”, y nombrar ese contenedor como “mongodb”, también va a detectar el puerto 27017 y va a correr este comando como un daemon. Esto último es muy importante ya que deseamos crear el contenedor y que siga corriendo.Espera, ¿y los archivos?Tanto MongoDB como la aplicación, van a necesitar leer/escribir datos en el disco duro, y probablemente quieres que esos datos persistan fuera del contenedor, ya que este es desechable. La solución es enlazar volúmenes. Primero hagamos esto con MongoDB.De manera predeterminada, MongoDB, dentro del contenedor, va a guardar los datos en /data/db, y esto está bien, de hecho nosotros creamos ese directorio en el archivo Dockerfile. MongoDB va a pensar que está guardando la información en /data/db pero en realidad, la va a estar guardando fuera del contenedor en un directorio que nosotros especifiquemos.Creemos un nuevo directorio para guardar los datos de MongoDB fuera del contenedor.$ sudo mkdir -p /var/mongodbY ahora, engañemos a MongoDB para que guarde los datos en /var/mongodb$ docker run -itd -p 27017 -v /var/mongodb:/data/db --name mongodb luis/mongodbLo que estamos haciendo diferente aquí es enlazar /var/mongodb (fuera del contenedor) a /data/db (dentro del contenedor).El mismo principio va a aplicar para los archivos de la aplicación.Enlazando contenedoresAhora podemos regresar a enlazar nuestros contenedores. Primero, tenemos que clonar la aplicación, en este caso yo estoy usando una aplicación en Node.js que cree antes ,mis archivos estarán en /home/luis/Docker/blog-example.Ahora, para correr el contenedor de node.js enlazado a MongoDB debo hacer:$ docker run -itd -p 8000:3000 --name nodejs --link mongodb:mongodb -v /home/luis/Docker/blog-example:/var/www luis/nodejsExpliquemos qué es lo que estamos haciendo con ese comando. Primero, se que mi contenedor está exponiendo el puerto 3000, así que estoy redirigiendo ese puerto al puerto 8000 (eventualmente tendremos que modificar esto pero por ahora está bien dejarlo así). Segundo, le damos un nombre a nuestro contenedor. Tercero, enlazamos el contenedor de MongoDB, que básicamente permite al contenedor de Node.js acceder al contenedor de MongoDB. Finalmente, establecemos la ruta real de /var/www, engañando a nuestro contenedor sobre la ubicación real de nuestros archivos.Mi aplicación no está funcionandoLa aplicación necesita instalar varias cosas antes de correr, así que vamos a instalar dependencias antes de correrla.Matemos a nuestro contenedor primero:$ docker rm -f nodejsY ahora, entremos usando bash:$ docker run -it -p 8000:3000 --link mongodb:mongodb -v /home/luis/Docker/blog-example:/var/www luis/nodejs bashNota que no estamos daemonizing (demonizando) nuestro contenedor para que podamos acceder a él.Si listamos todos los archivos en /var/www veremos que nuestra aplicación ahí está:$ ls -la /var/wwwdrwxr-xr-x  7 1000 1000 4096 Mar 25 05:09 .drwxr-xr-x 20 root root 4096 Mar 25 05:20 ..-rw-r--r--  1 1000 1000   34 Mar 25 05:09 .bowerrcdrwxr-xr-x  8 1000 1000 4096 Mar 25 05:09 .git-rw-r--r--  1 1000 1000   44 Mar 25 05:09 .gitignore-rw-r--r--  1 1000 1000 1377 Mar 25 05:09 app.js-rw-r--r--  1 1000 1000  260 Mar 25 05:09 bower.jsondrwxr-xr-x  4 1000 1000 4096 Mar 25 05:09 components-rw-r--r--  1 1000 1000  169 Mar 25 05:09 expressjsmvc.jsondrwxr-xr-x  2 1000 1000 4096 Mar 25 05:09 lib-rw-r--r--  1 1000 1000  327 Mar 25 05:09 package.jsondrwxr-xr-x  4 1000 1000 4096 Mar 25 05:09 public-rw-r--r--  1 1000 1000  824 Mar 25 05:09 start.jsdrwxr-xr-x  2 1000 1000 4096 Mar 25 05:09 viewsVariables de ambiente o Environment variablesAntes de instalar todo, quiero mostrarte algo muy interesante llamado variables de ambiente o environment variables. Estas variables pueden ser accesadas por nuestro sistema, solo tenemos que hacer:$ envHOSTNAME=7921e0543e40MONGODB_NAME=/focused_engelbart/mongodbMONGODB_PORT_27017_TCP=tcp://172.17.0.2:27017TERM=xtermMONGODB_PORT=tcp://172.17.0.2:27017MONGODB_PORT_27017_TCP_PORT=27017PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/binPWD=/MONGODB_PORT_27017_TCP_PROTO=tcpSHLVL=1HOME=/MONGODB_PORT_27017_TCP_ADDR=172.17.0.2_=/usr/bin/envComo puedes ver, tengo múltiples variables que referencian a MongoDB, esto es por el enlace que creamos. Si echamos un vistazo a nuestra aplicación, veremos que estamos utilizando estas mismas variables:var address = process.env.MONGODB_PORT_27017_TCP_ADDR;var port = process.env.MONGODB_PORT_27017_TCP_PORT;mongoose.connect(&quot;mongodb://&quot; + address + &quot;:&quot; + port + &quot;/blog&quot;);Ahora instalemos nuestras dependencias:$ cd /var/www$ npm install ; expressjsmvc installY salgamos de nuestro contenedor:$ exitCorramos de nuevo el contenedor:$ docker run -itd -p 8000:3000 --name nodejs --link mongodb:mongodb -v /home/luis/Docker/blog-example:/var/www luis/nodejsY ahora veamos qué está pasando dentro de nuestro contenedor:$ docker logs nodejsSi no vemos ningún error, podemos finalmente abrir el navegador e ir a http://localhost:8000Deberías ver la aplicación corriendo. Puedes agregar un nuevo blog si vas a http://localhost:8000/blogs/add¿Y Varnish?Este post quedó muy largo, así que va a tener que esperar para otro día." />
+<link rel="canonical" href="http://localhost:4000/2014-03-26/como-crear-un-ambiente-de-desarrollo-con-docker-node-js-mongodb-varnish/" />
+<meta property="og:url" content="http://localhost:4000/2014-03-26/como-crear-un-ambiente-de-desarrollo-con-docker-node-js-mongodb-varnish/" />
+<meta property="og:site_name" content="Luis Elizondo" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2014-03-26T17:21:22+09:00" />
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "¿Cómo crear un ambiente de desarrollo con Docker + Node.js + MongoDB + Varnish?",
+    "datePublished": "2014-03-26T17:21:22+09:00",
+    "description": "El fin de semana pasado empecé a aprender Docker.io y debo decir que es fantástico. Desafortunadamente, al ser un proyecto relativamente nuevo, no hay mucha documentación ni tutoriales en línea. Al principio, batallé un poco pero aquí está toda la explicación para que tu no tengas que batallar. Lo que vamos a hacer es crear un blog sencillo escrito en Node.js, corriendo en una base de datos MongoDB junto con Varnish como balanceador de carga (cubierto en otro post). Vamos a usar Docker y recomiendo ampliamente que uses Vagrant para que no destruyas tu ambiente principal. En este tutorial, no voy a cubrir cómo instalar Docker o las cosas más básicas ya que hay suficiente información al respecto en la web.Lo primero que necesitamos hacer es crear un nuevo directorio, en este directorio voy a descargar 3 proyectos Git.Nuestra aplicación de Blog hecha con Node.js y Express.js MVCLa imagen de Docker para Node.jsLa imagen de Docker para MongoDBDespués de que descargues todo, puedes revisar los archivos Dockerfile. A continuación, voy a explicar qué están haciendo cada uno y cómo correrlos.Imagen Docker para Node.jsFROM ubuntu:12.04MAINTAINER Luis Elizondo &quot;lelizondo@gmail.com&quot;RUN echo &quot;deb http://archive.ubuntu.com/ubuntu precise main universe&quot; &gt; /etc/apt/sources.listRUN apt-get updateRUN apt-get install -y python-software-properties curl gitRUN add-apt-repository -y ppa:chris-lea/node.jsRUN apt-get -qq updateRUN apt-get install -y nodejsRUN npm install -g expressjsmvc express nodemon bowerEXPOSE 3000ADD start.sh /start.shRUN chmod +x /start.shCMD [&quot;/start.sh&quot;]Este proyecto tiene un archivo Dockerfile, un README, un archivo run.sh y un archivo start.sh. El archivo start.sh se usa dentro del contenedor, así que no lo vas a estar usando realmente pero es importante que no lo modifiques a menos que sepas lo que estas haciendo.El archivo run.sh está ahí para que puedas escribir “sh run.sh” en lugar de todo el comando de docker que puede ser muy largo.El archivo Dockerfile va a instalar Node.js, usar npm para instalar expressjsvmc, express, bower y nodemon; y después va a exponer el puerto 3000 antes de agregar ‘start.sh’ al contenedor para después correrlo.Antes de continuar, tengo que explicar algo con lo que batallé un poco. Cuando estas usando archivos Dockerfiles (y para ahora deberías saber qué son) básicamente construyes una imagen para que puedas correr contenedores en base a esta imagen y este contenedor va a correr como está especificado en el archivo Dockerfile. Lo que esto significa es que puedes crear un contenedor que va a correr un comando tan pronto como se crea o puedes hacer este comando opcional.Aquí hay una gran diferencia y realmente depende del servicio que estés configurando. Cuando usas la propiedad ENTRYPOINT en tu archivo Dockerfile, básicamente le estás diciendo a la imagen que corra eses comando tan pronto el contenedor es creado, así que si haces algo como lo siguiente:Dockerfile:ENTRYPOINT [&quot;/start.sh&quot;]Significa que el contenedor va a correr el archivo ‘start.sh’ cuando se cree. Si después queires hacer algo como:$ docker run -it luis/nodejs bashPara acceder al contenedor, simplemente no va a funcionar, ya que el contenedor va a ignorar cualquier comando que pases (en este caso bash) y va a correr ‘start.sh’.Así que para poder tener ambos, a veces necesitas usar CMD en lugar de ENTRYPOINT, de esta manera, el contenedor va a correr el comando si no le pasas ningún otro comando, pero si le pasas un comando, va a correrlo.Si reemplazo mi Dockerfile con:CMD [&quot;/start.sh&quot;]Entonces$ docker run -it luis/nodejs bashVa a correr bash, y:$ docker run -it luis/nodejsVa a correr start.shImagen de Docker para MongoDBFROM ubuntu:12.04MAINTAINER Luis Elizondo, lelizondo@gmail.comRUN apt-get update################## BEGIN INSTALLATION####################### Install MongoDB Following the Instructions at MongoDB DocsRef: http://docs.mongodb.org/manual/tutorial/install-mongodb-on-ubuntu/Add the package verification keyRUN apt-key adv –keyserver hkp://keyserver.ubuntu.com:80 –recv 7F0CEB10Add MongoDB to the repository sources listRUN echo ‘deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen’ | tee /etc/apt/sources.list.d/mongodb.listUpdate the repository sources list once moreRUN apt-get updateInstall MongoDB package (.deb)RUN apt-get install -y mongodb-10genCreate the default data directoryRUN mkdir -p /data/db##################### INSTALLATION END #####################Expose the default portEXPOSE 27017Default port to execute the entrypoint (MongoDB)CMD [”–port 27017”]Set default container commandENTRYPOINT /usr/bin/mongod&lt;/code&gt;Esta imagen es más simple, va a exponer dos puertos, y después va a correr el servicio mongod usando ENTRYPOINT, así que realmente no se puede acceder al contenedor a menos que reescribamos el entrypoint.Construir las imágenesEl siguiente paso es construir las imágenes, ve a cada directorio que contenga un Dockerfile y corre:$ docker build -t myname/image-name .Este comando va a construir la imagen y nombrarla con un nombre, los comandos que yo use son:$ docker build -t luis/nodejs .$ docker build -t luis/mongodb .Si quiero listar todas mis imágenes, solo hago:$ docker imagesREPOSITORY          TAG                 IMAGE ID                      luis/nodejs         latest              3e9589892ef9               luis/mongodb        latest              79868a4506c7               &lt;/code&gt;¿Cómo enlazar mis contenedores?Para este momento, ya deberías de poder correr contenedores y deberían funcionar, pero no están enlazados unos a otros, necesitamos que el contenedor de Node pueda acceder al contenedor de MongoDB. Lo primero que vamos a hacer es iniciar el contenedor de MongoDB.$ docker run -itd -p 27017 --name mongodb luis/mongodbCuando corremos este comando, Docker va a crear un nuevo contendor con la imagen “luis/mongodb”, y nombrar ese contenedor como “mongodb”, también va a detectar el puerto 27017 y va a correr este comando como un daemon. Esto último es muy importante ya que deseamos crear el contenedor y que siga corriendo.Espera, ¿y los archivos?Tanto MongoDB como la aplicación, van a necesitar leer/escribir datos en el disco duro, y probablemente quieres que esos datos persistan fuera del contenedor, ya que este es desechable. La solución es enlazar volúmenes. Primero hagamos esto con MongoDB.De manera predeterminada, MongoDB, dentro del contenedor, va a guardar los datos en /data/db, y esto está bien, de hecho nosotros creamos ese directorio en el archivo Dockerfile. MongoDB va a pensar que está guardando la información en /data/db pero en realidad, la va a estar guardando fuera del contenedor en un directorio que nosotros especifiquemos.Creemos un nuevo directorio para guardar los datos de MongoDB fuera del contenedor.$ sudo mkdir -p /var/mongodbY ahora, engañemos a MongoDB para que guarde los datos en /var/mongodb$ docker run -itd -p 27017 -v /var/mongodb:/data/db --name mongodb luis/mongodbLo que estamos haciendo diferente aquí es enlazar /var/mongodb (fuera del contenedor) a /data/db (dentro del contenedor).El mismo principio va a aplicar para los archivos de la aplicación.Enlazando contenedoresAhora podemos regresar a enlazar nuestros contenedores. Primero, tenemos que clonar la aplicación, en este caso yo estoy usando una aplicación en Node.js que cree antes ,mis archivos estarán en /home/luis/Docker/blog-example.Ahora, para correr el contenedor de node.js enlazado a MongoDB debo hacer:$ docker run -itd -p 8000:3000 --name nodejs --link mongodb:mongodb -v /home/luis/Docker/blog-example:/var/www luis/nodejsExpliquemos qué es lo que estamos haciendo con ese comando. Primero, se que mi contenedor está exponiendo el puerto 3000, así que estoy redirigiendo ese puerto al puerto 8000 (eventualmente tendremos que modificar esto pero por ahora está bien dejarlo así). Segundo, le damos un nombre a nuestro contenedor. Tercero, enlazamos el contenedor de MongoDB, que básicamente permite al contenedor de Node.js acceder al contenedor de MongoDB. Finalmente, establecemos la ruta real de /var/www, engañando a nuestro contenedor sobre la ubicación real de nuestros archivos.Mi aplicación no está funcionandoLa aplicación necesita instalar varias cosas antes de correr, así que vamos a instalar dependencias antes de correrla.Matemos a nuestro contenedor primero:$ docker rm -f nodejsY ahora, entremos usando bash:$ docker run -it -p 8000:3000 --link mongodb:mongodb -v /home/luis/Docker/blog-example:/var/www luis/nodejs bashNota que no estamos daemonizing (demonizando) nuestro contenedor para que podamos acceder a él.Si listamos todos los archivos en /var/www veremos que nuestra aplicación ahí está:$ ls -la /var/wwwdrwxr-xr-x  7 1000 1000 4096 Mar 25 05:09 .drwxr-xr-x 20 root root 4096 Mar 25 05:20 ..-rw-r--r--  1 1000 1000   34 Mar 25 05:09 .bowerrcdrwxr-xr-x  8 1000 1000 4096 Mar 25 05:09 .git-rw-r--r--  1 1000 1000   44 Mar 25 05:09 .gitignore-rw-r--r--  1 1000 1000 1377 Mar 25 05:09 app.js-rw-r--r--  1 1000 1000  260 Mar 25 05:09 bower.jsondrwxr-xr-x  4 1000 1000 4096 Mar 25 05:09 components-rw-r--r--  1 1000 1000  169 Mar 25 05:09 expressjsmvc.jsondrwxr-xr-x  2 1000 1000 4096 Mar 25 05:09 lib-rw-r--r--  1 1000 1000  327 Mar 25 05:09 package.jsondrwxr-xr-x  4 1000 1000 4096 Mar 25 05:09 public-rw-r--r--  1 1000 1000  824 Mar 25 05:09 start.jsdrwxr-xr-x  2 1000 1000 4096 Mar 25 05:09 viewsVariables de ambiente o Environment variablesAntes de instalar todo, quiero mostrarte algo muy interesante llamado variables de ambiente o environment variables. Estas variables pueden ser accesadas por nuestro sistema, solo tenemos que hacer:$ envHOSTNAME=7921e0543e40MONGODB_NAME=/focused_engelbart/mongodbMONGODB_PORT_27017_TCP=tcp://172.17.0.2:27017TERM=xtermMONGODB_PORT=tcp://172.17.0.2:27017MONGODB_PORT_27017_TCP_PORT=27017PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/binPWD=/MONGODB_PORT_27017_TCP_PROTO=tcpSHLVL=1HOME=/MONGODB_PORT_27017_TCP_ADDR=172.17.0.2_=/usr/bin/envComo puedes ver, tengo múltiples variables que referencian a MongoDB, esto es por el enlace que creamos. Si echamos un vistazo a nuestra aplicación, veremos que estamos utilizando estas mismas variables:var address = process.env.MONGODB_PORT_27017_TCP_ADDR;var port = process.env.MONGODB_PORT_27017_TCP_PORT;mongoose.connect(&quot;mongodb://&quot; + address + &quot;:&quot; + port + &quot;/blog&quot;);Ahora instalemos nuestras dependencias:$ cd /var/www$ npm install ; expressjsmvc installY salgamos de nuestro contenedor:$ exitCorramos de nuevo el contenedor:$ docker run -itd -p 8000:3000 --name nodejs --link mongodb:mongodb -v /home/luis/Docker/blog-example:/var/www luis/nodejsY ahora veamos qué está pasando dentro de nuestro contenedor:$ docker logs nodejsSi no vemos ningún error, podemos finalmente abrir el navegador e ir a http://localhost:8000Deberías ver la aplicación corriendo. Puedes agregar un nuevo blog si vas a http://localhost:8000/blogs/add¿Y Varnish?Este post quedó muy largo, así que va a tener que esperar para otro día.",
+    "url": "http://localhost:4000/2014-03-26/como-crear-un-ambiente-de-desarrollo-con-docker-node-js-mongodb-varnish/"
+  }
+</script>
+<!-- End Jekyll SEO tag -->
+
+
+  <!-- Google Analytics -->
+
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-39814139-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+
+
+
+</head>
+
+<body>
+  <div class="content-container">
+    <header>
+  <h1 class="header-small">
+    <a href="http://localhost:4000">< BACK</a>
+  </h1>
+</header>
+<div class="post">
+  <h1 class="post-title">¿Cómo crear un ambiente de desarrollo con Docker + Node.js + MongoDB + Varnish?</h1>
+  <span class="post-date">
+    <time>26 Mar 2014</time>
+  </span>
+  <div class="post-tag">
+    <ul>
+      
+      <li>
+        <a href="http://localhost:4000/tags#docker" class="tag">
+          <span class="term">docker</span>
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="http://localhost:4000/tags#espanol" class="tag">
+          <span class="term">espanol</span>
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="http://localhost:4000/tags#mongodb" class="tag">
+          <span class="term">mongodb</span>
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="http://localhost:4000/tags#node-js" class="tag">
+          <span class="term">node-js</span>
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="http://localhost:4000/tags#nodejs" class="tag">
+          <span class="term">nodejs</span>
+        </a>
+      </li>
+      
+      
+    </ul>
+  </div>
+
+  <p>El fin de semana pasado empecé a aprender <a href="https://www.docker.io/" target="_blank">Docker.io</a> y debo decir que es fantástico. Desafortunadamente, al ser un proyecto relativamente nuevo, no hay mucha documentación ni tutoriales en línea. Al principio, batallé un poco pero aquí está toda la explicación para que tu no tengas que batallar. Lo que vamos a hacer es crear un blog sencillo escrito en Node.js, corriendo en una base de datos MongoDB junto con Varnish como balanceador de carga (cubierto en otro post). Vamos a usar Docker y recomiendo ampliamente que uses Vagrant para que no destruyas tu ambiente principal. En este tutorial, no voy a cubrir cómo instalar Docker o las cosas más básicas ya que hay suficiente información al respecto en la web.</p>
+
+<p>Lo primero que necesitamos hacer es crear un nuevo directorio, en este directorio voy a descargar 3 proyectos Git.</p>
+
+<ul>
+<li><a target="_blank" href="https://github.com/luiselizondo/blog-example">Nuestra aplicación de Blog hecha con Node.js y Express.js MVC</a></li>
+<li><a target="_blank" href="https://github.com/luiselizondo/docker-nodejs">La imagen de Docker para 
+Node.js</a></li>
+<li><a target="_blank" href="https://github.com/luiselizondo/docker-mongo">La imagen de Docker para MongoDB</a></li>
+</ul>
+
+<p>Después de que descargues todo, puedes revisar los archivos Dockerfile. A continuación, voy a explicar qué están haciendo cada uno y cómo correrlos.</p>
+
+<h3>Imagen Docker para Node.js</h3>
+
+<blockcode>
+FROM ubuntu:12.04
+MAINTAINER Luis Elizondo "lelizondo@gmail.com"
+RUN echo "deb http://archive.ubuntu.com/ubuntu precise main universe" &gt; /etc/apt/sources.list
+RUN apt-get updateRUN apt-get install -y python-software-properties curl git
+RUN add-apt-repository -y ppa:chris-lea/node.js
+RUN apt-get -qq update
+RUN apt-get install -y nodejs
+RUN npm install -g expressjsmvc express nodemon bower
+EXPOSE 3000
+ADD start.sh /start.sh
+RUN chmod +x /start.sh
+CMD ["/start.sh"]
+</blockcode>
+
+<p>Este proyecto tiene un archivo Dockerfile, un README, un archivo run.sh y un archivo start.sh. El archivo start.sh se usa <em>dentro</em> del contenedor, así que no lo vas a estar usando realmente pero es importante que no lo modifiques a menos que sepas lo que estas haciendo.</p>
+
+<p>El archivo run.sh está ahí para que puedas escribir “sh run.sh” en lugar de todo el comando de docker que puede ser muy largo.</p>
+
+<p>El archivo Dockerfile va a instalar Node.js, usar npm para instalar expressjsvmc, express, bower y nodemon; y después va a exponer el puerto 3000 antes de agregar ‘start.sh’ al contenedor para después correrlo.</p>
+
+<p>Antes de continuar, tengo que explicar algo con lo que batallé un poco. Cuando estas usando archivos Dockerfiles (y para ahora deberías saber qué son) básicamente construyes una imagen para que puedas correr contenedores en base a esta imagen y este contenedor va a correr como está especificado en el archivo Dockerfile. Lo que esto significa es que puedes crear un contenedor que va a correr un comando tan pronto como se crea <em>o</em> puedes hacer este comando opcional.</p>
+
+<p>Aquí hay una gran diferencia y realmente depende del servicio que estés configurando. Cuando usas la propiedad ENTRYPOINT en tu archivo Dockerfile, básicamente le estás diciendo a la imagen que corra eses comando tan pronto el contenedor es creado, así que si haces algo como lo siguiente:</p>
+
+<p>Dockerfile:</p>
+
+<p><code>
+ENTRYPOINT ["/start.sh"]
+</code></p>
+
+<p>Significa que el contenedor va a correr el archivo ‘start.sh’ cuando se cree. Si después queires hacer algo como:</p>
+
+<p><code>
+$ docker run -it luis/nodejs bash
+</code></p>
+
+<p>Para acceder al contenedor, simplemente no va a funcionar, ya que el contenedor va a ignorar cualquier comando que pases (en este caso bash) y va a correr ‘start.sh’.</p>
+
+<p>Así que para poder tener ambos, a veces necesitas usar CMD en lugar de ENTRYPOINT, de esta manera, el contenedor va a correr el comando si no le pasas ningún otro comando, pero si le pasas un comando, va a correrlo.</p>
+
+<p>Si reemplazo mi Dockerfile con:</p>
+
+<p><code>
+CMD ["/start.sh"]
+</code></p>
+
+<p>Entonces</p>
+
+<p><code>
+$ docker run -it luis/nodejs bash
+</code></p>
+
+<p>Va a correr bash, y:</p>
+
+<p><code>
+$ docker run -it luis/nodejs
+</code></p>
+
+<p>Va a correr start.sh</p>
+
+<h3>Imagen de Docker para MongoDB</h3>
+<p><code>
+FROM ubuntu:12.04
+MAINTAINER Luis Elizondo, lelizondo@gmail.com
+RUN apt-get update</code></p>
+
+<p>################## BEGIN INSTALLATION
+####################### Install MongoDB Following the Instructions at MongoDB Docs</p>
+<h1 id="ref-httpdocsmongodborgmanualtutorialinstall-mongodb-on-ubuntu">Ref: http://docs.mongodb.org/manual/tutorial/install-mongodb-on-ubuntu/</h1>
+
+<h1 id="add-the-package-verification-key">Add the package verification key</h1>
+<p>RUN apt-key adv –keyserver hkp://keyserver.ubuntu.com:80 –recv 7F0CEB10</p>
+
+<h1 id="add-mongodb-to-the-repository-sources-list">Add MongoDB to the repository sources list</h1>
+<p>RUN echo ‘deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen’ | tee /etc/apt/sources.list.d/mongodb.list</p>
+
+<h1 id="update-the-repository-sources-list-once-more">Update the repository sources list once more</h1>
+<p>RUN apt-get update</p>
+
+<h1 id="install-mongodb-package-deb">Install MongoDB package (.deb)</h1>
+<p>RUN apt-get install -y mongodb-10gen</p>
+
+<h1 id="create-the-default-data-directory">Create the default data directory</h1>
+<p>RUN mkdir -p /data/db</p>
+
+<p>##################### INSTALLATION END #####################</p>
+<h1 id="expose-the-default-port">Expose the default port</h1>
+<p>EXPOSE 27017</p>
+
+<h1 id="default-port-to-execute-the-entrypoint-mongodb">Default port to execute the entrypoint (MongoDB)</h1>
+<p>CMD [”–port 27017”]</p>
+
+<h1 id="set-default-container-command">Set default container command</h1>
+<p>ENTRYPOINT /usr/bin/mongod
+&lt;/code&gt;</p>
+
+<p>Esta imagen es más simple, va a exponer dos puertos, y después va a correr el servicio mongod usando ENTRYPOINT, así que realmente no se puede acceder al contenedor a menos que reescribamos el entrypoint.</p>
+
+<h3>Construir las imágenes</h3>
+<p>El siguiente paso es construir las imágenes, ve a cada directorio que contenga un Dockerfile y corre:</p>
+
+<p><code>
+$ docker build -t myname/image-name .
+</code></p>
+
+<p>Este comando va a construir la imagen y nombrarla con un nombre, los comandos que yo use son:</p>
+
+<p><code>
+$ docker build -t luis/nodejs .
+$ docker build -t luis/mongodb .
+</code></p>
+
+<p>Si quiero listar todas mis imágenes, solo hago:</p>
+
+<p><code>
+$ docker images</code></p>
+
+<p>REPOSITORY          TAG                 IMAGE ID                      <br />
+luis/nodejs         latest              3e9589892ef9               <br />
+luis/mongodb        latest              79868a4506c7               <br />
+&lt;/code&gt;</p>
+
+<h3>¿Cómo enlazar mis contenedores?</h3>
+
+<p>Para este momento, ya deberías de poder correr contenedores y deberían funcionar, pero no están enlazados unos a otros, necesitamos que el contenedor de Node pueda acceder al contenedor de MongoDB. Lo primero que vamos a hacer es iniciar el contenedor de MongoDB.</p>
+
+<p><code>
+$ docker run -itd -p 27017 --name mongodb luis/mongodb
+</code></p>
+
+<p>Cuando corremos este comando, Docker va a crear un nuevo contendor con la imagen “luis/mongodb”, y nombrar ese contenedor como “mongodb”, también va a detectar el puerto 27017 y va a correr este comando como un daemon. Esto último es muy importante ya que deseamos crear el contenedor y que siga corriendo.</p>
+
+<h3>Espera, ¿y los archivos?</h3>
+<p>Tanto MongoDB como la aplicación, van a necesitar leer/escribir datos en el disco duro, y probablemente quieres que esos datos persistan fuera del contenedor, ya que este es desechable. La solución es enlazar volúmenes. Primero hagamos esto con MongoDB.</p>
+
+<p>De manera predeterminada, MongoDB, dentro del contenedor, va a guardar los datos en /data/db, y esto está bien, de hecho nosotros creamos ese directorio en el archivo Dockerfile. MongoDB va a pensar que está guardando la información en /data/db pero en realidad, la va a estar guardando fuera del contenedor en un directorio que nosotros especifiquemos.</p>
+
+<p>Creemos un nuevo directorio para guardar los datos de MongoDB <em>fuera</em> del contenedor.</p>
+
+<p><code>
+$ sudo mkdir -p /var/mongodb
+</code></p>
+
+<p>Y ahora, engañemos a MongoDB para que guarde los datos en /var/mongodb</p>
+
+<p><code>
+$ docker run -itd -p 27017 -v /var/mongodb:/data/db --name mongodb luis/mongodb
+</code></p>
+
+<p>Lo que estamos haciendo diferente aquí es enlazar /var/mongodb (fuera del contenedor) a /data/db (dentro del contenedor).</p>
+
+<p>El mismo principio va a aplicar para los archivos de la aplicación.</p>
+
+<h3>Enlazando contenedores</h3>
+<p>Ahora podemos regresar a enlazar nuestros contenedores. Primero, tenemos que clonar la aplicación, en este caso yo estoy usando una aplicación en Node.js que cree antes ,mis archivos estarán en /home/luis/Docker/blog-example.</p>
+
+<p>Ahora, para correr el contenedor de node.js enlazado a MongoDB debo hacer:</p>
+
+<p><code>
+$ docker run -itd -p 8000:3000 --name nodejs --link mongodb:mongodb -v /home/luis/Docker/blog-example:/var/www luis/nodejs
+</code></p>
+
+<p>Expliquemos qué es lo que estamos haciendo con ese comando. Primero, se que mi contenedor está exponiendo el puerto 3000, así que estoy redirigiendo ese puerto al puerto 8000 (eventualmente tendremos que modificar esto pero por ahora está bien dejarlo así). Segundo, le damos un nombre a nuestro contenedor. Tercero, enlazamos el contenedor de MongoDB, que básicamente permite al contenedor de Node.js acceder al contenedor de MongoDB. Finalmente, establecemos la ruta real de /var/www, engañando a nuestro contenedor sobre la ubicación real de nuestros archivos.</p>
+
+<h3>Mi aplicación no está funcionando</h3>
+<p>La aplicación necesita instalar varias cosas antes de correr, así que vamos a instalar dependencias antes de correrla.</p>
+
+<p>Matemos a nuestro contenedor primero:</p>
+
+<p><code>
+$ docker rm -f nodejs
+</code></p>
+
+<p>Y ahora, entremos usando bash:</p>
+
+<p><code>
+$ docker run -it -p 8000:3000 --link mongodb:mongodb -v /home/luis/Docker/blog-example:/var/www luis/nodejs bash
+</code></p>
+
+<p>Nota que no estamos daemonizing (demonizando) nuestro contenedor para que podamos acceder a él.</p>
+
+<p>Si listamos todos los archivos en /var/www veremos que nuestra aplicación ahí está:</p>
+
+<p><code>
+$ ls -la /var/www
+drwxr-xr-x  7 1000 1000 4096 Mar 25 05:09 .
+drwxr-xr-x 20 root root 4096 Mar 25 05:20 ..
+-rw-r--r--  1 1000 1000   34 Mar 25 05:09 .bowerrc
+drwxr-xr-x  8 1000 1000 4096 Mar 25 05:09 .git
+-rw-r--r--  1 1000 1000   44 Mar 25 05:09 .gitignore
+-rw-r--r--  1 1000 1000 1377 Mar 25 05:09 app.js
+-rw-r--r--  1 1000 1000  260 Mar 25 05:09 bower.json
+drwxr-xr-x  4 1000 1000 4096 Mar 25 05:09 components
+-rw-r--r--  1 1000 1000  169 Mar 25 05:09 expressjsmvc.json
+drwxr-xr-x  2 1000 1000 4096 Mar 25 05:09 lib
+-rw-r--r--  1 1000 1000  327 Mar 25 05:09 package.json
+drwxr-xr-x  4 1000 1000 4096 Mar 25 05:09 public
+-rw-r--r--  1 1000 1000  824 Mar 25 05:09 start.js
+drwxr-xr-x  2 1000 1000 4096 Mar 25 05:09 views
+</code></p>
+
+<h3>Variables de ambiente o Environment variables</h3>
+<p>Antes de instalar todo, quiero mostrarte algo muy interesante llamado variables de ambiente o environment variables. Estas variables pueden ser accesadas por nuestro sistema, solo tenemos que hacer:</p>
+
+<p><code>
+$ env
+HOSTNAME=7921e0543e40
+MONGODB_NAME=/focused_engelbart/mongodb
+MONGODB_PORT_27017_TCP=tcp://172.17.0.2:27017
+TERM=xterm
+MONGODB_PORT=tcp://172.17.0.2:27017
+MONGODB_PORT_27017_TCP_PORT=27017
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+PWD=/
+MONGODB_PORT_27017_TCP_PROTO=tcp
+SHLVL=1
+HOME=/
+MONGODB_PORT_27017_TCP_ADDR=172.17.0.2
+_=/usr/bin/env
+</code></p>
+
+<p>Como puedes ver, tengo múltiples variables que referencian a MongoDB, esto es por el enlace que creamos. Si echamos un vistazo a nuestra aplicación, veremos que estamos utilizando estas mismas variables:</p>
+
+<p><code>
+var address = process.env.MONGODB_PORT_27017_TCP_ADDR;
+var port = process.env.MONGODB_PORT_27017_TCP_PORT;
+mongoose.connect("mongodb://" + address + ":" + port + "/blog");
+</code></p>
+
+<p>Ahora instalemos nuestras dependencias:</p>
+
+<p><code>
+$ cd /var/www
+$ npm install ; expressjsmvc install
+</code></p>
+
+<p>Y salgamos de nuestro contenedor:</p>
+
+<p><code>
+$ exit
+</code></p>
+
+<p>Corramos de nuevo el contenedor:</p>
+
+<p><code>
+$ docker run -itd -p 8000:3000 --name nodejs --link mongodb:mongodb -v /home/luis/Docker/blog-example:/var/www luis/nodejs
+</code></p>
+
+<p>Y ahora veamos qué está pasando dentro de nuestro contenedor:</p>
+
+<p><code>
+$ docker logs nodejs
+</code></p>
+
+<p>Si no vemos ningún error, podemos finalmente abrir el navegador e ir a http://localhost:8000</p>
+
+<p>Deberías ver la aplicación corriendo. Puedes agregar un nuevo blog si vas a http://localhost:8000/blogs/add</p>
+
+<h3>¿Y Varnish?</h3>
+<p>Este post quedó muy largo, así que va a tener que esperar para otro día.</p>
+
+
+
+  <!-- Share -->
+  
+  <div class="post-share">
+    <hr>
+    <span>Share this: <br /></span>
+<a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/2014-03-26/como-crear-un-ambiente-de-desarrollo-con-docker-node-js-mongodb-varnish/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-facebook"></a>
+<a href="https://twitter.com/intent/tweet?text=¿Cómo crear un ambiente de desarrollo con Docker + Node.js + MongoDB + Varnish?&url=http://localhost:4000/2014-03-26/como-crear-un-ambiente-de-desarrollo-con-docker-node-js-mongodb-varnish/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-twitter"></a>
+<a href="https://plus.google.com/share?url=http://localhost:4000/2014-03-26/como-crear-un-ambiente-de-desarrollo-con-docker-node-js-mongodb-varnish/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-google-plus"></a>
+<a href="https://www.tumblr.com/share?url=http://localhost:4000/2014-03-26/como-crear-un-ambiente-de-desarrollo-con-docker-node-js-mongodb-varnish/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-tumblr"></a>
+<a href="mailto:?subject=¿Cómo crear un ambiente de desarrollo con Docker + Node.js + MongoDB + Varnish?&amp;body=Check out this site http://localhost:4000/2014-03-26/como-crear-un-ambiente-de-desarrollo-con-docker-node-js-mongodb-varnish/" class="ssk ssk-icon ssk-email"></a>
+
+    <hr>
+  </div>
+  
+
+  <!-- Disqus -->
+  
+  <section id="disqus_thread"></section>
+  <script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables */
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = '//luiselizondobaez.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+</div>
+
+
+    <!-- Documents about icons are here: http://fontawesome.io/icons/ -->
+<div class="footer">
+	<hr />
+	<div class="footer-link">
+		
+
+		
+		<a href="https://twitter.com/lelizondo"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+		
+
+		
+		<a href="https://github.com/luiselizondo"><i class="fa fa-github" aria-hidden="true"></i></a>
+		
+
+		
+		<a href="https://www.linkedin.com/in/luiselizondobaez"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
+		
+
+		
+
+		
+
+		
+
+	</div>
+	© 2016 Luis Elizondo. All rights reserved.
+</div>
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Technologies behind the web. Part 1: The Web Server. (Explained for non techincal users)</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/assets/css/main.css" type="text/css">
+  <link rel="stylesheet" href="/assets/css/social-share-kit.css" type="text/css">
+
+  <!-- Font -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+
+
+  <link rel="alternate" type="application/rss+xml" title="RSS Feed for Luis Elizondo" href="/feed.xml" />
+  <!-- Begin Jekyll SEO tag v2.0.0 -->
+<title>Technologies behind the web. Part 1: The Web Server. (Explained for non techincal users) - Luis Elizondo</title>
+<meta property="og:title" content="Technologies behind the web. Part 1: The Web Server. (Explained for non techincal users)" />
+<meta name="description" content="The web is getting old, by know, you probably use it everyday, but the web is more than just your browser or that thing everyone talks about called Twitter. The web is a very complex infrastructure of web servers running software that makes really easy for you to just tweet or friend someone on Facebook.Behind the web there&#8217;s a web server, who is responsible of serving your browser a web page, there&#8217;s also a database (something like Excel or Microsoft Access but more complex) to store everything you post or read, and finally there&#8217;s a program that interacts between the web server and the database.So the web server serves your browser (like Firefox, Chrome, Safari, Opera or even Internet Explorer) with information, that information can be images, text, video, audio, and more. But here&#8217;s the interesting thing, what you really see on your screen, is not what the web server is actually sending to your browser, the web server is sending HTML code. This code will be interpreted by the browser and instead of code, you get text with nice fonts, links and more (to see how HTML code looks like go to http://www.sheldonbrown.com/web_sample1.html).A great example of a web server is Apache, made by the Apache Foundation. It is a great, and open source program that it is highly used. Of course, there are others, like Nginx and Internet Information Services (IIS) made by Microsoft.So next time you browse the web, you&#8217;ll know there&#8217;s this thing called a web server, probably Apache since it runs con more than half of the web servers in the world, that is the software responsible for giving you that page you want to see. The same is applied to services like Twitter or whatever app you open on your phone.In Part 2 I will talk about databases and in Part 3 about the guys in the middle." />
+<meta property="og:description" content="The web is getting old, by know, you probably use it everyday, but the web is more than just your browser or that thing everyone talks about called Twitter. The web is a very complex infrastructure of web servers running software that makes really easy for you to just tweet or friend someone on Facebook.Behind the web there&#8217;s a web server, who is responsible of serving your browser a web page, there&#8217;s also a database (something like Excel or Microsoft Access but more complex) to store everything you post or read, and finally there&#8217;s a program that interacts between the web server and the database.So the web server serves your browser (like Firefox, Chrome, Safari, Opera or even Internet Explorer) with information, that information can be images, text, video, audio, and more. But here&#8217;s the interesting thing, what you really see on your screen, is not what the web server is actually sending to your browser, the web server is sending HTML code. This code will be interpreted by the browser and instead of code, you get text with nice fonts, links and more (to see how HTML code looks like go to http://www.sheldonbrown.com/web_sample1.html).A great example of a web server is Apache, made by the Apache Foundation. It is a great, and open source program that it is highly used. Of course, there are others, like Nginx and Internet Information Services (IIS) made by Microsoft.So next time you browse the web, you&#8217;ll know there&#8217;s this thing called a web server, probably Apache since it runs con more than half of the web servers in the world, that is the software responsible for giving you that page you want to see. The same is applied to services like Twitter or whatever app you open on your phone.In Part 2 I will talk about databases and in Part 3 about the guys in the middle." />
+<link rel="canonical" href="http://localhost:4000/2012-06-07/technologies-behind-the-web-part-1-the-web-server-explained-for-non-techincal-users/" />
+<meta property="og:url" content="http://localhost:4000/2012-06-07/technologies-behind-the-web-part-1-the-web-server-explained-for-non-techincal-users/" />
+<meta property="og:site_name" content="Luis Elizondo" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2012-06-07T19:39:00+09:00" />
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Technologies behind the web. Part 1: The Web Server. (Explained for non techincal users)",
+    "datePublished": "2012-06-07T19:39:00+09:00",
+    "description": "The web is getting old, by know, you probably use it everyday, but the web is more than just your browser or that thing everyone talks about called Twitter. The web is a very complex infrastructure of web servers running software that makes really easy for you to just tweet or friend someone on Facebook.Behind the web there&#8217;s a web server, who is responsible of serving your browser a web page, there&#8217;s also a database (something like Excel or Microsoft Access but more complex) to store everything you post or read, and finally there&#8217;s a program that interacts between the web server and the database.So the web server serves your browser (like Firefox, Chrome, Safari, Opera or even Internet Explorer) with information, that information can be images, text, video, audio, and more. But here&#8217;s the interesting thing, what you really see on your screen, is not what the web server is actually sending to your browser, the web server is sending HTML code. This code will be interpreted by the browser and instead of code, you get text with nice fonts, links and more (to see how HTML code looks like go to http://www.sheldonbrown.com/web_sample1.html).A great example of a web server is Apache, made by the Apache Foundation. It is a great, and open source program that it is highly used. Of course, there are others, like Nginx and Internet Information Services (IIS) made by Microsoft.So next time you browse the web, you&#8217;ll know there&#8217;s this thing called a web server, probably Apache since it runs con more than half of the web servers in the world, that is the software responsible for giving you that page you want to see. The same is applied to services like Twitter or whatever app you open on your phone.In Part 2 I will talk about databases and in Part 3 about the guys in the middle.",
+    "url": "http://localhost:4000/2012-06-07/technologies-behind-the-web-part-1-the-web-server-explained-for-non-techincal-users/"
+  }
+</script>
+<!-- End Jekyll SEO tag -->
+
+
+  <!-- Google Analytics -->
+
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-39814139-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+
+
+
+</head>
+
+<body>
+  <div class="content-container">
+    <header>
+  <h1 class="header-small">
+    <a href="http://localhost:4000">< BACK</a>
+  </h1>
+</header>
+<div class="post">
+  <h1 class="post-title">Technologies behind the web. Part 1: The Web Server. (Explained for non techincal users)</h1>
+  <span class="post-date">
+    <time>07 Jun 2012</time>
+  </span>
+  <div class="post-tag">
+    <ul>
+      
+      <li>
+        <a href="http://localhost:4000/tags#apache" class="tag">
+          <span class="term">apache</span>
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="http://localhost:4000/tags#htmp" class="tag">
+          <span class="term">htmp</span>
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="http://localhost:4000/tags#http" class="tag">
+          <span class="term">http</span>
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="http://localhost:4000/tags#theweb" class="tag">
+          <span class="term">theweb</span>
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="http://localhost:4000/tags#web" class="tag">
+          <span class="term">web</span>
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="http://localhost:4000/tags#webserver" class="tag">
+          <span class="term">webserver</span>
+        </a>
+      </li>
+      
+      
+    </ul>
+  </div>
+
+  <p>The web is getting old, by know, you probably use it everyday, but the web is more than just your browser or that thing everyone talks about called Twitter. The web is a very complex infrastructure of web servers running software that makes really easy for you to just tweet or friend someone on Facebook.</p>
+<p>Behind the web there&#8217;s a web server, who is responsible of serving your browser a web page, there&#8217;s also a database (something like Excel or Microsoft Access but more complex) to store everything you post or read, and finally there&#8217;s a program that interacts between the web server and the database.</p>
+<p>So the web server serves your browser (like Firefox, Chrome, Safari, Opera or even Internet Explorer) with information, that information can be images, text, video, audio, and more. But here&#8217;s the interesting thing, what you really see on your screen, is not what the web server is actually sending to your browser, the web server is sending HTML code. This code will be interpreted by the browser and instead of code, you get text with nice fonts, links and more (to see how HTML code looks like go to <a href="http://www.sheldonbrown.com/web_sample1.html">http://www.sheldonbrown.com/web_sample1.html</a>).</p>
+<p>A great example of a web server is <a href="http://httpd.apache.org/" title="Apache HTTP Project" target="_blank">Apache</a>, made by the <a href="http://apache.org/" title="Apache Foundation" target="_blank">Apache Foundation</a>. It is a great, and open source program that it is highly used. Of course, there are others, like <a href="http://nginx.org/" title="Nginx" target="_blank">Nginx</a> and Internet Information Services (IIS) made by Microsoft.</p>
+<p>So next time you browse the web, you&#8217;ll know there&#8217;s this thing called a web server, probably Apache since it runs con more than half of the web servers in the world, that is the software responsible for giving you that page you want to see. The same is applied to services like Twitter or whatever app you open on your phone.</p>
+<p>In Part 2 I will talk about databases and in Part 3 about the guys in the middle.</p>
+
+
+
+  <!-- Share -->
+  
+  <div class="post-share">
+    <hr>
+    <span>Share this: <br /></span>
+<a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/2012-06-07/technologies-behind-the-web-part-1-the-web-server-explained-for-non-techincal-users/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-facebook"></a>
+<a href="https://twitter.com/intent/tweet?text=Technologies behind the web. Part 1: The Web Server. (Explained for non techincal users)&url=http://localhost:4000/2012-06-07/technologies-behind-the-web-part-1-the-web-server-explained-for-non-techincal-users/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-twitter"></a>
+<a href="https://plus.google.com/share?url=http://localhost:4000/2012-06-07/technologies-behind-the-web-part-1-the-web-server-explained-for-non-techincal-users/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-google-plus"></a>
+<a href="https://www.tumblr.com/share?url=http://localhost:4000/2012-06-07/technologies-behind-the-web-part-1-the-web-server-explained-for-non-techincal-users/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-tumblr"></a>
+<a href="mailto:?subject=Technologies behind the web. Part 1: The Web Server. (Explained for non techincal users)&amp;body=Check out this site http://localhost:4000/2012-06-07/technologies-behind-the-web-part-1-the-web-server-explained-for-non-techincal-users/" class="ssk ssk-icon ssk-email"></a>
+
+    <hr>
+  </div>
+  
+
+  <!-- Disqus -->
+  
+  <section id="disqus_thread"></section>
+  <script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables */
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = '//luiselizondobaez.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+</div>
+
+
+    <!-- Documents about icons are here: http://fontawesome.io/icons/ -->
+<div class="footer">
+	<hr />
+	<div class="footer-link">
+		
+
+		
+		<a href="https://twitter.com/lelizondo"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+		
+
+		
+		<a href="https://github.com/luiselizondo"><i class="fa fa-github" aria-hidden="true"></i></a>
+		
+
+		
+		<a href="https://www.linkedin.com/in/luiselizondobaez"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
+		
+
+		
+
+		
+
+		
+
+	</div>
+	© 2016 Luis Elizondo. All rights reserved.
+</div>
+
+  </div>
+</body>
+</html>

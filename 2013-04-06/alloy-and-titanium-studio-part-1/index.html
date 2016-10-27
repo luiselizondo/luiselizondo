@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Alloy and Titanium Studio, Part 1</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/assets/css/main.css" type="text/css">
+  <link rel="stylesheet" href="/assets/css/social-share-kit.css" type="text/css">
+
+  <!-- Font -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+
+
+  <link rel="alternate" type="application/rss+xml" title="RSS Feed for Luis Elizondo" href="/feed.xml" />
+  <!-- Begin Jekyll SEO tag v2.0.0 -->
+<title>Alloy and Titanium Studio, Part 1 - Luis Elizondo</title>
+<meta property="og:title" content="Alloy and Titanium Studio, Part 1" />
+<meta name="description" content="Titanium Studio introduced Alloy, an MVC Framework. I&#39;m not gonna cover the installation or basic concepts of an MVC because you can find enough resources on the web about them, I&#39;ll just focus on what&#39;s not on the web, how to use it and the things you can do with it. But I do  have to cover some basics.You don&#39;t touch the Resources directoryControllers go in the app/controllers folder and are just javascript filesModels go in the app/models folder and are javascript filesStyles go in app/styles and are a mix between JSON and CSS. All files have the tss extension, which means Titanium Style SheetsViews to in app/views and are xml files. You can use ids and classes to create elements, everything should be wrapped inStyles, Models, Controllers and Views are all tied together by the name of the file, that means there&#39;s a relationship between the files and that relationship is created by the name of the file. So, if you create a new View called &quot;loginScreen.xml&quot;, you should name the controller &quot;loginScreen.js&quot; and the style loginScreen.tssAlloy is Backbone.js and Underscore.js compatible/based, so if you know how to use Backbone.js then you won&#39;t start from zero, if you don&#39;t it&#39;s higly recommended that you spend a few days learning it.Forget pretty much about everything you know about Titanium Studio before Alloy. You can still use the old way to code, but it&#39;s not recommended. Anyway, once you start using Alloy, you&#39;ll love it.Let&#39;s do something easy. I&#39;ll create two Windows. In one window, you&#39;ll enter a value in a textfield, once you click a button, we&#39;ll open a new window and do something with the entered value. This is pretty much what we do with a login screen.CodeSo let’s code, first, we’ll create the two XMLs, the first one is index.xml and it’s the first window that will be loaded unless you override this behaviour. For now, I will just forget the tss files ut keep in mind that we use ids and classes. We use ids too in controllers to reference a window or objects in the XML file, like buttons, labels, etc.File index.xml:            Enter the URL of the site you want to connect                Save    &lt;/code&gt;So, what are we doing here? We create a Window and give it an id (urlWindow). Then inside, we add three elements, a label with a text, a textfield with an id (you’ll se later why) and a button. Notice that the button has an onClick event, the property will load a callback in the controller file.File index.js:function urlRegistered(e) {    var valueEntered = $.textField.getValue();    $.urlWindow.close();    $.urlWindow = null;    var args = {        data : &quot;This value will be passed to loginWindow and be inserted in a label&quot;,        value : valueEntered,    }    // Create a new Window by loading the controller loginWindow    // Pass args as arguments, we&#39;ll catch them up in loginWindow using arguments[0]    var loginWindow = Alloy.createController(&quot;loginWindow&quot;, args);// Get the view of the controller and open itloginWindow.getView().open(); }$.urlWindow.open();&lt;/code&gt;Remember the callback we’ll execute when we click on the button? That’s the first thing we do. Notice that $.urlWindow means something like “In this context, use urlWindow” which is the id of the Window we defined in the XML file. This is really cool because we can use this objects declared in our views right into the controller files.Inside the urlRegistered function, which by now you know it will be executed when we click on the button, we get the value of the Textfield declared in the view, notice that “textField” is just the id we used in our view and can be any other value. We then close the urlWindow, declare it null to free memory and then we define an args object with some properties.Finally, we create a new controller in loginWindow. Notice that we use Alloy.createController and we pass both the name of the controller we want to use and the args object. We’ll create that file in a few moments, the important thing here is that we create the controller and then in the next line we load the view using loginWindow.getView() and open it.Now, let’s define the loginWindow, which we’ll open when we click on the Button. We need two files, the xml and the js file.File: loginWindow.xml            You&#39;ll connect to:        Login    &lt;/code&gt;Again, we create a window with a different id and add two elements. Notice that I’m assigning an id to the label because I’m gonna change the value of the label in the controller.File: loginWindow.jsfunction clickLoginButton(e) {    alert(&quot;Login button pressed&quot;);}            var args = arguments[0]             {};      $.connectionLabel.text = “data here: “ + args.data + “ “ + args.value;&lt;/code&gt;Now we define a new callback to be executed when the loginButton is clicked. We keep things simple and just alert the user with a message. The important thing is the next line because we define an arguments object and we take the first argument we passed to the controller in the index.js file. In case you forgot, in index.js we did:Alloy.createController(“loginWindow”, args);And in loginWindow.js we use that argument with:            var args = arguments[0]             {};      That way, we’ll just do args.data or args.value or whatever property we defined in args inside the index.js file.Finally, the next line is very simple, we take the connectionLabel id and assign the text value to use the args object.$.connectionLabel.text = “data here: “ + args.data + “ “ + args.value;I hope you now get an idea of how to interact with multiple controllers and views using Alloy and Titanium Studio. Is not that hard isn’t it? If you have any questions, please leave a comment." />
+<meta property="og:description" content="Titanium Studio introduced Alloy, an MVC Framework. I&#39;m not gonna cover the installation or basic concepts of an MVC because you can find enough resources on the web about them, I&#39;ll just focus on what&#39;s not on the web, how to use it and the things you can do with it. But I do  have to cover some basics.You don&#39;t touch the Resources directoryControllers go in the app/controllers folder and are just javascript filesModels go in the app/models folder and are javascript filesStyles go in app/styles and are a mix between JSON and CSS. All files have the tss extension, which means Titanium Style SheetsViews to in app/views and are xml files. You can use ids and classes to create elements, everything should be wrapped inStyles, Models, Controllers and Views are all tied together by the name of the file, that means there&#39;s a relationship between the files and that relationship is created by the name of the file. So, if you create a new View called &quot;loginScreen.xml&quot;, you should name the controller &quot;loginScreen.js&quot; and the style loginScreen.tssAlloy is Backbone.js and Underscore.js compatible/based, so if you know how to use Backbone.js then you won&#39;t start from zero, if you don&#39;t it&#39;s higly recommended that you spend a few days learning it.Forget pretty much about everything you know about Titanium Studio before Alloy. You can still use the old way to code, but it&#39;s not recommended. Anyway, once you start using Alloy, you&#39;ll love it.Let&#39;s do something easy. I&#39;ll create two Windows. In one window, you&#39;ll enter a value in a textfield, once you click a button, we&#39;ll open a new window and do something with the entered value. This is pretty much what we do with a login screen.CodeSo let’s code, first, we’ll create the two XMLs, the first one is index.xml and it’s the first window that will be loaded unless you override this behaviour. For now, I will just forget the tss files ut keep in mind that we use ids and classes. We use ids too in controllers to reference a window or objects in the XML file, like buttons, labels, etc.File index.xml:            Enter the URL of the site you want to connect                Save    &lt;/code&gt;So, what are we doing here? We create a Window and give it an id (urlWindow). Then inside, we add three elements, a label with a text, a textfield with an id (you’ll se later why) and a button. Notice that the button has an onClick event, the property will load a callback in the controller file.File index.js:function urlRegistered(e) {    var valueEntered = $.textField.getValue();    $.urlWindow.close();    $.urlWindow = null;    var args = {        data : &quot;This value will be passed to loginWindow and be inserted in a label&quot;,        value : valueEntered,    }    // Create a new Window by loading the controller loginWindow    // Pass args as arguments, we&#39;ll catch them up in loginWindow using arguments[0]    var loginWindow = Alloy.createController(&quot;loginWindow&quot;, args);// Get the view of the controller and open itloginWindow.getView().open(); }$.urlWindow.open();&lt;/code&gt;Remember the callback we’ll execute when we click on the button? That’s the first thing we do. Notice that $.urlWindow means something like “In this context, use urlWindow” which is the id of the Window we defined in the XML file. This is really cool because we can use this objects declared in our views right into the controller files.Inside the urlRegistered function, which by now you know it will be executed when we click on the button, we get the value of the Textfield declared in the view, notice that “textField” is just the id we used in our view and can be any other value. We then close the urlWindow, declare it null to free memory and then we define an args object with some properties.Finally, we create a new controller in loginWindow. Notice that we use Alloy.createController and we pass both the name of the controller we want to use and the args object. We’ll create that file in a few moments, the important thing here is that we create the controller and then in the next line we load the view using loginWindow.getView() and open it.Now, let’s define the loginWindow, which we’ll open when we click on the Button. We need two files, the xml and the js file.File: loginWindow.xml            You&#39;ll connect to:        Login    &lt;/code&gt;Again, we create a window with a different id and add two elements. Notice that I’m assigning an id to the label because I’m gonna change the value of the label in the controller.File: loginWindow.jsfunction clickLoginButton(e) {    alert(&quot;Login button pressed&quot;);}            var args = arguments[0]             {};      $.connectionLabel.text = “data here: “ + args.data + “ “ + args.value;&lt;/code&gt;Now we define a new callback to be executed when the loginButton is clicked. We keep things simple and just alert the user with a message. The important thing is the next line because we define an arguments object and we take the first argument we passed to the controller in the index.js file. In case you forgot, in index.js we did:Alloy.createController(“loginWindow”, args);And in loginWindow.js we use that argument with:            var args = arguments[0]             {};      That way, we’ll just do args.data or args.value or whatever property we defined in args inside the index.js file.Finally, the next line is very simple, we take the connectionLabel id and assign the text value to use the args object.$.connectionLabel.text = “data here: “ + args.data + “ “ + args.value;I hope you now get an idea of how to interact with multiple controllers and views using Alloy and Titanium Studio. Is not that hard isn’t it? If you have any questions, please leave a comment." />
+<link rel="canonical" href="http://localhost:4000/2013-04-06/alloy-and-titanium-studio-part-1/" />
+<meta property="og:url" content="http://localhost:4000/2013-04-06/alloy-and-titanium-studio-part-1/" />
+<meta property="og:site_name" content="Luis Elizondo" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2013-04-06T23:20:13+09:00" />
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Alloy and Titanium Studio, Part 1",
+    "datePublished": "2013-04-06T23:20:13+09:00",
+    "description": "Titanium Studio introduced Alloy, an MVC Framework. I&#39;m not gonna cover the installation or basic concepts of an MVC because you can find enough resources on the web about them, I&#39;ll just focus on what&#39;s not on the web, how to use it and the things you can do with it. But I do  have to cover some basics.You don&#39;t touch the Resources directoryControllers go in the app/controllers folder and are just javascript filesModels go in the app/models folder and are javascript filesStyles go in app/styles and are a mix between JSON and CSS. All files have the tss extension, which means Titanium Style SheetsViews to in app/views and are xml files. You can use ids and classes to create elements, everything should be wrapped inStyles, Models, Controllers and Views are all tied together by the name of the file, that means there&#39;s a relationship between the files and that relationship is created by the name of the file. So, if you create a new View called &quot;loginScreen.xml&quot;, you should name the controller &quot;loginScreen.js&quot; and the style loginScreen.tssAlloy is Backbone.js and Underscore.js compatible/based, so if you know how to use Backbone.js then you won&#39;t start from zero, if you don&#39;t it&#39;s higly recommended that you spend a few days learning it.Forget pretty much about everything you know about Titanium Studio before Alloy. You can still use the old way to code, but it&#39;s not recommended. Anyway, once you start using Alloy, you&#39;ll love it.Let&#39;s do something easy. I&#39;ll create two Windows. In one window, you&#39;ll enter a value in a textfield, once you click a button, we&#39;ll open a new window and do something with the entered value. This is pretty much what we do with a login screen.CodeSo let’s code, first, we’ll create the two XMLs, the first one is index.xml and it’s the first window that will be loaded unless you override this behaviour. For now, I will just forget the tss files ut keep in mind that we use ids and classes. We use ids too in controllers to reference a window or objects in the XML file, like buttons, labels, etc.File index.xml:            Enter the URL of the site you want to connect                Save    &lt;/code&gt;So, what are we doing here? We create a Window and give it an id (urlWindow). Then inside, we add three elements, a label with a text, a textfield with an id (you’ll se later why) and a button. Notice that the button has an onClick event, the property will load a callback in the controller file.File index.js:function urlRegistered(e) {    var valueEntered = $.textField.getValue();    $.urlWindow.close();    $.urlWindow = null;    var args = {        data : &quot;This value will be passed to loginWindow and be inserted in a label&quot;,        value : valueEntered,    }    // Create a new Window by loading the controller loginWindow    // Pass args as arguments, we&#39;ll catch them up in loginWindow using arguments[0]    var loginWindow = Alloy.createController(&quot;loginWindow&quot;, args);// Get the view of the controller and open itloginWindow.getView().open(); }$.urlWindow.open();&lt;/code&gt;Remember the callback we’ll execute when we click on the button? That’s the first thing we do. Notice that $.urlWindow means something like “In this context, use urlWindow” which is the id of the Window we defined in the XML file. This is really cool because we can use this objects declared in our views right into the controller files.Inside the urlRegistered function, which by now you know it will be executed when we click on the button, we get the value of the Textfield declared in the view, notice that “textField” is just the id we used in our view and can be any other value. We then close the urlWindow, declare it null to free memory and then we define an args object with some properties.Finally, we create a new controller in loginWindow. Notice that we use Alloy.createController and we pass both the name of the controller we want to use and the args object. We’ll create that file in a few moments, the important thing here is that we create the controller and then in the next line we load the view using loginWindow.getView() and open it.Now, let’s define the loginWindow, which we’ll open when we click on the Button. We need two files, the xml and the js file.File: loginWindow.xml            You&#39;ll connect to:        Login    &lt;/code&gt;Again, we create a window with a different id and add two elements. Notice that I’m assigning an id to the label because I’m gonna change the value of the label in the controller.File: loginWindow.jsfunction clickLoginButton(e) {    alert(&quot;Login button pressed&quot;);}            var args = arguments[0]             {};      $.connectionLabel.text = “data here: “ + args.data + “ “ + args.value;&lt;/code&gt;Now we define a new callback to be executed when the loginButton is clicked. We keep things simple and just alert the user with a message. The important thing is the next line because we define an arguments object and we take the first argument we passed to the controller in the index.js file. In case you forgot, in index.js we did:Alloy.createController(“loginWindow”, args);And in loginWindow.js we use that argument with:            var args = arguments[0]             {};      That way, we’ll just do args.data or args.value or whatever property we defined in args inside the index.js file.Finally, the next line is very simple, we take the connectionLabel id and assign the text value to use the args object.$.connectionLabel.text = “data here: “ + args.data + “ “ + args.value;I hope you now get an idea of how to interact with multiple controllers and views using Alloy and Titanium Studio. Is not that hard isn’t it? If you have any questions, please leave a comment.",
+    "url": "http://localhost:4000/2013-04-06/alloy-and-titanium-studio-part-1/"
+  }
+</script>
+<!-- End Jekyll SEO tag -->
+
+
+  <!-- Google Analytics -->
+
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-39814139-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+
+
+
+</head>
+
+<body>
+  <div class="content-container">
+    <header>
+  <h1 class="header-small">
+    <a href="http://localhost:4000">< BACK</a>
+  </h1>
+</header>
+<div class="post">
+  <h1 class="post-title">Alloy and Titanium Studio, Part 1</h1>
+  <span class="post-date">
+    <time>06 Apr 2013</time>
+  </span>
+  <div class="post-tag">
+    <ul>
+      
+      <li>
+        <a href="http://localhost:4000/tags#alloy" class="tag">
+          <span class="term">alloy</span>
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="http://localhost:4000/tags#backbone-js" class="tag">
+          <span class="term">backbone-js</span>
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="http://localhost:4000/tags#titaniumstudio" class="tag">
+          <span class="term">titaniumstudio</span>
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="http://localhost:4000/tags#underscore-js" class="tag">
+          <span class="term">underscore-js</span>
+        </a>
+      </li>
+      
+      
+    </ul>
+  </div>
+
+  <p>Titanium Studio introduced Alloy, an MVC Framework. I'm not gonna cover the installation or basic concepts of an MVC because you can find enough resources on the web about them, I'll just focus on what's not on the web, how to use it and the things you can do with it. But I do  have to cover some basics.</p>
+<ul><li>You don't touch the Resources directory</li><li>Controllers go in the app/controllers folder and are just javascript files</li><li>Models go in the app/models folder and are javascript files</li><li>Styles go in app/styles and are a mix between JSON and CSS. All files have the tss extension, which means Titanium Style Sheets</li><li>Views to in app/views and are xml files. You can use ids and classes to create elements, everything should be wrapped in</li><li>Styles, Models, Controllers and Views are all tied together by the name of the file, that means there's a relationship between the files and that relationship is created by the name of the file. So, if you create a new View called "loginScreen.xml", you should name the controller "loginScreen.js" and the style loginScreen.tss</li><li>Alloy is Backbone.js and Underscore.js compatible/based, so if you know how to use Backbone.js then you won't start from zero, if you don't it's higly recommended that you spend a few days learning it.</li><li>Forget pretty much about everything you know about Titanium Studio before Alloy. You can still use the old way to code, but it's not recommended. Anyway, once you start using Alloy, you'll love it.</li></ul>
+<p>Let's do something easy. I'll create two Windows. In one window, you'll enter a value in a textfield, once you click a button, we'll open a new window and do something with the entered value. This is pretty much what we do with a login screen.</p>
+
+<h3>Code</h3>
+<p>So let’s code, first, we’ll create the two XMLs, the first one is index.xml and it’s the first window that will be loaded unless you override this behaviour. For now, I will just forget the tss files ut keep in mind that we use ids and classes. We use ids too in controllers to reference a window or objects in the XML file, like buttons, labels, etc.</p>
+
+<p>File index.xml:
+<code></code></p>
+<Alloy>
+    <Window id="urlWindow">
+        <label>Enter the URL of the site you want to connect</label>
+        <TextField id="textField" />
+        <button id="urlRegisteredButton" onclick="urlRegistered">Save</button>
+    </Window>
+</Alloy>
+<p>&lt;/code&gt;</p>
+
+<p>So, what are we doing here? We create a Window and give it an id (urlWindow). Then inside, we add three elements, a label with a text, a textfield with an id (you’ll se later why) and a button. Notice that the button has an onClick event, the property will load a callback in the controller file.</p>
+
+<p>File index.js:
+<code>
+function urlRegistered(e) {
+    var valueEntered = $.textField.getValue();
+    $.urlWindow.close();
+    $.urlWindow = null;
+    var args = {
+        data : "This value will be passed to loginWindow and be inserted in a label",
+        value : valueEntered,
+    }
+    // Create a new Window by loading the controller loginWindow
+    // Pass args as arguments, we'll catch them up in loginWindow using arguments[0]
+    var loginWindow = Alloy.createController("loginWindow", args);</code></p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>// Get the view of the controller and open it
+loginWindow.getView().open(); }
+</code></pre>
+</div>
+
+<p>$.urlWindow.open();</p>
+
+<p>&lt;/code&gt;</p>
+
+<p>Remember the callback we’ll execute when we click on the button? That’s the first thing we do. Notice that $.urlWindow means something like “In this context, use urlWindow” which is the id of the Window we defined in the XML file. This is really cool because we can use this objects declared in our views right into the controller files.</p>
+
+<p>Inside the urlRegistered function, which by now you know it will be executed when we click on the button, we get the value of the Textfield declared in the view, notice that “textField” is just the id we used in our view and can be any other value. We then close the urlWindow, declare it null to free memory and then we define an args object with some properties.</p>
+
+<p>Finally, we create a new controller in loginWindow. Notice that we use Alloy.createController and we pass both the name of the controller we want to use and the args object. We’ll create that file in a few moments, the important thing here is that we create the controller and then in the next line we load the view using loginWindow.getView() and open it.</p>
+
+<p>Now, let’s define the loginWindow, which we’ll open when we click on the Button. We need two files, the xml and the js file.</p>
+
+<p>File: loginWindow.xml
+<code></code></p>
+<Alloy>
+    <Window id="loginWindow">
+        <label id="connectionLabel">You'll connect to:</label>
+        <button id="loginButton" onclick="clickLoginButton">Login</button>
+    </Window>
+</Alloy>
+<p>&lt;/code&gt;</p>
+
+<p>Again, we create a window with a different id and add two elements. Notice that I’m assigning an id to the label because I’m gonna change the value of the label in the controller.</p>
+
+<p>File: loginWindow.js
+<code>
+function clickLoginButton(e) {
+    alert("Login button pressed");
+}</code></p>
+
+<table>
+  <tbody>
+    <tr>
+      <td>var args = arguments[0]</td>
+      <td> </td>
+      <td>{};</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>$.connectionLabel.text = “data here: “ + args.data + “ “ + args.value;
+&lt;/code&gt;</p>
+
+<p>Now we define a new callback to be executed when the loginButton is clicked. We keep things simple and just alert the user with a message. The important thing is the next line because we define an arguments object and we take the first argument we passed to the controller in the index.js file. In case you forgot, in index.js we did:</p>
+
+<p>Alloy.createController(“loginWindow”, args);</p>
+
+<p>And in loginWindow.js we use that argument with:</p>
+
+<table>
+  <tbody>
+    <tr>
+      <td>var args = arguments[0]</td>
+      <td> </td>
+      <td>{};</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>That way, we’ll just do args.data or args.value or whatever property we defined in args inside the index.js file.</p>
+
+<p>Finally, the next line is very simple, we take the connectionLabel id and assign the text value to use the args object.</p>
+
+<p>$.connectionLabel.text = “data here: “ + args.data + “ “ + args.value;</p>
+
+<p>I hope you now get an idea of how to interact with multiple controllers and views using Alloy and Titanium Studio. Is not that hard isn’t it? If you have any questions, please leave a comment.</p>
+
+
+
+  <!-- Share -->
+  
+  <div class="post-share">
+    <hr>
+    <span>Share this: <br /></span>
+<a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/2013-04-06/alloy-and-titanium-studio-part-1/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-facebook"></a>
+<a href="https://twitter.com/intent/tweet?text=Alloy and Titanium Studio, Part 1&url=http://localhost:4000/2013-04-06/alloy-and-titanium-studio-part-1/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-twitter"></a>
+<a href="https://plus.google.com/share?url=http://localhost:4000/2013-04-06/alloy-and-titanium-studio-part-1/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-google-plus"></a>
+<a href="https://www.tumblr.com/share?url=http://localhost:4000/2013-04-06/alloy-and-titanium-studio-part-1/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-tumblr"></a>
+<a href="mailto:?subject=Alloy and Titanium Studio, Part 1&amp;body=Check out this site http://localhost:4000/2013-04-06/alloy-and-titanium-studio-part-1/" class="ssk ssk-icon ssk-email"></a>
+
+    <hr>
+  </div>
+  
+
+  <!-- Disqus -->
+  
+  <section id="disqus_thread"></section>
+  <script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables */
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = '//luiselizondobaez.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+</div>
+
+
+    <!-- Documents about icons are here: http://fontawesome.io/icons/ -->
+<div class="footer">
+	<hr />
+	<div class="footer-link">
+		
+
+		
+		<a href="https://twitter.com/lelizondo"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+		
+
+		
+		<a href="https://github.com/luiselizondo"><i class="fa fa-github" aria-hidden="true"></i></a>
+		
+
+		
+		<a href="https://www.linkedin.com/in/luiselizondobaez"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
+		
+
+		
+
+		
+
+		
+
+	</div>
+	© 2016 Luis Elizondo. All rights reserved.
+</div>
+
+  </div>
+</body>
+</html>

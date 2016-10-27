@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>A production ready Docker workflow. Part 3: Orchestration tools</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/assets/css/main.css" type="text/css">
+  <link rel="stylesheet" href="/assets/css/social-share-kit.css" type="text/css">
+
+  <!-- Font -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+
+
+  <link rel="alternate" type="application/rss+xml" title="RSS Feed for Luis Elizondo" href="/feed.xml" />
+  <!-- Begin Jekyll SEO tag v2.0.0 -->
+<title>A production ready Docker workflow. Part 3: Orchestration tools - Luis Elizondo</title>
+<meta property="og:title" content="A production ready Docker workflow. Part 3: Orchestration tools" />
+<meta name="description" content="This is the third part of a series of posts about how we’re using Docker in production at IIIEPE." />
+<meta property="og:description" content="This is the third part of a series of posts about how we’re using Docker in production at IIIEPE." />
+<link rel="canonical" href="http://localhost:4000/2015-03-27/a-production-ready-docker-workflow-part-3-orchestration-tools/" />
+<meta property="og:url" content="http://localhost:4000/2015-03-27/a-production-ready-docker-workflow-part-3-orchestration-tools/" />
+<meta property="og:site_name" content="Luis Elizondo" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2015-03-27T16:07:54+09:00" />
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "A production ready Docker workflow. Part 3: Orchestration tools",
+    "datePublished": "2015-03-27T16:07:54+09:00",
+    "description": "This is the third part of a series of posts about how we’re using Docker in production at IIIEPE.",
+    "url": "http://localhost:4000/2015-03-27/a-production-ready-docker-workflow-part-3-orchestration-tools/"
+  }
+</script>
+<!-- End Jekyll SEO tag -->
+
+
+  <!-- Google Analytics -->
+
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-39814139-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+
+
+
+</head>
+
+<body>
+  <div class="content-container">
+    <header>
+  <h1 class="header-small">
+    <a href="http://localhost:4000">< BACK</a>
+  </h1>
+</header>
+<div class="post">
+  <h1 class="post-title">A production ready Docker workflow. Part 3: Orchestration tools</h1>
+  <span class="post-date">
+    <time>27 Mar 2015</time>
+  </span>
+  <div class="post-tag">
+    <ul>
+      
+    </ul>
+  </div>
+
+  <p>This is the third part of a series of posts about how we’re using Docker in production at <a href="https://iiiepe.edu.mx">IIIEPE</a>. If you haven’t, please read <a href="http://www.luiselizondo.net/a-production-ready-docker-workflow/">Part 1</a> and <a href="http://www.luiselizondo.net/a-production-ready-docker-workflow-part-2-the-storage-problem/">Part 2</a> before continuing. In this post, I’ll discuss what orchestration tools we tested, which one we’re using and why. I’ll also explain how we are using Jenkins to do the hard work for us and how it’s organised.</p>
+
+<p>Using Docker is really cool, it solved several problems on our workflow, but it created others. Managing containers can be as hard, if not even harder, than managing a few VMs, so if you’re not using an Orchestration tool to do it, you’re doing it wrong. Once your containers start growing, it’ll be really hard to manage.</p>
+
+<p>All the base images that we open sourced at <a href="https://hub.docker.com/u/iiiepe">Docker Hub</a> use Supervisor. Supervisor is a beautiful piece of software that manages processes, if a process dies, supervisor will restart it. Because the way Docker works, the container needs to have a process running in order for the container to stay alive. The process cannot be demonised and if the process dies, the container dies too and you’ll have to find a way to restart the container. This is a problem you probably want to avoid in the first place. The great thing about supervisor is that it can handle several processes, so a container running a PHP application will run PHP-FPM, Nginx and Sendmail.</p>
+
+<h4 id="orchestration-tools">Orchestration tools</h4>
+<p>For about two weeks we did nothing but test a list of orchestration solutions. Our list included:</p>
+
+<ul>
+  <li>Deis</li>
+  <li>Shipyard</li>
+  <li>Panamax</li>
+  <li>Kubernetes</li>
+  <li>Tsuru.io</li>
+  <li>Decking.io</li>
+  <li>Maestro-ng</li>
+</ul>
+
+<p>I don’t want to go over an extensive review of each of those solutions, so I’ll be brief.</p>
+
+<h4 id="deis">Deis</h4>
+<p>PasS solution that uses Docker. It is basically Heroku with Docker. Easy to install, but it’s not really flexible when it comes to storage. This was the most attractive but it was not a solution for us because we use Drupal. Also, no UI.</p>
+
+<h4 id="shipyard">Shipyard</h4>
+<p>We ended using Shipyard in the end but only as a viewer. Shipyard is still under heavy development and the biggest problem it has is that it doesn’t provide a way to easily manage containers automatically. As I said, we use it only as a viewer to monitor the status of all of our containers and our Docker services. If a container crashes, instead of rebooting all of the containers of that application, we just restart the dead container with Shipyard.</p>
+
+<h4 id="panamax">Panamax</h4>
+<p>Promising but it wasn’t ready when we needed it. It also depends heavily on some kind of templates which I personally didn’t like. The lack of an agent when we tested it was a major blocker. Basically, with no agent we’d have to install Panamax on each server.</p>
+
+<h4 id="kubernetes">Kubernetes</h4>
+<p>PaaS solution, the hardest to install and configure of the list. It has many more features than we needed but it lacked the one feature that we needed, Kubernetes doesn’t handle storage.</p>
+
+<h4 id="tsuruio">Tsuru.io</h4>
+<p>PasS solution, which states:</p>
+
+<blockquote>
+  <p>… Amazon S3 … It’s the right way to store content files into tsuru.</p>
+</blockquote>
+
+<p>We didn’t even try to install it after reading that.</p>
+
+<h4 id="deckingio">Decking.io</h4>
+<p>Is kind of a replacement for Fig, not having multi-host capabilities was the biggest issue.</p>
+
+<h4 id="maestro-ng">Maestro-NG</h4>
+<p>Maestro-NG was the winner for several reasons, it was easy to use, has a CLI with very simple commands, does multi-host and everything is described as a YAML file.</p>
+
+<p>We setup a server in which we installed Maestro-NG, since we needed to open the Docker port on each web node, only Maestro-NG can connect to Docker for security reasons. Then we organised all of the maestro files in a single git project. The project is organised using directories with the FQDN of the application, inside every directory there’s a single file, a maestro.yaml file.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>/subdomain.example.com/maestro.yaml
+/another-example.example.com/maestro.yaml
+</code></pre>
+</div>
+
+<p>If we need to test a particular project (we don’t really do that kind of testing), we just create a new maestro file and push it, then we just treat it like any other project.</p>
+
+<p>With Maestro-NG, our Continuous Delivery process is reduced to two single commands:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>maestro pull ; maestro restart
+</code></pre>
+</div>
+
+<p>Since we waste precious seconds doing that, we let Jenkins do this for us.</p>
+
+<h3 id="jenkins">Jenkins</h3>
+<p>We didn’t use Jenkins before so CI and CD was not a practice we had implemented, everything was manual and error prone. Creating a new workflow was the perfect opportunity to bring it into the mix.</p>
+
+<p>All of our projects have the same workflow:</p>
+
+<ol>
+  <li>A push is detected by Gitlab</li>
+  <li>Gitlab triggers a web hook and orders Jenkins to start a new Job.</li>
+  <li>Jenkins clones the latest version of the project.</li>
+  <li>Jenkins runs tests.</li>
+  <li>If tests are passing, then Jenkins starts to build a new docker image.</li>
+  <li>If the image finishes building, Jenkins pushes the image to our private registry.</li>
+  <li>Jenkins connects to the Maestro-NG server using SSH and runs the command <code class="highlighter-rouge">maestro pull ; maestro restart</code></li>
+</ol>
+
+<p>This whole process takes small projects that are not tested less than 2 minutes, some projects are even faster, between 25 and 35 seconds. On the biggest project, which is a public project that gets pushed to Docker Hub, it takes about 6 minutes. We do have one exception, which is a project that takes 18-20 minutes to build, this is an old HTML website with lots of videos and big files, the whole project is about 1.8 GB in size so that’s why it takes too long to build.</p>
+
+<p>When we started to configure all the VMs we needed, we decided to install Jenkins on the same VM as Docker Registry. We did this for two reasons. The first reason is that this VM has lots of HD space in it, enough for both, while our web nodes are small in size, this VM is relatively bigger. The second reason to install both the Docker registry and Jenkins on the same VM was to reduce transfer times when pushing the image to the registry. This has worked well for us.</p>
+
+<h4 id="jenkins-tasks">Jenkins tasks</h4>
+<p>For regular, non tested applications, Jenkins runs the following shell task:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>docker build —tag=our-private-docker-registry/application_name --no-cache .
+docker login --username="someusername" --password="somepassword" --email="someemail" https://our-private-docker-registry.fqdn
+docker push our-private-docker-registry/application_name
+</code></pre>
+</div>
+
+<p>For applications that are tested, Jenkins does the following:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>make prepare-test
+sleep 90
+make install
+make test
+make clean-test
+docker build --tag=iiieperobot/dashi3 .
+docker login --username="iiieperobot" --email="someemail" --password="somepassword"
+docker push iiieperobot/dashi3
+</code></pre>
+</div>
+
+<p>In the example above, we push directly to the Docker Hub, but 99% of the tasks push to our private Docker Registry.</p>
+
+<p>After the shell script is run, Jenkins connects to the Maestro-NG server using SSH and runs:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>cd /path_to_maestro/application_fqdn ; maestro pull ; maestro restart
+</code></pre>
+</div>
+
+<h4 id="re-building-base-images">Re-building base images</h4>
+<p>When a new base image is rebuilt, we need to rebuild all images that depend on that base image, so we also have a task for each of the base images:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>docker pull iiiepe/nginx-drupal
+</code></pre>
+</div>
+
+<p>And we have a Post-build action to build all the projects that depend on that image.</p>
+
+<h3 id="testing">Testing</h3>
+<p>While I was in the middle of writing this post, I was asked if Docker was used to test our projects. You bet it is, when we need to. Sometimes we do test against a database instead of mocking, when we do this kind of testing, we use the process I described above, and to simplify it, we use Makefiles, so both Jenkins and developers can both run <code class="highlighter-rouge">make test</code> to run tests.</p>
+
+<p>That’s it for now, on the next and final post, I’ll talk about Service Discovery and Load Balancing.</p>
+
+<h3 id="update">Update</h3>
+<p>Part 4 is out, you can read it <a href="http://www.luiselizondo.net/a-production-ready-docker-workflow-part-4-service-discovery-and-the-load-balancer/">here</a></p>
+
+
+
+  <!-- Share -->
+  
+  <div class="post-share">
+    <hr>
+    <span>Share this: <br /></span>
+<a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/2015-03-27/a-production-ready-docker-workflow-part-3-orchestration-tools/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-facebook"></a>
+<a href="https://twitter.com/intent/tweet?text=A production ready Docker workflow. Part 3: Orchestration tools&url=http://localhost:4000/2015-03-27/a-production-ready-docker-workflow-part-3-orchestration-tools/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-twitter"></a>
+<a href="https://plus.google.com/share?url=http://localhost:4000/2015-03-27/a-production-ready-docker-workflow-part-3-orchestration-tools/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-google-plus"></a>
+<a href="https://www.tumblr.com/share?url=http://localhost:4000/2015-03-27/a-production-ready-docker-workflow-part-3-orchestration-tools/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-tumblr"></a>
+<a href="mailto:?subject=A production ready Docker workflow. Part 3: Orchestration tools&amp;body=Check out this site http://localhost:4000/2015-03-27/a-production-ready-docker-workflow-part-3-orchestration-tools/" class="ssk ssk-icon ssk-email"></a>
+
+    <hr>
+  </div>
+  
+
+  <!-- Disqus -->
+  
+  <section id="disqus_thread"></section>
+  <script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables */
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = '//luiselizondobaez.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+</div>
+
+
+    <!-- Documents about icons are here: http://fontawesome.io/icons/ -->
+<div class="footer">
+	<hr />
+	<div class="footer-link">
+		
+
+		
+		<a href="https://twitter.com/lelizondo"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+		
+
+		
+		<a href="https://github.com/luiselizondo"><i class="fa fa-github" aria-hidden="true"></i></a>
+		
+
+		
+		<a href="https://www.linkedin.com/in/luiselizondobaez"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
+		
+
+		
+
+		
+
+		
+
+	</div>
+	© 2016 Luis Elizondo. All rights reserved.
+</div>
+
+  </div>
+</body>
+</html>

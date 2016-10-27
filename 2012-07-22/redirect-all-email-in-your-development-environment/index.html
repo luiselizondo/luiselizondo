@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Redirect all email in your development environment</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/assets/css/main.css" type="text/css">
+  <link rel="stylesheet" href="/assets/css/social-share-kit.css" type="text/css">
+
+  <!-- Font -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+
+
+  <link rel="alternate" type="application/rss+xml" title="RSS Feed for Luis Elizondo" href="/feed.xml" />
+  <!-- Begin Jekyll SEO tag v2.0.0 -->
+<title>Redirect all email in your development environment - Luis Elizondo</title>
+<meta property="og:title" content="Redirect all email in your development environment" />
+<meta name="description" content="Quick post. Scenario: You have a Drupal site running on production and as you should be doing it, all the development is done in a different server but you use the database with all the real users and their emails. How can you prevent the real users from receiving all the emails?In the drupal site you&#8217;ll need the mail_redirect module. Is really easy to install. Basically what it does is just redirect all email to a domain, so if you have luis@gmail.com you&#8217;ll redirect emails to luis@mydomain.comThe drupal module does it really good, but you still have a problem, you&#8217;ll probably want to read all those emails, right? Well, easy to do it, all you have to do is create the file:$ sudo nano /etc/postfix/virtualand add the following line:@mydomain.com luis@myrealdomain.comSo basically a multiple redirection will happen. The drupal module will redirect all real email to users who probably doesn&#8217;t exist in your server, it will change the real domain to the domain you specify in configuration of the module. If you have billgates@microsoft and timcook@apple.com as your users, all email will go to billgates@mydomain.com and timcook@mydomain.com and those emails will be lost.With postfix you redirect emails sent to any-user@mydomain.com to your real email address, luis@myrealdomain.com, this could be even an external domain, like @gmail.comAfter that edit the file: /etc/postfix/main.cf as root and add the following:virtual_alias_domains = mydomain.comvirtual_alias_maps = hash:/etc/postfix/virtualFinally, just run as root$ postmap /etc/postfix/virtual$ service postfix reloadAnd test, you should receive all email from your site to the email you specified.One more thing, is probably not a good idea to redirect all email to your main email address, you&#8217;ll get lots of spam." />
+<meta property="og:description" content="Quick post. Scenario: You have a Drupal site running on production and as you should be doing it, all the development is done in a different server but you use the database with all the real users and their emails. How can you prevent the real users from receiving all the emails?In the drupal site you&#8217;ll need the mail_redirect module. Is really easy to install. Basically what it does is just redirect all email to a domain, so if you have luis@gmail.com you&#8217;ll redirect emails to luis@mydomain.comThe drupal module does it really good, but you still have a problem, you&#8217;ll probably want to read all those emails, right? Well, easy to do it, all you have to do is create the file:$ sudo nano /etc/postfix/virtualand add the following line:@mydomain.com luis@myrealdomain.comSo basically a multiple redirection will happen. The drupal module will redirect all real email to users who probably doesn&#8217;t exist in your server, it will change the real domain to the domain you specify in configuration of the module. If you have billgates@microsoft and timcook@apple.com as your users, all email will go to billgates@mydomain.com and timcook@mydomain.com and those emails will be lost.With postfix you redirect emails sent to any-user@mydomain.com to your real email address, luis@myrealdomain.com, this could be even an external domain, like @gmail.comAfter that edit the file: /etc/postfix/main.cf as root and add the following:virtual_alias_domains = mydomain.comvirtual_alias_maps = hash:/etc/postfix/virtualFinally, just run as root$ postmap /etc/postfix/virtual$ service postfix reloadAnd test, you should receive all email from your site to the email you specified.One more thing, is probably not a good idea to redirect all email to your main email address, you&#8217;ll get lots of spam." />
+<link rel="canonical" href="http://localhost:4000/2012-07-22/redirect-all-email-in-your-development-environment/" />
+<meta property="og:url" content="http://localhost:4000/2012-07-22/redirect-all-email-in-your-development-environment/" />
+<meta property="og:site_name" content="Luis Elizondo" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2012-07-22T14:52:42+09:00" />
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Redirect all email in your development environment",
+    "datePublished": "2012-07-22T14:52:42+09:00",
+    "description": "Quick post. Scenario: You have a Drupal site running on production and as you should be doing it, all the development is done in a different server but you use the database with all the real users and their emails. How can you prevent the real users from receiving all the emails?In the drupal site you&#8217;ll need the mail_redirect module. Is really easy to install. Basically what it does is just redirect all email to a domain, so if you have luis@gmail.com you&#8217;ll redirect emails to luis@mydomain.comThe drupal module does it really good, but you still have a problem, you&#8217;ll probably want to read all those emails, right? Well, easy to do it, all you have to do is create the file:$ sudo nano /etc/postfix/virtualand add the following line:@mydomain.com luis@myrealdomain.comSo basically a multiple redirection will happen. The drupal module will redirect all real email to users who probably doesn&#8217;t exist in your server, it will change the real domain to the domain you specify in configuration of the module. If you have billgates@microsoft and timcook@apple.com as your users, all email will go to billgates@mydomain.com and timcook@mydomain.com and those emails will be lost.With postfix you redirect emails sent to any-user@mydomain.com to your real email address, luis@myrealdomain.com, this could be even an external domain, like @gmail.comAfter that edit the file: /etc/postfix/main.cf as root and add the following:virtual_alias_domains = mydomain.comvirtual_alias_maps = hash:/etc/postfix/virtualFinally, just run as root$ postmap /etc/postfix/virtual$ service postfix reloadAnd test, you should receive all email from your site to the email you specified.One more thing, is probably not a good idea to redirect all email to your main email address, you&#8217;ll get lots of spam.",
+    "url": "http://localhost:4000/2012-07-22/redirect-all-email-in-your-development-environment/"
+  }
+</script>
+<!-- End Jekyll SEO tag -->
+
+
+  <!-- Google Analytics -->
+
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-39814139-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+
+
+
+</head>
+
+<body>
+  <div class="content-container">
+    <header>
+  <h1 class="header-small">
+    <a href="http://localhost:4000">< BACK</a>
+  </h1>
+</header>
+<div class="post">
+  <h1 class="post-title">Redirect all email in your development environment</h1>
+  <span class="post-date">
+    <time>22 Jul 2012</time>
+  </span>
+  <div class="post-tag">
+    <ul>
+      
+    </ul>
+  </div>
+
+  <p>Quick post. Scenario: You have a Drupal site running on production and as you should be doing it, all the development is done in a different server but you use the database with all the real users and their emails. How can you prevent the real users from receiving all the emails?</p>
+<p>In the drupal site you&#8217;ll need the mail_redirect module. Is really easy to install. Basically what it does is just redirect all email to a domain, so if you have luis@gmail.com you&#8217;ll redirect emails to luis@mydomain.com</p>
+<p>The drupal module does it really good, but you still have a problem, you&#8217;ll probably want to read all those emails, right? Well, easy to do it, all you have to do is create the file:</p>
+<p><code>$ sudo nano /etc/postfix/virtual</code></p>
+<p>and add the following line:</p>
+<p><code>@mydomain.com luis@myrealdomain.com</code></p>
+<p>So basically a multiple redirection will happen. The drupal module will redirect all real email to users who probably doesn&#8217;t exist in your server, it will change the real domain to the domain you specify in configuration of the module. If you have billgates@microsoft and timcook@apple.com as your users, all email will go to billgates@mydomain.com and timcook@mydomain.com and those emails will be lost.</p>
+<p>With postfix you redirect emails sent to any-user@mydomain.com to your real email address, luis@myrealdomain.com, this could be even an external domain, like @gmail.com</p>
+<p>After that edit the file: <code>/etc/postfix/main.cf</code> as root and add the following:</p>
+<p><code>virtual_alias_domains = mydomain.com<br />virtual_alias_maps = hash:/etc/postfix/virtual</code></p>
+<p>Finally, just run as root</p>
+<p><code>$ postmap /etc/postfix/virtual<br />$ service postfix reload</code></p>
+<p>And test, you should receive all email from your site to the email you specified.</p>
+<p>One more thing, is probably not a good idea to redirect all email to your main email address, you&#8217;ll get lots of spam.</p>
+
+
+
+  <!-- Share -->
+  
+  <div class="post-share">
+    <hr>
+    <span>Share this: <br /></span>
+<a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/2012-07-22/redirect-all-email-in-your-development-environment/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-facebook"></a>
+<a href="https://twitter.com/intent/tweet?text=Redirect all email in your development environment&url=http://localhost:4000/2012-07-22/redirect-all-email-in-your-development-environment/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-twitter"></a>
+<a href="https://plus.google.com/share?url=http://localhost:4000/2012-07-22/redirect-all-email-in-your-development-environment/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-google-plus"></a>
+<a href="https://www.tumblr.com/share?url=http://localhost:4000/2012-07-22/redirect-all-email-in-your-development-environment/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-tumblr"></a>
+<a href="mailto:?subject=Redirect all email in your development environment&amp;body=Check out this site http://localhost:4000/2012-07-22/redirect-all-email-in-your-development-environment/" class="ssk ssk-icon ssk-email"></a>
+
+    <hr>
+  </div>
+  
+
+  <!-- Disqus -->
+  
+  <section id="disqus_thread"></section>
+  <script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables */
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = '//luiselizondobaez.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+</div>
+
+
+    <!-- Documents about icons are here: http://fontawesome.io/icons/ -->
+<div class="footer">
+	<hr />
+	<div class="footer-link">
+		
+
+		
+		<a href="https://twitter.com/lelizondo"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+		
+
+		
+		<a href="https://github.com/luiselizondo"><i class="fa fa-github" aria-hidden="true"></i></a>
+		
+
+		
+		<a href="https://www.linkedin.com/in/luiselizondobaez"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
+		
+
+		
+
+		
+
+		
+
+	</div>
+	© 2016 Luis Elizondo. All rights reserved.
+</div>
+
+  </div>
+</body>
+</html>

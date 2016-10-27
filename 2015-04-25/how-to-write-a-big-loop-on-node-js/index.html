@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How to write a big loop on Node.js</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/assets/css/main.css" type="text/css">
+  <link rel="stylesheet" href="/assets/css/social-share-kit.css" type="text/css">
+
+  <!-- Font -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+
+
+  <link rel="alternate" type="application/rss+xml" title="RSS Feed for Luis Elizondo" href="/feed.xml" />
+  <!-- Begin Jekyll SEO tag v2.0.0 -->
+<title>How to write a big loop on Node.js - Luis Elizondo</title>
+<meta property="og:title" content="How to write a big loop on Node.js" />
+<meta name="description" content="I’m working on a project on Sails.js and I need to insert 144,034 records into a MySQL database. Sails provides Waterline, a database abstraction mechanism which is outside of the scope of this post." />
+<meta property="og:description" content="I’m working on a project on Sails.js and I need to insert 144,034 records into a MySQL database. Sails provides Waterline, a database abstraction mechanism which is outside of the scope of this post." />
+<link rel="canonical" href="http://localhost:4000/2015-04-25/how-to-write-a-big-loop-on-node-js/" />
+<meta property="og:url" content="http://localhost:4000/2015-04-25/how-to-write-a-big-loop-on-node-js/" />
+<meta property="og:site_name" content="Luis Elizondo" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2015-04-25T21:42:18+09:00" />
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "How to write a big loop on Node.js",
+    "datePublished": "2015-04-25T21:42:18+09:00",
+    "description": "I’m working on a project on Sails.js and I need to insert 144,034 records into a MySQL database. Sails provides Waterline, a database abstraction mechanism which is outside of the scope of this post.",
+    "url": "http://localhost:4000/2015-04-25/how-to-write-a-big-loop-on-node-js/"
+  }
+</script>
+<!-- End Jekyll SEO tag -->
+
+
+  <!-- Google Analytics -->
+
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-39814139-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+
+
+
+</head>
+
+<body>
+  <div class="content-container">
+    <header>
+  <h1 class="header-small">
+    <a href="http://localhost:4000">< BACK</a>
+  </h1>
+</header>
+<div class="post">
+  <h1 class="post-title">How to write a big loop on Node.js</h1>
+  <span class="post-date">
+    <time>25 Apr 2015</time>
+  </span>
+  <div class="post-tag">
+    <ul>
+      
+    </ul>
+  </div>
+
+  <p>I’m working on a project on Sails.js and I need to insert 144,034 records into a MySQL database. Sails provides Waterline, a database abstraction mechanism which is outside of the scope of this post.</p>
+
+<p>The problem I faced is that when doing a big loop, Node.js runs out of memory. Before I continue, let me say that if the same thing happened to you is probably not because you found a bug on Node.js, is likely that there’s a problem with your code.</p>
+
+<p>There’s many good posts about loops on Node.js, I read most of them, and to keep things simple, I usually use the async module, which is great. But, async fails when doing a loop this big.</p>
+
+<p>The process I’m trying to accomplish is actually very simple.</p>
+
+<ol>
+  <li>Read a JSON file.</li>
+  <li>Loop the array in the JSON file and for each of the objects found…</li>
+  <li>Insert it into the database.</li>
+  <li>Continue</li>
+</ol>
+
+<p>The problem as I said, was with the magnitude of the array, on smaller arrays I never had problems. But, around 20,000+ records, Node.js starts complaining about memory.</p>
+
+<p>I tried async, a for loop, using process.nextTick, Fabric, and all kind of hacks. And then I found <a href="https://blog.jcoglan.com/2010/08/30/the-potentially-asynchronous-loop/">“The potentially asynchronous loop”</a> which is a very simple approach (simple solutions usually work best) to the problem. Basically, it just waits until the current operation is completed before trying the next one. Yes, it’s slower, but I’m not trying to fool myself, I know inserting 144,304 records on a MySQL is not going to take a few seconds. And I’m running this as a script, is not technically part of the application.</p>
+
+<p>Enough words, this is the code:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>var filePath = process.argv[4];
+var fs = require("fs");
+var include = require("include");
+var file = include(filePath);
+
+
+function init(callback) {
+	var total = file.length;
+	var counter = 0;
+	console.log("Inserting " + total);
+	file.asyncEach(function(item, resume) {
+		insert(item, function(err, result) {
+			counter++
+
+			if(counter &lt; total) {
+				resume();
+			}
+			else {
+				return callback();
+			}
+		});
+	});
+}
+</code></pre>
+</div>
+
+<p>The insert method is not really special, is just the operation to insert a single record into the DB so I’m going to omit the explanation.</p>
+
+<p>The init method will read the file “file” and then loop the elements using the “asyncEach” method. It will call the insert method which will insert the record into the DB. When the operation is completed, it will check if the array has finished processing and return the callback, if is not, then it will call resume(), meaning it work on the next item of the array.</p>
+
+<p>I call this method like this:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>init(function() {
+			process.exit();
+		})
+</code></pre>
+</div>
+
+<p>The cool part of this is the asyncEach method:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>Array.prototype.asyncEach = function(iterator) {
+  var list    = this,
+      n       = list.length,
+      i       = -1,
+      calls   = 0,
+      looping = false;
+
+  var iterate = function() {
+    calls -= 1;
+    i += 1;
+    if (i === n) return;
+    iterator(list[i], resume);
+  };
+
+  var loop = function() {
+    if (looping) return;
+    looping = true;
+    while (calls &gt; 0) iterate();
+    looping = false;
+  };
+
+  var resume = function() {
+    calls += 1;
+    if (typeof setTimeout === 'undefined') loop();
+    else setTimeout(iterate, 1);
+  };
+  resume();
+};
+</code></pre>
+</div>
+
+<p>This code was taken from the post I mentioned before.</p>
+
+<p>So there you have it, a very easy solution to handle a big loop.</p>
+
+
+
+  <!-- Share -->
+  
+  <div class="post-share">
+    <hr>
+    <span>Share this: <br /></span>
+<a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/2015-04-25/how-to-write-a-big-loop-on-node-js/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-facebook"></a>
+<a href="https://twitter.com/intent/tweet?text=How to write a big loop on Node.js&url=http://localhost:4000/2015-04-25/how-to-write-a-big-loop-on-node-js/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-twitter"></a>
+<a href="https://plus.google.com/share?url=http://localhost:4000/2015-04-25/how-to-write-a-big-loop-on-node-js/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-google-plus"></a>
+<a href="https://www.tumblr.com/share?url=http://localhost:4000/2015-04-25/how-to-write-a-big-loop-on-node-js/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-tumblr"></a>
+<a href="mailto:?subject=How to write a big loop on Node.js&amp;body=Check out this site http://localhost:4000/2015-04-25/how-to-write-a-big-loop-on-node-js/" class="ssk ssk-icon ssk-email"></a>
+
+    <hr>
+  </div>
+  
+
+  <!-- Disqus -->
+  
+  <section id="disqus_thread"></section>
+  <script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables */
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = '//luiselizondobaez.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+</div>
+
+
+    <!-- Documents about icons are here: http://fontawesome.io/icons/ -->
+<div class="footer">
+	<hr />
+	<div class="footer-link">
+		
+
+		
+		<a href="https://twitter.com/lelizondo"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+		
+
+		
+		<a href="https://github.com/luiselizondo"><i class="fa fa-github" aria-hidden="true"></i></a>
+		
+
+		
+		<a href="https://www.linkedin.com/in/luiselizondobaez"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
+		
+
+		
+
+		
+
+		
+
+	</div>
+	© 2016 Luis Elizondo. All rights reserved.
+</div>
+
+  </div>
+</body>
+</html>

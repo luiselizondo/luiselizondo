@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>A production ready #Docker workflow. Part 2: The Storage Problem</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/assets/css/main.css" type="text/css">
+  <link rel="stylesheet" href="/assets/css/social-share-kit.css" type="text/css">
+
+  <!-- Font -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+
+
+  <link rel="alternate" type="application/rss+xml" title="RSS Feed for Luis Elizondo" href="/feed.xml" />
+  <!-- Begin Jekyll SEO tag v2.0.0 -->
+<title>A production ready #Docker workflow. Part 2: The Storage Problem - Luis Elizondo</title>
+<meta property="og:title" content="A production ready #Docker workflow. Part 2: The Storage Problem" />
+<meta name="description" content="A few days ago I wrote about how we at IIIEPE started using Docker in production. It really changed the way we develop and deploy web based applications. In this series of posts I’ll keep writing about our experience and the problems we faced and how we solved them." />
+<meta property="og:description" content="A few days ago I wrote about how we at IIIEPE started using Docker in production. It really changed the way we develop and deploy web based applications. In this series of posts I’ll keep writing about our experience and the problems we faced and how we solved them." />
+<link rel="canonical" href="http://localhost:4000/2015-03-23/a-production-ready-docker-workflow-part-2-the-storage-problem/" />
+<meta property="og:url" content="http://localhost:4000/2015-03-23/a-production-ready-docker-workflow-part-2-the-storage-problem/" />
+<meta property="og:site_name" content="Luis Elizondo" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2015-03-23T18:39:56+09:00" />
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "A production ready #Docker workflow. Part 2: The Storage Problem",
+    "datePublished": "2015-03-23T18:39:56+09:00",
+    "description": "A few days ago I wrote about how we at IIIEPE started using Docker in production. It really changed the way we develop and deploy web based applications. In this series of posts I’ll keep writing about our experience and the problems we faced and how we solved them.",
+    "url": "http://localhost:4000/2015-03-23/a-production-ready-docker-workflow-part-2-the-storage-problem/"
+  }
+</script>
+<!-- End Jekyll SEO tag -->
+
+
+  <!-- Google Analytics -->
+
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-39814139-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+
+
+
+</head>
+
+<body>
+  <div class="content-container">
+    <header>
+  <h1 class="header-small">
+    <a href="http://localhost:4000">< BACK</a>
+  </h1>
+</header>
+<div class="post">
+  <h1 class="post-title">A production ready #Docker workflow. Part 2: The Storage Problem</h1>
+  <span class="post-date">
+    <time>23 Mar 2015</time>
+  </span>
+  <div class="post-tag">
+    <ul>
+      
+    </ul>
+  </div>
+
+  <p>A few days ago I <a href="http://www.luiselizondo.net/a-production-ready-docker-workflow/">wrote</a> about how we at <a href="https://iiiepe.edu.mx">IIIEPE</a> started using Docker in production. It really changed the way we develop and deploy web based applications. In this series of posts I’ll keep writing about our experience and the problems we faced and how we solved them.</p>
+
+<p>The last post didn’t have as much context as you’d probably needed to understand why we did what we did, but if you’re still reading, allow me to explain.</p>
+
+<p>IIIEPE is a Government Institute and we love <a href="https://github.com/iiiepe">Open Source</a>. We develop most of our projects using Drupal and Node.js and we have our own Datacenter. As of this writing, we have 25 web applications, but only 8-10 of them receive commits on a daily basis. Our previous workflow was very 2005, we developed on a totally different environment than the one in production (sounds familiar?), so we usually ran the application on a testing environment to detect problems. The funny thing about testing environments is that testing VMs are never the same as production VMs.</p>
+
+<p>As we began planning the migration and the new workflow, we created a wish list which included replication of 100% of our websites to reduce downtime to a minimum during server maintenance, even the HTML websites that don’t receive too much traffic would be running on at least 2 instances running on different VMs. Having an elastic cloud was another item in the wish list since we have some traffic spikes every now and then.</p>
+
+<p>Since many of our websites are made with Drupal, this really presented us with many challenges when we tested the migration, the biggest of them was the <em>Storage Problem</em></p>
+
+<p>We do not have a storage solution like AWS S3 nor we have the money to pay Amazon for GBs of data so we tested <a href="http://www.skylable.com/products/">LibreS3</a>. LibreS3 is a great API-compatible S3 clone once you sort the DNS problems.</p>
+
+<p>But Drupal sometimes will give you a hard time. Drupal just won’t play nice with S3 so even if we wanted to use S3, we had to invest months tweaking Drupal and we just didn’t have the time nor the patience to do it.</p>
+
+<p>Before we moved everything to production, we used DigitalOcean to test PasS solutions like <a href="http://deis.io">Deis</a> and orchestration software like <a href="http://panamax.io/">Panamax</a>. Deis was a not too hard to configure and it was really easy to use. The biggest problem with Deis and some of the other orchestration solutions we tested was the Storage problem, actually, the heroku-like ephemeral filesystem. Panamax was not ready for us at the time because it didn’t have an agent to support a multi-host environment.</p>
+
+<h2 id="glusterfs">GlusterFS</h2>
+<p>Before GlusterFS we used NFS, but when we configured it years ago we made the mistake of only configuring one NFS VM. We also made the mistake of never upgrading the OS of the machine to the next major version so by the time we wanted to do it was too late. We heard nice things about GlusterFS and since now it was necessary to reinstall NFS, we decided to try GlusterFS before.</p>
+
+<p>GlusterFS was surprisingly easy to configure. We ended up with 2 GlusterFS VMs, one is a replica of the other and if one goes down, the other immediately and transparently will start to serve files. If we need to expand our storage solution in the future, it’s just a matter of creating new replicas with bigger space and then shutting down the old ones.</p>
+
+<p>With GlusterFS configured and our storage layer figured out, we just had to connect each of the web nodes, which was really easy. Then we just had to introduce Docker into all of this.</p>
+
+<h2 id="volumes">Volumes</h2>
+<p>Drupal writes all kinds of files in the directory <em>sites/default/files</em>. The problem with this is that the files are inside the web application. On Drupal, the main index file is at <em>/var/www/index.php</em> and the files are at <em>/var/www/sites/default/files</em>, as you can see, there’s no separation of concerns, files and code living side by side with just a couple of directories in the way. Even the .gitignore that comes with Drupal includes this directory so the files aren’t committed.</p>
+
+<p>Moving <em>sites/default/files</em> out of /var/www was not really an option because Drupal will fight you, if you want to try it, save yourself the trouble and the time.</p>
+
+<p>So we had to share.</p>
+
+<p>I wrote about each application having a Dockerfile, and this Dockerfile uses a base image. When we develop an application, we share the <em>application</em> folder so the code lives in <em>/var/www</em> and when Jenkins builds the image it copies the same <em>application</em> folder to <em>/var/www</em>. From the perspective of the container, it’s just the same code when we share or copy and from the perspective of of the developer, it’s the same environment as production.</p>
+
+<p>To solve the <em>/var/sites/default/files</em> problem, we just had to share it with the host, so we added one line to the Dockerfile</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>VOLUME ["/var/www/sites/default/files"]
+</code></pre>
+</div>
+
+<p>and made sure not to include the files directory with our project. Docker will just create the directory and map it to where we tell it to. Since Maestro-NG makes it really easy to do this (I’ll discuss this on the next post), the rest was a walk in the park.</p>
+
+<h2 id="glusterfs--docker">GlusterFS + Docker</h2>
+<p>To made things even easier and to standardize further our workflow, the GlusterFS volume has an structure like the following:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>/storage/files/subdomain.domain.com
+/storage/logs/subdomain.domain.com
+</code></pre>
+</div>
+
+<p>And each container maps the files directory like this::</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>container -&gt; host
+/var/www/sites/default/files -&gt; /storage/files/subdomain.domain.com
+</code></pre>
+</div>
+
+<p>Each of the web nodes reads and writes to this directory and since each application has one single directory to write and read files, it makes things easier to backup. All of this while fooling Drupal because it thinks it’s reading and writing to <em>/var/www/sites/default/files</em> when in fact it’s reading and writing from <em>/storage/files/subdomain.domain.com</em>. Voilà!</p>
+
+<p>Docker 1 - Drupal 0.</p>
+
+<h2 id="developer">Developer</h2>
+<p>We don’t really need to download files to develop any of the websites we have, we treat them as content so they stay on the server, but we do have to recreate this structure when we boot a container. I’ll talk about how we handle our databases in another post. The way we do it is by including a files directory on the root of the project and we include this directory in .gitignore so we won’t commit it.</p>
+
+<p>Using docker-compose (or fig) it would look like this:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>volumes:
+  - application:/var/www
+  - files:/var/www/sites/default/files
+</code></pre>
+</div>
+
+<p>So our application is mapped to <em>/var/www</em> and drupal has a place where it can write files happily.</p>
+
+<p>Thanks for reading, please share your thoughts or questions. On the next post I’ll talk about how we configured Maestro-NG and how we let Jenkins do the hard work for us. On the final post I’ll discuss what service discovery solution we’re using and the issues we had with the load balancer.</p>
+
+<h5 id="update">Update</h5>
+<p>Part 3 is out, you can read it <a href="http://www.luiselizondo.net/a-production-ready-docker-workflow-part-3-orchestration-tools/">here</a></p>
+
+
+
+  <!-- Share -->
+  
+  <div class="post-share">
+    <hr>
+    <span>Share this: <br /></span>
+<a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/2015-03-23/a-production-ready-docker-workflow-part-2-the-storage-problem/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-facebook"></a>
+<a href="https://twitter.com/intent/tweet?text=A production ready #Docker workflow. Part 2: The Storage Problem&url=http://localhost:4000/2015-03-23/a-production-ready-docker-workflow-part-2-the-storage-problem/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-twitter"></a>
+<a href="https://plus.google.com/share?url=http://localhost:4000/2015-03-23/a-production-ready-docker-workflow-part-2-the-storage-problem/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-google-plus"></a>
+<a href="https://www.tumblr.com/share?url=http://localhost:4000/2015-03-23/a-production-ready-docker-workflow-part-2-the-storage-problem/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-tumblr"></a>
+<a href="mailto:?subject=A production ready #Docker workflow. Part 2: The Storage Problem&amp;body=Check out this site http://localhost:4000/2015-03-23/a-production-ready-docker-workflow-part-2-the-storage-problem/" class="ssk ssk-icon ssk-email"></a>
+
+    <hr>
+  </div>
+  
+
+  <!-- Disqus -->
+  
+  <section id="disqus_thread"></section>
+  <script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables */
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = '//luiselizondobaez.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+</div>
+
+
+    <!-- Documents about icons are here: http://fontawesome.io/icons/ -->
+<div class="footer">
+	<hr />
+	<div class="footer-link">
+		
+
+		
+		<a href="https://twitter.com/lelizondo"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+		
+
+		
+		<a href="https://github.com/luiselizondo"><i class="fa fa-github" aria-hidden="true"></i></a>
+		
+
+		
+		<a href="https://www.linkedin.com/in/luiselizondobaez"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
+		
+
+		
+
+		
+
+		
+
+	</div>
+	© 2016 Luis Elizondo. All rights reserved.
+</div>
+
+  </div>
+</body>
+</html>

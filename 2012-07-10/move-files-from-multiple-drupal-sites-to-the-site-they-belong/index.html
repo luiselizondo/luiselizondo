@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Move files from multiple drupal sites to the site they belong</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/assets/css/main.css" type="text/css">
+  <link rel="stylesheet" href="/assets/css/social-share-kit.css" type="text/css">
+
+  <!-- Font -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+
+
+  <link rel="alternate" type="application/rss+xml" title="RSS Feed for Luis Elizondo" href="/feed.xml" />
+  <!-- Begin Jekyll SEO tag v2.0.0 -->
+<title>Move files from multiple drupal sites to the site they belong - Luis Elizondo</title>
+<meta property="og:title" content="Move files from multiple drupal sites to the site they belong" />
+<meta name="description" content="A long time ago I had a multisite installation. Eventually I moved all sites to their own directories but the files directory, once shared by all sites, remained as one.Now I&#8217;m moving all sites to a new server and right now is the perfect opportunity to move files where they belong.The problem is, how to know which file belongs to what site? If you take a look at the structure of the directory there&#8217;s just no way to tell.But Drupal is just amazing, why? Because it keeps record of all the files needed in a table. This way we can get a list of all the files needed for that particular site and copy/move the files to the site&#8217;s directory. Yes, we can do this manually, but is no good if we&#8217;re talking about thousands of files.Export the files needed by the siteWith MySQL we just do:D6:SELECT filepath FROM files INTO OUTFILE &#8216;/tmp/files.txt&#8217;;D7:SELECT filepath FROM managed_files INTO OUTFILE &#8216;/tmp/files.txt&#8217;;If we take a look at files.txt we&#8217;ll see we have a huge list of files, something like:sites/default/files/talis1.jpgsites/default/files/pic_02.jpgsites/default/files/pic_03.jpgsites/default/files/pic_05.jpgsites/default/files/pic_07.jpgsites/default/files/pic_09.jpgNow, remember I said I was moving the sites to a new server? Well I had to move the files too and for my own sake, I recreated the structure of the files in /srv so I have something like:/srv/www/sites/default/files/tails1.jpgThis way I save myself a few lines in the script.The scriptThe script is really simple, it does three things and is written in Python.1. Iterate over each line of the file files.txt2. Strip the n that MySQL added on each line when we exported the file4. Move the file to the final destination#!/usr/bin/pythonfrom subprocess import callfor line in open(&#8220;/tmp/files.txt&#8221;, &#8220;r&#8221;):    file = line.strip()    print &#8220;Moving file &#8221; + file    call([&#8220;mv&#8221;, &#8220;/srv/www/&#8221; + file, &#8220;/srv/www/example.com/files&#8221;])That&#8217;s it. Save the script as whatever.py, give it permission to execute (chmod u+x) and run it. If you can&#8217;t move files around in those directories you have to run the script as sudo. You&#8217;ll need to create any directory that you doesn&#8217;t exists too." />
+<meta property="og:description" content="A long time ago I had a multisite installation. Eventually I moved all sites to their own directories but the files directory, once shared by all sites, remained as one.Now I&#8217;m moving all sites to a new server and right now is the perfect opportunity to move files where they belong.The problem is, how to know which file belongs to what site? If you take a look at the structure of the directory there&#8217;s just no way to tell.But Drupal is just amazing, why? Because it keeps record of all the files needed in a table. This way we can get a list of all the files needed for that particular site and copy/move the files to the site&#8217;s directory. Yes, we can do this manually, but is no good if we&#8217;re talking about thousands of files.Export the files needed by the siteWith MySQL we just do:D6:SELECT filepath FROM files INTO OUTFILE &#8216;/tmp/files.txt&#8217;;D7:SELECT filepath FROM managed_files INTO OUTFILE &#8216;/tmp/files.txt&#8217;;If we take a look at files.txt we&#8217;ll see we have a huge list of files, something like:sites/default/files/talis1.jpgsites/default/files/pic_02.jpgsites/default/files/pic_03.jpgsites/default/files/pic_05.jpgsites/default/files/pic_07.jpgsites/default/files/pic_09.jpgNow, remember I said I was moving the sites to a new server? Well I had to move the files too and for my own sake, I recreated the structure of the files in /srv so I have something like:/srv/www/sites/default/files/tails1.jpgThis way I save myself a few lines in the script.The scriptThe script is really simple, it does three things and is written in Python.1. Iterate over each line of the file files.txt2. Strip the n that MySQL added on each line when we exported the file4. Move the file to the final destination#!/usr/bin/pythonfrom subprocess import callfor line in open(&#8220;/tmp/files.txt&#8221;, &#8220;r&#8221;):    file = line.strip()    print &#8220;Moving file &#8221; + file    call([&#8220;mv&#8221;, &#8220;/srv/www/&#8221; + file, &#8220;/srv/www/example.com/files&#8221;])That&#8217;s it. Save the script as whatever.py, give it permission to execute (chmod u+x) and run it. If you can&#8217;t move files around in those directories you have to run the script as sudo. You&#8217;ll need to create any directory that you doesn&#8217;t exists too." />
+<link rel="canonical" href="http://localhost:4000/2012-07-10/move-files-from-multiple-drupal-sites-to-the-site-they-belong/" />
+<meta property="og:url" content="http://localhost:4000/2012-07-10/move-files-from-multiple-drupal-sites-to-the-site-they-belong/" />
+<meta property="og:site_name" content="Luis Elizondo" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2012-07-10T21:46:00+09:00" />
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Move files from multiple drupal sites to the site they belong",
+    "datePublished": "2012-07-10T21:46:00+09:00",
+    "description": "A long time ago I had a multisite installation. Eventually I moved all sites to their own directories but the files directory, once shared by all sites, remained as one.Now I&#8217;m moving all sites to a new server and right now is the perfect opportunity to move files where they belong.The problem is, how to know which file belongs to what site? If you take a look at the structure of the directory there&#8217;s just no way to tell.But Drupal is just amazing, why? Because it keeps record of all the files needed in a table. This way we can get a list of all the files needed for that particular site and copy/move the files to the site&#8217;s directory. Yes, we can do this manually, but is no good if we&#8217;re talking about thousands of files.Export the files needed by the siteWith MySQL we just do:D6:SELECT filepath FROM files INTO OUTFILE &#8216;/tmp/files.txt&#8217;;D7:SELECT filepath FROM managed_files INTO OUTFILE &#8216;/tmp/files.txt&#8217;;If we take a look at files.txt we&#8217;ll see we have a huge list of files, something like:sites/default/files/talis1.jpgsites/default/files/pic_02.jpgsites/default/files/pic_03.jpgsites/default/files/pic_05.jpgsites/default/files/pic_07.jpgsites/default/files/pic_09.jpgNow, remember I said I was moving the sites to a new server? Well I had to move the files too and for my own sake, I recreated the structure of the files in /srv so I have something like:/srv/www/sites/default/files/tails1.jpgThis way I save myself a few lines in the script.The scriptThe script is really simple, it does three things and is written in Python.1. Iterate over each line of the file files.txt2. Strip the n that MySQL added on each line when we exported the file4. Move the file to the final destination#!/usr/bin/pythonfrom subprocess import callfor line in open(&#8220;/tmp/files.txt&#8221;, &#8220;r&#8221;):    file = line.strip()    print &#8220;Moving file &#8221; + file    call([&#8220;mv&#8221;, &#8220;/srv/www/&#8221; + file, &#8220;/srv/www/example.com/files&#8221;])That&#8217;s it. Save the script as whatever.py, give it permission to execute (chmod u+x) and run it. If you can&#8217;t move files around in those directories you have to run the script as sudo. You&#8217;ll need to create any directory that you doesn&#8217;t exists too.",
+    "url": "http://localhost:4000/2012-07-10/move-files-from-multiple-drupal-sites-to-the-site-they-belong/"
+  }
+</script>
+<!-- End Jekyll SEO tag -->
+
+
+  <!-- Google Analytics -->
+
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-39814139-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+
+
+
+</head>
+
+<body>
+  <div class="content-container">
+    <header>
+  <h1 class="header-small">
+    <a href="http://localhost:4000">< BACK</a>
+  </h1>
+</header>
+<div class="post">
+  <h1 class="post-title">Move files from multiple drupal sites to the site they belong</h1>
+  <span class="post-date">
+    <time>10 Jul 2012</time>
+  </span>
+  <div class="post-tag">
+    <ul>
+      
+    </ul>
+  </div>
+
+  <p>A long time ago I had a multisite installation. Eventually I moved all sites to their own directories but the files directory, once shared by all sites, remained as one.</p>
+<p>Now I&#8217;m moving all sites to a new server and right now is the perfect opportunity to move files where they belong.</p>
+<p>The problem is, how to know which file belongs to what site? If you take a look at the structure of the directory there&#8217;s just no way to tell.</p>
+<p>But Drupal is just amazing, why? Because it keeps record of all the files needed in a table. This way we can get a list of all the files needed for that particular site and copy/move the files to the site&#8217;s directory. Yes, we can do this manually, but is no good if we&#8217;re talking about thousands of files.</p>
+<p><strong>Export the files needed by the site</strong></p>
+<p>With MySQL we just do:</p>
+<p>D6:<br />SELECT filepath FROM files INTO OUTFILE &#8216;/tmp/files.txt&#8217;;</p>
+<p>D7:<br />SELECT filepath FROM managed_files INTO OUTFILE &#8216;/tmp/files.txt&#8217;;</p>
+<p>If we take a look at files.txt we&#8217;ll see we have a huge list of files, something like:</p>
+<p>sites/default/files/talis1.jpg<br />sites/default/files/pic_02.jpg<br />sites/default/files/pic_03.jpg<br />sites/default/files/pic_05.jpg<br />sites/default/files/pic_07.jpg<br />sites/default/files/pic_09.jpg</p>
+<p>Now, remember I said I was moving the sites to a new server? Well I had to move the files too and for my own sake, I recreated the structure of the files in /srv so I have something like:</p>
+<p>/srv/www/sites/default/files/tails1.jpg</p>
+<p>This way I save myself a few lines in the script.</p>
+<p><strong>The script</strong></p>
+<p>The script is really simple, it does three things and is written in Python.</p>
+<p>1. Iterate over each line of the file files.txt</p>
+<p>2. Strip the n that MySQL added on each line when we exported the file</p>
+<p>4. Move the file to the final destination</p>
+<p>#!/usr/bin/python<br />from subprocess import call<br />for line in open(&#8220;/tmp/files.txt&#8221;, &#8220;r&#8221;):<br />    file = line.strip()<br />    print &#8220;Moving file &#8221; + file<br />    call([&#8220;mv&#8221;, &#8220;/srv/www/&#8221; + file, &#8220;/srv/www/example.com/files&#8221;])</p>
+<p>That&#8217;s it. Save the script as whatever.py, give it permission to execute (chmod u+x) and run it. If you can&#8217;t move files around in those directories you have to run the script as sudo. You&#8217;ll need to create any directory that you doesn&#8217;t exists too.</p>
+
+
+
+  <!-- Share -->
+  
+  <div class="post-share">
+    <hr>
+    <span>Share this: <br /></span>
+<a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/2012-07-10/move-files-from-multiple-drupal-sites-to-the-site-they-belong/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-facebook"></a>
+<a href="https://twitter.com/intent/tweet?text=Move files from multiple drupal sites to the site they belong&url=http://localhost:4000/2012-07-10/move-files-from-multiple-drupal-sites-to-the-site-they-belong/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-twitter"></a>
+<a href="https://plus.google.com/share?url=http://localhost:4000/2012-07-10/move-files-from-multiple-drupal-sites-to-the-site-they-belong/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-google-plus"></a>
+<a href="https://www.tumblr.com/share?url=http://localhost:4000/2012-07-10/move-files-from-multiple-drupal-sites-to-the-site-they-belong/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-tumblr"></a>
+<a href="mailto:?subject=Move files from multiple drupal sites to the site they belong&amp;body=Check out this site http://localhost:4000/2012-07-10/move-files-from-multiple-drupal-sites-to-the-site-they-belong/" class="ssk ssk-icon ssk-email"></a>
+
+    <hr>
+  </div>
+  
+
+  <!-- Disqus -->
+  
+  <section id="disqus_thread"></section>
+  <script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables */
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = '//luiselizondobaez.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+</div>
+
+
+    <!-- Documents about icons are here: http://fontawesome.io/icons/ -->
+<div class="footer">
+	<hr />
+	<div class="footer-link">
+		
+
+		
+		<a href="https://twitter.com/lelizondo"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+		
+
+		
+		<a href="https://github.com/luiselizondo"><i class="fa fa-github" aria-hidden="true"></i></a>
+		
+
+		
+		<a href="https://www.linkedin.com/in/luiselizondobaez"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
+		
+
+		
+
+		
+
+		
+
+	</div>
+	© 2016 Luis Elizondo. All rights reserved.
+</div>
+
+  </div>
+</body>
+</html>
