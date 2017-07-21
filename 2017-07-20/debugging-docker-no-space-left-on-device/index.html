@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Debugging docker no space left on device problem</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/assets/css/main.css" type="text/css">
+  <link rel="stylesheet" href="/assets/css/social-share-kit.css" type="text/css">
+
+  <!-- Font -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+
+
+  <link rel="alternate" type="application/rss+xml" title="RSS Feed for Luis Elizondo" href="/feed.xml" />
+  <!-- Begin Jekyll SEO tag v2.0.0 -->
+<title>Debugging docker no space left on device problem - Luis Elizondo</title>
+<meta property="og:title" content="Debugging docker no space left on device problem" />
+<meta name="description" content="A few weeks ago I started seeing an error that was preventing the Jenkins (docker) slave from running the tests of one of our projects." />
+<meta property="og:description" content="A few weeks ago I started seeing an error that was preventing the Jenkins (docker) slave from running the tests of one of our projects." />
+<link rel="canonical" href="http://luiselizondo.github.io/2017-07-20/debugging-docker-no-space-left-on-device/" />
+<meta property="og:url" content="http://luiselizondo.github.io/2017-07-20/debugging-docker-no-space-left-on-device/" />
+<meta property="og:site_name" content="Luis Elizondo" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-07-20T11:20:44+09:00" />
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Debugging docker no space left on device problem",
+    "datePublished": "2017-07-20T11:20:44+09:00",
+    "description": "A few weeks ago I started seeing an error that was preventing the Jenkins (docker) slave from running the tests of one of our projects.",
+    "url": "http://luiselizondo.github.io/2017-07-20/debugging-docker-no-space-left-on-device/"
+  }
+</script>
+<!-- End Jekyll SEO tag -->
+
+
+  <!-- Google Analytics -->
+
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-39814139-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+
+
+
+</head>
+
+<body>
+  <div class="content-container">
+    <header>
+  <h1 class="header-small">
+    <a href="http://luiselizondo.github.io">< BACK</a>
+  </h1>
+</header>
+<div class="post">
+  <h1 class="post-title">Debugging docker no space left on device problem</h1>
+  <span class="post-date">
+    <time>20 Jul 2017</time>
+  </span>
+  <div class="post-tag">
+    <ul>
+      
+      <li>
+        <a href="http://luiselizondo.github.io/tags#docker" class="tag">
+          <span class="term">docker</span>
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="http://luiselizondo.github.io/tags#linux" class="tag">
+          <span class="term">linux</span>
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="http://luiselizondo.github.io/tags#jenkins" class="tag">
+          <span class="term">jenkins</span>
+        </a>
+      </li>
+      
+      
+    </ul>
+  </div>
+
+  <p>At Rever we use Docker on Docker to build our images and distribute them to production. In a nutshell, Jenkins is in charge of creating a new slave using Docker, then, we start the Docker daemon inside the Jenkins (docker) slave, where we pull all the images of a project, run tests and then we build the final image that we send to our Docker Registry.</p>
+
+<p>A few weeks ago I started seeing an error that was preventing the Jenkins (docker) slave from running the tests of one of our projects.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>time="2017-07-20T03:52:58.422032126Z" level=error msg="Handler for POST /v1.24/containers/create returned error: Error processing tar file(exit status 1): write /usr/libexec/gcc/x86_64-alpine-linux-musl/5.3.0/cc1obj: no space left on device"
+docker: Error response from daemon: Error processing tar file(exit status 1): write /usr/libexec/gcc/x86_64-alpine-linux-musl/5.3.0/cc1obj: no space left on device.
+See 'docker run --help'.
+make: *** [test] Error 125
+</code></pre>
+</div>
+
+<p>This error was really annoying since when going to the Jenkins VM it showed that we have more than enough hard drive space. I started to explore the option that this was a RAM issue and I increased the RAM on our VM but nothing happened. I found on internet several posts that talked about iNodes, but that was not our problem.</p>
+
+<p>After two days exploring the internet and a lot of debugging I came up with a post that point me in the right direction. Turns out that when Docker creates a new container, assigns a virtual partition with only 10 GB of space. When running Docker on Docker, we pull Docker images inside the Docker container and the device is left with no space on the virtual partition.</p>
+
+<p>I ran some tests and found that that when the container starts, the <code class="highlighter-rouge">/dev/mapper/docker*</code> partition has 10G and 9+ GB of free space. But after pulling some images, I’m left with less than 10% of free space.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>root@c85b9b0acbbb:~# df -h
+Filesystem                                                                                        Size  Used Avail Use% Mounted on
+/dev/mapper/docker-202:1-152516-66f9feb4b4c712acf1f74beee40cce2675127de8ea33ef7de213348f53325ca2   10G  934M  9.1G  10% /
+tmpfs                                                                                             3.9G     0  3.9G   0% /dev
+tmpfs                                                                                             3.9G     0  3.9G   0% /sys/fs/cgroup
+/dev/xvda1                                                                                         79G  7.9G   68G  11% /keys
+shm                                                                                                64M     0   64M   0% /dev/shm
+</code></pre>
+</div>
+
+<p>The solution was simple, I had to increase the partition and I’ll get to that in a moment. Increasing the partition was not enough, since I had to remove and rebuild all the images on the main Docker daemon.</p>
+
+<p>First, I had to pass the following options to the Docker Daemon:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>DOCKER_OPTS="--storage-opt dm.basesize=20GB --storage-opt dm.min_free_space=20%"
+</code></pre>
+</div>
+
+<p>Then, I started to get a weird error about Docker not running. I found out after reading the logs that the <code class="highlighter-rouge">%</code> on <code class="highlighter-rouge">20%</code> was not being parsed because systemd considers the character <code class="highlighter-rouge">%</code> a special character.</p>
+
+<p>The final configuration I had to enter on <code class="highlighter-rouge">/etc/systemd/system/docker.service.d/docker.conf</code> was:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>[Service]
+ExecStart=
+ExecStart=/usr/bin/dockerd --storage-opt dm.basesize=20GB --storage-opt dm.min_free_space=20%%
+</code></pre>
+</div>
+
+<p>Notice the double %% at the end of the ExecStart configuration</p>
+
+<p>I had to stop and start docker by running the following commands:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>systemctl stop docker.service
+systemctl daemon-reload
+systemctl start docker.service
+</code></pre>
+</div>
+
+<p>And then, I had to remove all images with:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>docker rmi $(docker image -qa)
+</code></pre>
+</div>
+
+<p>And rebuild the images that I had.</p>
+
+<p>Once I had that, I tested that the configuration was working by running:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$ sudo docker run alpine:latest df -h
+Unable to find image 'alpine:latest' locally
+latest: Pulling from library/alpine
+88286f41530e: Pull complete
+Digest: sha256:1072e499f3f655a032e88542330cf75b02e7bdf673278f701d7ba61629ee3ebe
+Status: Downloaded newer image for alpine:latest
+Filesystem                Size      Used Available Use% Mounted on
+/dev/mapper/docker-202:1-152516-94c4aa9da75e3faaa8237047f51255ddf370e849d6eb82a75d4d2323a0421b59
+                         20.0G     38.3M     20.0G   0% /
+tmpfs                     3.9G         0      3.9G   0% /dev
+tmpfs                     3.9G         0      3.9G   0% /sys/fs/cgroup
+/dev/xvda1               78.6G      7.3G     68.0G  10% /etc/resolv.conf
+/dev/xvda1               78.6G      7.3G     68.0G  10% /etc/hostname
+/dev/xvda1               78.6G      7.3G     68.0G  10% /etc/hosts
+shm                      64.0M         0     64.0M   0% /dev/shm
+tmpfs                     3.9G         0      3.9G   0% /proc/kcore
+tmpfs                     3.9G         0      3.9G   0% /proc/timer_list
+tmpfs                     3.9G         0      3.9G   0% /proc/timer_stats
+tmpfs                     3.9G         0      3.9G   0% /proc/sched_debug
+tmpfs                     3.9G         0      3.9G   0% /sys/firmware
+</code></pre>
+</div>
+
+<p>Voila! The partition was increased to 20G! and no more problem.</p>
+
+
+
+  <!-- Share -->
+  
+  <div class="post-share">
+    <hr>
+    <span>Share this: <br /></span>
+<a href="https://www.facebook.com/sharer/sharer.php?u=http://luiselizondo.github.io/2017-07-20/debugging-docker-no-space-left-on-device/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-facebook"></a>
+<a href="https://twitter.com/intent/tweet?text=Debugging docker no space left on device problem&url=http://luiselizondo.github.io/2017-07-20/debugging-docker-no-space-left-on-device/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-twitter"></a>
+<a href="https://plus.google.com/share?url=http://luiselizondo.github.io/2017-07-20/debugging-docker-no-space-left-on-device/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-google-plus"></a>
+<a href="https://www.tumblr.com/share?url=http://luiselizondo.github.io/2017-07-20/debugging-docker-no-space-left-on-device/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-tumblr"></a>
+<a href="mailto:?subject=Debugging docker no space left on device problem&amp;body=Check out this site http://luiselizondo.github.io/2017-07-20/debugging-docker-no-space-left-on-device/" class="ssk ssk-icon ssk-email"></a>
+
+    <hr>
+  </div>
+  
+
+  <!-- Disqus -->
+  
+  <section id="disqus_thread"></section>
+  <script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables */
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = '//luiselizondobaez.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+</div>
+
+
+    <!-- Documents about icons are here: http://fontawesome.io/icons/ -->
+<div class="footer">
+	<hr />
+	<div class="footer-link">
+		
+
+		
+		<a href="https://twitter.com/lelizondo"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+		
+
+		
+		<a href="https://github.com/luiselizondo"><i class="fa fa-github" aria-hidden="true"></i></a>
+		
+
+		
+		<a href="https://www.linkedin.com/in/luiselizondobaez"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
+		
+
+		
+
+		
+
+		
+
+	</div>
+	© 2016 Luis Elizondo. All rights reserved.
+</div>
+
+  </div>
+</body>
+</html>
