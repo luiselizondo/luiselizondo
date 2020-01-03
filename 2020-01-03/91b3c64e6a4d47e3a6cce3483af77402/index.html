@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Git Cheat Guide en Español</title>
+  <title>How to analyse a text file with millions of lines</title>
 
   <!-- CSS -->
   <link rel="stylesheet" href="/assets/css/main.css" type="text/css">
@@ -15,23 +15,23 @@
 
   <link rel="alternate" type="application/rss+xml" title="RSS Feed for Luis Elizondo" href="/feed.xml" />
   <!-- Begin Jekyll SEO tag v2.0.0 -->
-<title>Git Cheat Guide en Español - Luis Elizondo</title>
-<meta property="og:title" content="Git Cheat Guide en Español" />
-<meta name="description" content="Git es parte de nuestro trabajo en el IIIEPE, hace tiempo elaboré una Guía de trampas (Cheat Guide) para todo el equipo, la comparto aquí bajo la licencia&nbsp; Creative Commons Attribution-NonCommercial 4.0 International License. Se comparte la fuente y PDF." />
-<meta property="og:description" content="Git es parte de nuestro trabajo en el IIIEPE, hace tiempo elaboré una Guía de trampas (Cheat Guide) para todo el equipo, la comparto aquí bajo la licencia&nbsp; Creative Commons Attribution-NonCommercial 4.0 International License. Se comparte la fuente y PDF." />
-<link rel="canonical" href="http://luiselizondo.github.io/2014-03-07/git-cheat-guide-en-espanol/" />
-<meta property="og:url" content="http://luiselizondo.github.io/2014-03-07/git-cheat-guide-en-espanol/" />
+<title>How to analyse a text file with millions of lines - Luis Elizondo</title>
+<meta property="og:title" content="How to analyse a text file with millions of lines" />
+<meta name="description" content="Let’s say that you have a file with millions of lines and you need to analyse it." />
+<meta property="og:description" content="Let’s say that you have a file with millions of lines and you need to analyse it." />
+<link rel="canonical" href="http://luiselizondo.github.io/2020-01-03/91b3c64e6a4d47e3a6cce3483af77402/" />
+<meta property="og:url" content="http://luiselizondo.github.io/2020-01-03/91b3c64e6a4d47e3a6cce3483af77402/" />
 <meta property="og:site_name" content="Luis Elizondo" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2014-03-07T01:02:09+09:00" />
+<meta property="article:published_time" content="2020-01-03T00:00:00+09:00" />
 <script type="application/ld+json">
   {
     "@context": "http://schema.org",
     "@type": "BlogPosting",
-    "headline": "Git Cheat Guide en Español",
-    "datePublished": "2014-03-07T01:02:09+09:00",
-    "description": "Git es parte de nuestro trabajo en el IIIEPE, hace tiempo elaboré una Guía de trampas (Cheat Guide) para todo el equipo, la comparto aquí bajo la licencia&nbsp; Creative Commons Attribution-NonCommercial 4.0 International License. Se comparte la fuente y PDF.",
-    "url": "http://luiselizondo.github.io/2014-03-07/git-cheat-guide-en-espanol/"
+    "headline": "How to analyse a text file with millions of lines",
+    "datePublished": "2020-01-03T00:00:00+09:00",
+    "description": "Let’s say that you have a file with millions of lines and you need to analyse it.",
+    "url": "http://luiselizondo.github.io/2020-01-03/91b3c64e6a4d47e3a6cce3483af77402/"
   }
 </script>
 <!-- End Jekyll SEO tag -->
@@ -62,30 +62,30 @@ ga('send', 'pageview');
   </h1>
 </header>
 <div class="post">
-  <h1 class="post-title">Git Cheat Guide en Español</h1>
+  <h1 class="post-title">How to analyse a text file with millions of lines</h1>
   <span class="post-date">
-    <time>07 Mar 2014</time>
+    <time>03 Jan 2020</time>
   </span>
   <div class="post-tag">
     <ul>
       
       <li>
-        <a href="http://luiselizondo.github.io/tags#espanol" class="tag">
-          <span class="term">espanol</span>
+        <a href="http://luiselizondo.github.io/tags#bash" class="tag">
+          <span class="term">bash</span>
         </a>
       </li>
       
       
       <li>
-        <a href="http://luiselizondo.github.io/tags#git" class="tag">
-          <span class="term">git</span>
+        <a href="http://luiselizondo.github.io/tags#linux" class="tag">
+          <span class="term">linux</span>
         </a>
       </li>
       
       
       <li>
-        <a href="http://luiselizondo.github.io/tags#spanish" class="tag">
-          <span class="term">spanish</span>
+        <a href="http://luiselizondo.github.io/tags#logs" class="tag">
+          <span class="term">logs</span>
         </a>
       </li>
       
@@ -93,7 +93,27 @@ ga('send', 'pageview');
     </ul>
   </div>
 
-  <p>Git es parte de nuestro trabajo en el IIIEPE, hace tiempo elaboré una Guía de trampas (Cheat Guide) para todo el equipo, la comparto aquí bajo la licencia&nbsp; Creative Commons Attribution-NonCommercial 4.0 International License. Se comparte la fuente y PDF.</p>
+  <p>Let’s say that you have a file with millions of lines and you need to analyse it. A common use case for this is a log file that you want to understand how many users made a request to a particular route.</p>
+
+<p>I had a case like this one recently and here’s what I did.</p>
+
+<p>The first thing you need to do is determine the pattern you are trying to find to count it. Let’s say that we had a log saying ‘Accessing POST /api/login’ and that’s what determines if a user is attempting to login to your site, which is what we want to find out.</p>
+
+<p>Once you have a defined pattern it is actually really easy to do:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>cat file.txt | grep 'Accessing POST /api/login' &gt; count-results.txt
+</code></pre>
+</div>
+
+<p>As you can see, I do a <code class="highlighter-rouge">cat</code> on the file and filter the results by the string we want to count, finally, I send all the results to a text file.</p>
+
+<p>The second step would be to count the lines in this new file, since now I know I only have the results I want.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>wc -l count-results.txt
+</code></pre>
+</div>
+
+<p>And that’s it, I’ll get how many requests were made to the route /api/login</p>
 
 
 
@@ -102,15 +122,15 @@ ga('send', 'pageview');
   <div class="post-share">
     <hr>
     <span>Share this: <br /></span>
-<a href="https://www.facebook.com/sharer/sharer.php?u=http://luiselizondo.github.io/2014-03-07/git-cheat-guide-en-espanol/" onclick="window.open(this.href, 'mywin',
+<a href="https://www.facebook.com/sharer/sharer.php?u=http://luiselizondo.github.io/2020-01-03/91b3c64e6a4d47e3a6cce3483af77402/" onclick="window.open(this.href, 'mywin',
 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-facebook"></a>
-<a href="https://twitter.com/intent/tweet?text=Git Cheat Guide en Español&url=http://luiselizondo.github.io/2014-03-07/git-cheat-guide-en-espanol/" onclick="window.open(this.href, 'mywin',
+<a href="https://twitter.com/intent/tweet?text=How to analyse a text file with millions of lines&url=http://luiselizondo.github.io/2020-01-03/91b3c64e6a4d47e3a6cce3483af77402/" onclick="window.open(this.href, 'mywin',
 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-twitter"></a>
-<a href="https://plus.google.com/share?url=http://luiselizondo.github.io/2014-03-07/git-cheat-guide-en-espanol/" onclick="window.open(this.href, 'mywin',
+<a href="https://plus.google.com/share?url=http://luiselizondo.github.io/2020-01-03/91b3c64e6a4d47e3a6cce3483af77402/" onclick="window.open(this.href, 'mywin',
 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-google-plus"></a>
-<a href="https://www.tumblr.com/share?url=http://luiselizondo.github.io/2014-03-07/git-cheat-guide-en-espanol/" onclick="window.open(this.href, 'mywin',
+<a href="https://www.tumblr.com/share?url=http://luiselizondo.github.io/2020-01-03/91b3c64e6a4d47e3a6cce3483af77402/" onclick="window.open(this.href, 'mywin',
 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="ssk ssk-icon ssk-tumblr"></a>
-<a href="mailto:?subject=Git Cheat Guide en Español&amp;body=Check out this site http://luiselizondo.github.io/2014-03-07/git-cheat-guide-en-espanol/" class="ssk ssk-icon ssk-email"></a>
+<a href="mailto:?subject=How to analyse a text file with millions of lines&amp;body=Check out this site http://luiselizondo.github.io/2020-01-03/91b3c64e6a4d47e3a6cce3483af77402/" class="ssk ssk-icon ssk-email"></a>
 
     <hr>
   </div>

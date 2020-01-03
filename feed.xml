@@ -6,6 +6,35 @@
 		<atom:link href="http://luiselizondo.github.io/feed.xml" rel="self" type="application/rss+xml" />
 		
 			<item>
+				<title>How to analyse a text file with millions of lines</title>
+        <description>&lt;p&gt;Let’s say that you have a file with millions of lines and you need to analyse it. A common use case for this is a log file that you want to understand how many users made a request to a particular route.&lt;/p&gt;
+
+&lt;p&gt;I had a case like this one recently and here’s what I did.&lt;/p&gt;
+
+&lt;p&gt;The first thing you need to do is determine the pattern you are trying to find to count it. Let’s say that we had a log saying ‘Accessing POST /api/login’ and that’s what determines if a user is attempting to login to your site, which is what we want to find out.&lt;/p&gt;
+
+&lt;p&gt;Once you have a defined pattern it is actually really easy to do:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;cat file.txt | grep 'Accessing POST /api/login' &amp;gt; count-results.txt
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;As you can see, I do a &lt;code class=&quot;highlighter-rouge&quot;&gt;cat&lt;/code&gt; on the file and filter the results by the string we want to count, finally, I send all the results to a text file.&lt;/p&gt;
+
+&lt;p&gt;The second step would be to count the lines in this new file, since now I know I only have the results I want.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;wc -l count-results.txt
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;And that’s it, I’ll get how many requests were made to the route /api/login&lt;/p&gt;
+</description>
+				<pubDate>Fri, 03 Jan 2020 00:00:00 +0900</pubDate>
+				<link>http://luiselizondo.github.io/2020-01-03/91b3c64e6a4d47e3a6cce3483af77402/</link>
+				<guid isPermaLink="true">http://luiselizondo.github.io/2020-01-03/91b3c64e6a4d47e3a6cce3483af77402/</guid>
+			</item>
+		
+			<item>
 				<title>Debugging docker no space left on device problem</title>
         <description>&lt;p&gt;At Rever we use Docker on Docker to build our images and distribute them to production. In a nutshell, Jenkins is in charge of creating a new slave using Docker, then, we start the Docker daemon inside the Jenkins (docker) slave, where we pull all the images of a project, run tests and then we build the final image that we send to our Docker Registry.&lt;/p&gt;
 
